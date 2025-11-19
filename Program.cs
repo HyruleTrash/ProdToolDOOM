@@ -1,4 +1,7 @@
-﻿namespace ProdToolDOOM;
+﻿using Gum.Forms.Controls;
+using MonoGameGum;
+
+namespace ProdToolDOOM;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +10,8 @@ using Microsoft.Xna.Framework.Input;
 class Program : Game
 {
     private GraphicsDeviceManager graphics;
+
+    private GumService Gum => GumService.Default;
     
     public Program()
     {
@@ -24,7 +29,21 @@ class Program : Game
     
     protected override void Initialize()
     {
+        Gum.Initialize(this);
+        LoadUI();
         base.Initialize();
+    }
+
+    private void LoadUI()
+    {
+        var mainPanel = new StackPanel();
+        mainPanel.AddToRoot();
+        
+        var exitButton = new Button();
+        exitButton.Text = "Exit";
+        exitButton.Click += (sender, args) => Exit();
+        
+        mainPanel.AddChild(exitButton);
     }
     
     protected override void LoadContent()
@@ -37,13 +56,14 @@ class Program : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        Gum.Update(gameTime);
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
-
+        Gum.Draw();
         base.Draw(gameTime);
     }
 }
