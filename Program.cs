@@ -10,8 +10,11 @@ using Microsoft.Xna.Framework.Input;
 class Program : Game
 {
     private GraphicsDeviceManager graphics;
-
     private GumService Gum => GumService.Default;
+    
+    public Project currentProject;
+    public CommandHistory cmdHistory;
+    private int currentLevel;
     
     public Program()
     {
