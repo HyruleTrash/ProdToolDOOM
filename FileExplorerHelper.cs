@@ -21,7 +21,7 @@ public static class FileExplorerHelper
             using var openFileDialog = new OpenFileDialog();
             
             openFileDialog.InitialDirectory = initialDirectory;
-            openFileDialog.Filter = "xml files (*.xml)|*.xml";
+            openFileDialog.Filter = "wapd files (*.wapd)|*.wapd";
             openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
 
@@ -41,7 +41,7 @@ public static class FileExplorerHelper
             using var saveFileDialog = new SaveFileDialog();
             
             saveFileDialog.InitialDirectory = initialDirectory;
-            saveFileDialog.Filter = "xml files (*.xml)|*.xml";
+            saveFileDialog.Filter = "wapd files (*.wapd)|*.wapd";
             saveFileDialog.FilterIndex = 1;
             saveFileDialog.RestoreDirectory = true;
 
