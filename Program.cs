@@ -1,5 +1,6 @@
 ﻿using Gum.Forms.Controls;
 using MonoGameGum;
+using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM;
 
@@ -23,9 +24,10 @@ class Program : Game
         IsMouseVisible = true;
     }
     
+    [STAThread]
     static void Main(string[] args)
     {
-        Console.WriteLine("Starting application...");
+        Debug.Log("Starting application...");
         var p = new Program();
         p.Run();
     }
@@ -45,8 +47,12 @@ class Program : Game
         var exitButton = new Button();
         exitButton.Text = "Exit";
         exitButton.Click += (sender, args) => Exit();
-        
         mainPanel.AddChild(exitButton);
+        
+        var LoadProjectButton = new Button();
+        LoadProjectButton.Text = "Load Project";
+        LoadProjectButton.Click += (sender, args) => Project.Load();
+        mainPanel.AddChild(LoadProjectButton);
     }
     
     protected override void LoadContent()
