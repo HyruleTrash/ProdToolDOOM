@@ -10,6 +10,7 @@ public static class FileExplorerHelper
     public interface IFileDialogService
     {
         string OpenFile(string initialDirectory = "c:\\");
+        string SaveFile(string initialDirectory = "c:\\");
     }
 
     public class DesktopFileDialogService : IFileDialogService
@@ -20,8 +21,8 @@ public static class FileExplorerHelper
             using var openFileDialog = new OpenFileDialog();
             
             openFileDialog.InitialDirectory = initialDirectory;
-            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog.FilterIndex = 2;
+            openFileDialog.Filter = "xml files (*.xml)|*.xml";
+            openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK) 
@@ -33,12 +34,36 @@ public static class FileExplorerHelper
             #endif
             return null;
         }
+
+        public string SaveFile(string initialDirectory = "c:\\")
+        {
+            #if WINDOWS
+            using var saveFileDialog = new SaveFileDialog();
+            
+            saveFileDialog.InitialDirectory = initialDirectory;
+            saveFileDialog.Filter = "xml files (*.xml)|*.xml";
+            saveFileDialog.FilterIndex = 1;
+            saveFileDialog.RestoreDirectory = true;
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK) 
+                return saveFileDialog.FileName;
+            #endif
+            return null;
+        }
     }
 
     private static IFileDialogService fileDialogService;
 
     [STAThread]
-    public static string OpenFileExplorer()
+    public static string OpenFileExplorer(string path = "c:\\")
+    {
+        if (HasFileExplorer())
+            return fileDialogService.OpenFile(path);
+        else
+            return String.Empty;
+    }
+
+    private static bool HasFileExplorer()
     {
         if (fileDialogService == null)
         {
@@ -46,9 +71,16 @@ public static class FileExplorerHelper
             fileDialogService = new DesktopFileDialogService();
             #endif
         }
-        if (fileDialogService != null)
-            return fileDialogService.OpenFile();
+
+        return fileDialogService != null;
+    }
+    
+    [STAThread]
+    public static string SaveWithFileExplorer(string path = "c:\\")
+    {
+        if (HasFileExplorer())
+            return fileDialogService.SaveFile(path);
         else
-            return "";
+            return String.Empty;
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 class Program : Game
 {
+    public static string PROGRAM_VERSION = "0.0.1";
     private GraphicsDeviceManager graphics;
     private GumService Gum => GumService.Default;
     
@@ -53,6 +54,11 @@ class Program : Game
         LoadProjectButton.Text = "Load Project";
         LoadProjectButton.Click += (sender, args) => Project.Load();
         mainPanel.AddChild(LoadProjectButton);
+        
+        var SaveProjectButton = new Button();
+        SaveProjectButton.Text = "Save Project";
+        SaveProjectButton.Click += (sender, args) => Project.Save();
+        mainPanel.AddChild(SaveProjectButton);
     }
     
     protected override void LoadContent()
