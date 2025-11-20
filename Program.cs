@@ -14,7 +14,6 @@ class Program : Game
     private GraphicsDeviceManager graphics;
     private GumService Gum => GumService.Default;
     
-    public Project currentProject;
     public CommandHistory cmdHistory;
     private int currentLevel;
     
@@ -50,15 +49,7 @@ class Program : Game
         exitButton.Click += (sender, args) => Exit();
         mainPanel.AddChild(exitButton);
         
-        var LoadProjectButton = new Button();
-        LoadProjectButton.Text = "Load Project";
-        LoadProjectButton.Click += (sender, args) => Project.Load();
-        mainPanel.AddChild(LoadProjectButton);
-        
-        var SaveProjectButton = new Button();
-        SaveProjectButton.Text = "Save Project";
-        SaveProjectButton.Click += (sender, args) => Project.Save();
-        mainPanel.AddChild(SaveProjectButton);
+        Project.LoadUI(mainPanel);
     }
     
     protected override void LoadContent()

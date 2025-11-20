@@ -1,21 +1,47 @@
 ﻿
 
+using Gum.Forms.Controls;
+using Button = Gum.Forms.Controls.Button;
+
 namespace ProdToolDOOM;
 
-public class Project
+public static class Project
 {
-    private Dictionary<int, EntityData> entityData;
-    private List<Level> levels;
+    public static Dictionary<int, EntityData> entityData = [];
+    public static List<Level> levels = [];
     private static IProjectSaveAndLoadStrategy saveAndLoadStrat = null;
-    private static string filePath = string.Empty;
 
-    public static void Load()
+    private static string FilePath
+    {
+        get => filePath;
+        set
+        {
+            if (filePath != value)
+                filePathChanged.Invoke(value);
+            filePath = value;
+        }
+    }
+    private static string filePath = string.Empty;
+    private static Action<string> filePathChanged;
+    private static Button LoadProjectButton;
+    private static Button SaveProjectAsButton;
+    
+    private static StackPanel inProjectStack;
+    private static Button SaveProjectButton;
+    private static Button AddLevelButton;
+
+    static Project()
+    {
+        filePathChanged += (string value) => { Debug.Log($"FilePathChanged: {value}"); };
+    }
+
+    private static void Load()
     {
         if (CheckStrategy())
             return;
         Debug.Log("Loading project file...");
         
-        String tempPath = filePath;
+        String tempPath = FilePath;
         if (tempPath == String.Empty)
         {
             tempPath = FileExplorerHelper.OpenFileExplorer();
@@ -24,7 +50,7 @@ public class Project
         else
             tempPath = FileExplorerHelper.OpenFileExplorer(tempPath);
         if (saveAndLoadStrat.Load(tempPath))
-            filePath = tempPath;
+            FilePath = tempPath;
     }
 
     /// <summary>
@@ -43,21 +69,75 @@ public class Project
         return saveAndLoadStrat == null;
     }
 
-    public static void Save()
+    private static void Save(bool newProject = false)
     {
         if (CheckStrategy())
             return;
         Debug.Log("Saving project file...");
 
-        String tempPath = filePath;
-        if (filePath == String.Empty)
+        String tempPath = FilePath;
+        if (newProject)
         {
-            tempPath = FileExplorerHelper.SaveWithFileExplorer();
-            Debug.Log(tempPath);
+            if (FilePath == String.Empty)
+            {
+                tempPath = FileExplorerHelper.SaveWithFileExplorer();
+                Debug.Log(tempPath);
+            }
+            else
+                tempPath = FileExplorerHelper.SaveWithFileExplorer(tempPath);
         }
         else
-            tempPath = FileExplorerHelper.SaveWithFileExplorer(filePath);
+        {
+            if (FilePath == String.Empty)
+                return;
+        }
+
         if (saveAndLoadStrat.Save(tempPath))
-            filePath = tempPath;
+            FilePath = tempPath;
+    }
+
+    public static void LoadUI(StackPanel mainPanel)
+    {
+        LoadProjectButton = new Button
+        {
+            Text = "Load Project"
+        };
+        LoadProjectButton.Click += (sender, args) => Load();
+        mainPanel.AddChild(LoadProjectButton);
+        
+        SaveProjectAsButton = new Button
+        {
+            Text = "New Project"
+        };
+        SaveProjectAsButton.Click += (sender, args) => Save(true);
+        filePathChanged += (string value) => {SaveProjectAsButton.Text = value == String.Empty ? "New Project" : "Save Project as..."; };
+        mainPanel.AddChild(SaveProjectAsButton);
+        
+        inProjectStack = new StackPanel
+        {
+            IsVisible = false
+        };
+        filePathChanged += (string value) => { inProjectStack.IsVisible = value != String.Empty; };
+        mainPanel.AddChild(inProjectStack);
+        
+        SaveProjectButton = new Button
+        {
+            Text = "Save Project"
+        };
+        SaveProjectButton.Click += (sender, args) => Save(false);
+        inProjectStack.AddChild(SaveProjectButton);
+        
+        AddLevelButton = new Button
+        {
+            Text = "Create new level"
+        };
+        AddLevelButton.Click += (sender, args) => AddLevel();
+        inProjectStack.AddChild(AddLevelButton);
+    }
+
+    private static void AddLevel()
+    {
+        Debug.Log("Adding level!");
+        levels.Add(new Level());
     }
 }

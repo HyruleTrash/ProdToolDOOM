@@ -48,13 +48,34 @@ public class WindowsProjectSaveAndLoadStrategy : IProjectSaveAndLoadStrategy
     {
         if (path == String.Empty || path == null)
             return false;
+
+        var usedPath = path;
+        var exists = File.Exists(path);
+        if (exists)
+        {
+            usedPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\" + $"tempSave{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}.wapd";
+        }
         
-        using var archive = ZipFile.Open(path, ZipArchiveMode.Create);
-        
-        var entry = archive.CreateEntry("projectData.xml");
-        WriteProjectData(entry.Open());
-        
-        return true;
+        try
+        {
+            using (var archive = ZipFile.Open(usedPath, ZipArchiveMode.Create))
+            {
+                var entry = archive.CreateEntry("projectData.xml");
+                WriteProjectData(entry.Open());
+            }
+
+            if (!exists) return true;
+            // replacing old file with new
+            File.Delete(path);
+            File.Move(usedPath, path);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            return false;
+        }
     }
 
     private void WriteProjectData(Stream output)
@@ -66,6 +87,8 @@ public class WindowsProjectSaveAndLoadStrategy : IProjectSaveAndLoadStrategy
         writer.WriteStartElement("Project_Version");
         writer.WriteString(Program.PROGRAM_VERSION);
         writer.WriteEndElement();
+        
+        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.levels, "Levels", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();
