@@ -125,10 +125,11 @@ public class ReflectionSerializer<T, TU> where T : notnull
     {
         if (list.Count <= 0) return;
         #if WINDOWS
-        writer.WriteStartElement($"{name}_List");
-        writer.WriteStartElement($"{name}_Count");
+        writer.WriteStartElement($"{name}");
+        writer.WriteAttributeString("collectionType", "list");
+        writer.WriteStartAttribute("count");
         writer.WriteValue(list.Count);
-        writer.WriteEndElement();
+        writer.WriteEndAttribute();
         foreach (var instance in list)
         {
             new ReflectionSerializer<T, TU>().Serialize(instance, writer);
@@ -141,10 +142,11 @@ public class ReflectionSerializer<T, TU> where T : notnull
     {
         if (dict.Count <= 0) return;
         #if WINDOWS
-        writer.WriteStartElement($"{name}_Dict");
-        writer.WriteStartElement($"{name}_Count");
+        writer.WriteStartElement($"{name}");
+        writer.WriteAttributeString("collectionType", "dictionary");
+        writer.WriteStartAttribute("count");
         writer.WriteValue(dict.Count);
-        writer.WriteEndElement();
+        writer.WriteEndAttribute();
         
         var dictTypes = dict.GetType().GetGenericArguments();
         Type dictKeyType = dictTypes[0];
