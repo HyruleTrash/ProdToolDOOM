@@ -8,7 +8,9 @@ namespace ProdToolDOOM;
 public static class Project
 {
     public static Dictionary<int, EntityData> entityData = [];
+    public static int idCounter = 0;
     public static List<Level> levels = [];
+    public static int currentLevel = 0;
     private static IProjectSaveAndLoadStrategy saveAndLoadStrat = null;
 
     private static string FilePath
@@ -29,6 +31,8 @@ public static class Project
     private static StackPanel inProjectStack;
     private static Button SaveProjectButton;
     private static Button AddLevelButton;
+    private static Button AddEntityButton;
+    private static Button AddEntityDataButton;
 
     static Project()
     {
@@ -133,11 +137,41 @@ public static class Project
         };
         AddLevelButton.Click += (sender, args) => AddLevel();
         inProjectStack.AddChild(AddLevelButton);
+        
+        AddLevelButton = new Button
+        {
+            Text = "Add new Entity to project"
+        };
+        AddLevelButton.Click += (sender, args) => AddEntityData();
+        inProjectStack.AddChild(AddLevelButton);
+        
+        AddLevelButton = new Button
+        {
+            Text = "Add Entity to level"
+        };
+        AddLevelButton.Click += (sender, args) => AddEntity();
+        inProjectStack.AddChild(AddLevelButton);
     }
 
     private static void AddLevel()
     {
         Debug.Log("Adding level!");
         levels.Add(new Level());
+        currentLevel = levels.Count - 1;
+    }
+
+    private static void AddEntityData()
+    {
+        Debug.Log("Adding entity data!");
+        entityData.Add(idCounter, new EntityData());
+        idCounter++;
+    }
+
+    private static void AddEntity()
+    {
+        if (entityData == null ||  entityData.Count == 0)
+            return;
+        Debug.Log("Adding entity!");
+        levels[currentLevel].Entities.Add(new Entity(0));
     }
 }

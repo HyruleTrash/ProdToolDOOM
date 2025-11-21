@@ -8,4 +8,9 @@ public class Entity
     
     private float xPos, yPos;
     private int id;
+
+    public Entity(int id)
+    {
+        this.id = id;
+    }
 }

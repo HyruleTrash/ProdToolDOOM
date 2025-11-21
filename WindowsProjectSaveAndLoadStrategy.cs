@@ -89,6 +89,7 @@ public class WindowsProjectSaveAndLoadStrategy : IProjectSaveAndLoadStrategy
         writer.WriteEndElement();
         
         new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.levels, "Levels", writer);
+        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary<int>(Project.entityData, "EntityData", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();
