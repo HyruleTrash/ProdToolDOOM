@@ -126,13 +126,15 @@ public class ReflectionSerializer<T, TU> where T : notnull
         if (list.Count <= 0) return;
         #if WINDOWS
         writer.WriteStartElement($"{name}");
-        writer.WriteAttributeString("collectionType", "list");
+        writer.WriteAttributeString("collectionType", "List");
         writer.WriteStartAttribute("count");
         writer.WriteValue(list.Count);
         writer.WriteEndAttribute();
         foreach (var instance in list)
         {
+            writer.WriteStartElement($"{name}_Entry");
             new ReflectionSerializer<T, TU>().Serialize(instance, writer);
+            writer.WriteEndElement();
         }
         writer.WriteEndElement();
         #endif
@@ -143,7 +145,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
         if (dict.Count <= 0) return;
         #if WINDOWS
         writer.WriteStartElement($"{name}");
-        writer.WriteAttributeString("collectionType", "dictionary");
+        writer.WriteAttributeString("collectionType", "Dictionary");
         writer.WriteStartAttribute("count");
         writer.WriteValue(dict.Count);
         writer.WriteEndAttribute();

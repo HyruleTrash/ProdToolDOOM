@@ -2,48 +2,10 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace ProdToolDOOM;
+namespace ProdToolDOOM.Version1;
 
-public class WindowsProjectSaveAndLoadStrategy : IProjectSaveAndLoadStrategy
+public class WindowsProjectSaveStrategy : IProjectSaveStrategy
 {
-    public bool Load(string path)
-    {
-        if (path == String.Empty)
-            return false;
-        try
-        {
-            using var archive = ZipFile.OpenRead(path);
-            foreach (var entry in archive.Entries)
-            {
-                if (entry.Name == "projectData.xml")
-                {
-                    ReadProjectData(entry.Open());
-                }
-            }
-            
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.Message);
-            return false;
-        }
-    }
-
-    private void ReadProjectData(Stream fileStream)
-    {
-        using var reader = XmlReader.Create(fileStream);
-        
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Project_Version")
-            {
-                string version = reader.ReadElementContentAsString();
-                Debug.Log($"Project_Version: {version}");
-            }
-        }
-    }
-
     public bool Save(string path)
     {
         if (path == String.Empty || path == null)
@@ -89,7 +51,7 @@ public class WindowsProjectSaveAndLoadStrategy : IProjectSaveAndLoadStrategy
         writer.WriteEndElement();
         
         new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.levels, "Levels", writer);
-        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.entityData, "EntityData", writer);
+        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.entityDatas, "EntityData", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();

@@ -3,15 +3,19 @@
 using Gum.Forms.Controls;
 using Button = Gum.Forms.Controls.Button;
 
+using WindowsProjectLoadStrategy = ProdToolDOOM.Version1.WindowsProjectLoadStrategy;
+using WindowsProjectSaveStrategy = ProdToolDOOM.Version1.WindowsProjectSaveStrategy;
+
 namespace ProdToolDOOM;
 
 public static class Project
 {
-    public static Dictionary<int, EntityData> entityData = [];
+    public static Dictionary<int, EntityData> entityDatas = [];
     public static int idCounter = 0;
     public static List<Level> levels = [];
     public static int currentLevel = 0;
-    private static IProjectSaveAndLoadStrategy saveAndLoadStrat = null;
+    private static IProjectSaveStrategy saveStrat = null;
+    private static IProjectLoadStrategy loadStrat = null;
 
     private static string FilePath
     {
@@ -41,7 +45,7 @@ public static class Project
 
     private static void Load()
     {
-        if (CheckStrategy())
+        if (CheckLoadStrategy())
             return;
         Debug.Log("Loading project file...");
         
@@ -53,29 +57,45 @@ public static class Project
         }
         else
             tempPath = FileExplorerHelper.OpenFileExplorer(tempPath);
-        if (saveAndLoadStrat.Load(tempPath))
+        if (loadStrat.Load(tempPath))
             FilePath = tempPath;
     }
 
     /// <summary>
-    /// Checks the state of the current strategy
+    /// Checks the state of the current load strategy
     /// </summary>
     /// <returns>true if strategy is unset, false if it is set</returns>
-    private static bool CheckStrategy()
+    private static bool CheckLoadStrategy()
     {
-        if (saveAndLoadStrat == null)
+        if (loadStrat == null)
         {
             #if WINDOWS
-            saveAndLoadStrat = new WindowsProjectSaveAndLoadStrategy();
+            loadStrat = new WindowsProjectLoadStrategy();
             #endif
         }
         
-        return saveAndLoadStrat == null;
+        return loadStrat == null;
+    }
+    
+    /// <summary>
+    /// Checks the state of the current save strategy
+    /// </summary>
+    /// <returns>true if strategy is unset, false if it is set</returns>
+    private static bool CheckSaveStrategy()
+    {
+        if (saveStrat == null)
+        {
+            #if WINDOWS
+            saveStrat = new WindowsProjectSaveStrategy();
+            #endif
+        }
+        
+        return saveStrat == null;
     }
 
     private static void Save(bool newProject = false)
     {
-        if (CheckStrategy())
+        if (CheckSaveStrategy())
             return;
         Debug.Log("Saving project file...");
 
@@ -96,7 +116,7 @@ public static class Project
                 return;
         }
 
-        if (saveAndLoadStrat.Save(tempPath))
+        if (saveStrat.Save(tempPath))
             FilePath = tempPath;
     }
 
@@ -163,15 +183,22 @@ public static class Project
     private static void AddEntityData()
     {
         Debug.Log("Adding entity data!");
-        entityData.Add(idCounter, new EntityData());
+        entityDatas.Add(idCounter, new EntityData());
         idCounter++;
     }
 
     private static void AddEntity()
     {
-        if (entityData == null ||  entityData.Count == 0)
+        if (entityDatas == null ||  entityDatas.Count == 0)
             return;
         Debug.Log("Adding entity!");
         levels[currentLevel].Entities.Add(new Entity(0));
+    }
+
+    public static void ResetData()
+    {
+        levels = new();
+        entityDatas = new();
+        currentLevel = 0;
     }
 }

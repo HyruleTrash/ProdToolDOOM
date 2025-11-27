@@ -2,9 +2,9 @@
 
 public class Entity
 {
-    public float XPosition { get => xPos; }
-    public float YPosition { get => yPos; }
-    public float Id { get => id; }
+    public float XPosition { get => xPos; set => xPos = value; }
+    public float YPosition { get => yPos; set  => yPos = value; }
+    public int Id { get => id; set => id = value; }
     
     private float xPos, yPos;
     private int id;
@@ -13,4 +13,5 @@ public class Entity
     {
         this.id = id;
     }
+    public Entity() {}
 }
