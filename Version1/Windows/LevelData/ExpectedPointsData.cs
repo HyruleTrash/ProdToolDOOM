@@ -17,7 +17,6 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
     {
         if (reader.NodeType != XmlNodeType.Element)
             return;
-        Debug.Log(reader.Name);
 
         if (reader.Name == "Vector2")
             vector2 = Vector2.FromString(reader.ReadElementContentAsString());
@@ -26,6 +25,7 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
     public void saveEntry()
     {
         referenceLevelData.points.Add(new Vector2(vector2));
+        vector2 = new Vector2();
     }
 }
 #endif

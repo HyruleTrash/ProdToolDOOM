@@ -146,7 +146,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             var foundEntry = ReadCollectionEntry(reader, collectionData, dataInstance);
             if (foundEntry && collectionData.collectionIndex == collectionData.collectionCount)
             {
-                Debug.Log("Collection read finished (count)");
+                Debug.Log($"Collection read finished (count) {collectionData.collectionName}");
                 break;
             }
         }
@@ -168,6 +168,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             if (outCollectionData.collectionType is "List" or "Dictionary")
             {
                 outCollectionData.collectionName = reader.Name;
+                outCollectionData.collectionIndex = 0;
                 Int32.TryParse(reader.GetAttribute("count"), out outCollectionData.collectionCount);
                 return true;
             }
@@ -188,10 +189,19 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         }
         
         int entryDepth = reader.Depth;
+        bool hasEntered = false;
+        if (collectionData.collectionName == "Points")
+        {
+            Debug.Log($"{entryDepth} Points: {reader.Name}");
+        }
 
         while (reader.Read())
         {
-            if ((reader.NodeType == XmlNodeType.EndElement || entryDepth == reader.Depth) && reader.Name.Contains("Entry") &&
+            // if (collectionData.collectionName == "Points")
+            //     Debug.Log($"{entryDepth}/{reader.Depth} element: {reader.NodeType} element: {reader.Name}");
+            if (reader.Depth > entryDepth)
+                hasEntered = true;
+            if ((reader.NodeType == XmlNodeType.EndElement || (hasEntered && entryDepth == reader.Depth)) && reader.Name.Contains("Entry") &&
                 reader.Name.Contains(collectionData.collectionName))
             {
                 collectionData.collectionIndex++;
