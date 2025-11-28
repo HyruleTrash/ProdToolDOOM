@@ -16,16 +16,14 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
         
     public void loadEntry(XmlReader reader)
     {
-        if (reader.NodeType == XmlNodeType.Element)
-        {
-            Debug.Log($"{reader.Name}, {reader.ReadElementContentAsString()}");
-            if (reader.Name == typeof(Int32).ToString())
-                lastReadId = reader.ReadElementContentAsInt();
-            if (reader.Name == "ImagePath")
-                entityData.ImagePath = reader.ReadElementContentAsString();
-            if (reader.Name == "Name")
-                entityData.Name = reader.ReadElementContentAsString();
-        }
+        if (reader.NodeType != XmlNodeType.Element) return;
+        
+        if (reader.Name == nameof(Int32))
+            lastReadId = reader.ReadElementContentAsInt();
+        if (reader.Name == "ImagePath")
+            entityData.ImagePath = reader.ReadElementContentAsString();
+        if (reader.Name == "Name")
+            entityData.Name = reader.ReadElementContentAsString();
     }
 
     public void saveEntry()
