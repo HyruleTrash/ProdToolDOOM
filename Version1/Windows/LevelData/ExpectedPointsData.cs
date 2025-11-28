@@ -1,0 +1,31 @@
+﻿#if WINDOWS
+using System.Xml;
+namespace ProdToolDOOM.Version1;
+
+public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
+{
+    private Vector2 vector2 = new();
+    private readonly ExpectedLevelData referenceLevelData;
+
+    public ExpectedPointsData(ExpectedLevelData referenceLevelData)
+    {
+        name = "Points";
+        this.referenceLevelData = referenceLevelData;
+    }
+    
+    public void loadEntry(XmlReader reader)
+    {
+        if (reader.NodeType != XmlNodeType.Element)
+            return;
+        Debug.Log(reader.Name);
+
+        if (reader.Name == "Vector2")
+            vector2 = Vector2.FromString(reader.ReadElementContentAsString());
+    }
+
+    public void saveEntry()
+    {
+        referenceLevelData.points.Add(new Vector2(vector2));
+    }
+}
+#endif

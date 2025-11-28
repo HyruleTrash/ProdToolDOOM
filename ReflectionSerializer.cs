@@ -13,6 +13,14 @@ public class ReflectionSerializer<T, TU> where T : notnull
     {
         #if WINDOWS
         var type = typeof(T);
+
+        if (type == typeof(Vector2))
+        {
+            writer.WriteStartElement(type.Name);
+            writer.WriteString(obj.ToString());
+            writer.WriteEndElement();
+            return;
+        }
         
         if (type.IsPrimitive)
         {

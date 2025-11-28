@@ -1,6 +1,6 @@
-﻿using System.Xml;
-
+﻿
 #if WINDOWS
+using System.Xml;
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedEntityData : ExpectedData, IExpectedCollectionData

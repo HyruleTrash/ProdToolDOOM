@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
-using System.Xml;
 
 #if WINDOWS
+using System.Xml;
 namespace ProdToolDOOM.Version1;
 
 public class ProjectLoadStrategy : IProjectLoadStrategy
@@ -39,25 +39,35 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 ReadData(reader, new(expectedData));
                 
                 // TODO remove this
-                // Debug.Log("Levels:");
-                // foreach (var level in Project.levels)
-                // {
-                //     Debug.Log(" Level:");
-                //     Debug.Log("  Entities:");
-                //     foreach (var entity in level.Entities)
-                //     {
-                //         Debug.Log("   Entity:");
-                //         Debug.Log($"   id: {entity.Id}");
-                //         Debug.Log($"   x: {entity.XPosition}, y: {entity.YPosition}");
-                //     }
-                // }
-                // Debug.Log("EntityData:");
-                // foreach (var data in Project.entityDatas)
-                // {
-                //     Debug.Log(" EntityData:");
-                //     Debug.Log($"  Id: {data.Key}");
-                //     Debug.Log($"  Name: {data.Value.Name}, ImagePath: {data.Value.ImagePath}");
-                // }
+                Debug.Log($"Levels: {Project.levels.Count}");
+                foreach (var level in Project.levels)
+                {
+                    Debug.Log(" Level:");
+                    Debug.Log("  Entities:");
+                    foreach (var entity in level.Entities)
+                    {
+                        Debug.Log("   Entity:");
+                        Debug.Log($"   id: {entity.Id}");
+                        Debug.Log($"   position: {entity.Position}");
+                    }
+                    Debug.Log("  Points:");
+                    foreach (var point in level.Points)
+                    {
+                        Debug.Log($"   Point: {point}");
+                    }
+                    Debug.Log("  Lines:");
+                    foreach (var line in level.Lines)
+                    {
+                        Debug.Log($"   Line: {line.Id} to {line.IdOther}");
+                    }
+                }
+                Debug.Log($"EntityData: {Project.entityDatas.Count}");
+                foreach (var data in Project.entityDatas)
+                {
+                    Debug.Log(" EntityData:");
+                    Debug.Log($"  Id: {data.Key}");
+                    Debug.Log($"  Name: {data.Value.Name}, ImagePath: {data.Value.ImagePath}");
+                }
             }
             
             return true;
@@ -69,7 +79,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         }
     }
 
-    private struct CollectionData
+    private class CollectionData
     {
         public string? collectionName = null;
         public string? collectionType = null;
@@ -79,20 +89,22 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         public CollectionData() { }
     }
     
-    public void ReadData(XmlReader reader, List<ExpectedData> searchData, string? stopAt = null)
+    public void ReadData(XmlReader reader, List<ExpectedData> searchData)
     {
         CollectionData collectionData = new CollectionData();
         
         while (reader.Read())
         {
-            if (reader is not { NodeType: XmlNodeType.Element })
-                continue;
-            if (stopAt != null && reader.NodeType == XmlNodeType.EndElement && reader.Name == stopAt)
-                break;
-            
             foreach (var dataInstance in searchData)
             {
-                if (dataInstance.name != reader.Name)
+                if (dataInstance.stopAt != null && reader.NodeType == XmlNodeType.EndElement &&
+                    reader.Name == dataInstance.stopAt)
+                {
+                    dataInstance.found = true;
+                    continue;
+                }
+                
+                if (dataInstance.name != reader.Name || reader.NodeType != XmlNodeType.Element)
                     continue;
                 if (dataInstance is IExpectedCollectionData expectedCollectionData)
                 {
@@ -127,12 +139,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             if (reader.NodeType == XmlNodeType.EndElement && !reader.Name.Contains("Entry") &&
                 reader.Name.Contains(collectionData.collectionName))
             {
-                Debug.Log($"Collection read finished (endEntry encountered {reader.Name})");
+                Debug.Log($"Collection read finished (endEntry encountered {reader.Name}, {collectionData.collectionName})");
                 break;
             }
-                        
-            if (reader is not { NodeType: XmlNodeType.Element })
-                return;
                         
             var foundEntry = ReadCollectionEntry(reader, collectionData, dataInstance);
             if (foundEntry && collectionData.collectionIndex == collectionData.collectionCount)
@@ -177,14 +186,18 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         {
             return false;
         }
+        
+        int entryDepth = reader.Depth;
 
         while (reader.Read())
         {
-            if (reader.NodeType == XmlNodeType.EndElement && reader.Name.Contains("Entry") &&
+            if ((reader.NodeType == XmlNodeType.EndElement || entryDepth == reader.Depth) && reader.Name.Contains("Entry") &&
                 reader.Name.Contains(collectionData.collectionName))
             {
                 collectionData.collectionIndex++;
                 data.saveEntry();
+                if (collectionData.collectionName == "Points")
+                    Debug.Log($"AAAAAAA {collectionData.collectionIndex} && {collectionData.collectionCount}");
                 return true;
             }
             

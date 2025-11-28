@@ -1,11 +1,12 @@
-﻿using System.Xml;
-
+﻿
 #if WINDOWS
+using System.Xml;
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedData
 {
     public string name;
+    public string? stopAt = null;
     public bool found;
     public Action<XmlReader> load;
 }
