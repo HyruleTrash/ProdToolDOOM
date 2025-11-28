@@ -1,13 +1,14 @@
 ﻿using System.Xml;
 
+#if WINDOWS
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 {
-    public Level level = new ();
-    private readonly WindowsProjectLoadStrategy referenceLoadStrategy;
+    private Level level = new ();
+    private readonly ProjectLoadStrategy referenceLoadStrategy;
 
-    public ExpectedLevelData(WindowsProjectLoadStrategy referenceLoadStrategy)
+    public ExpectedLevelData(ProjectLoadStrategy referenceLoadStrategy)
     {
         this.referenceLoadStrategy = referenceLoadStrategy;
         name = "Levels";
@@ -15,8 +16,8 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 
     private class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
     {
-        private Entity? entity = null;
-        private ExpectedLevelData referenceLevelData;
+        private Entity entity = new();
+        private readonly ExpectedLevelData referenceLevelData;
 
         public ExpectedEntitiesData(ExpectedLevelData referenceLevelData)
         {
@@ -28,14 +29,6 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         {
             if (reader.NodeType != XmlNodeType.Element)
                 return;
-            if (reader.Name == "Entity")
-            {
-                if (entity != null)
-                    referenceLevelData.level.Entities.Add(entity);
-            }
-                
-            if (entity == null)
-                entity = new Entity();
 
             if (reader.Name == "Id")
                 entity.Id = reader.ReadElementContentAsInt();
@@ -45,7 +38,10 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
                 entity.YPosition = reader.ReadElementContentAsFloat();
         }
 
-        public void saveEntry() {}
+        public void saveEntry()
+        {
+            referenceLevelData.level.Entities.Add(new Entity(entity));
+        }
     }
     
     public void loadEntry(XmlReader reader)
@@ -63,3 +59,4 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry() { }
 }
+#endif

@@ -1,5 +1,6 @@
 ﻿using System.Xml;
 
+#if WINDOWS
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedData
@@ -14,3 +15,4 @@ public interface IExpectedCollectionData
     public abstract void loadEntry(XmlReader reader);
     public abstract void saveEntry();
 }
+#endif

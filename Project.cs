@@ -1,10 +1,8 @@
 ﻿
 
 using Gum.Forms.Controls;
+using ProdToolDOOM.Version1;
 using Button = Gum.Forms.Controls.Button;
-
-using WindowsProjectLoadStrategy = ProdToolDOOM.Version1.WindowsProjectLoadStrategy;
-using WindowsProjectSaveStrategy = ProdToolDOOM.Version1.WindowsProjectSaveStrategy;
 
 namespace ProdToolDOOM;
 
@@ -12,8 +10,10 @@ public static class Project
 {
     public static Dictionary<int, EntityData> entityDatas = [];
     public static int idCounter = 0;
+    
     public static List<Level> levels = [];
     public static int currentLevel = 0;
+    
     private static IProjectSaveStrategy saveStrat = null;
     private static IProjectLoadStrategy loadStrat = null;
 
@@ -68,11 +68,7 @@ public static class Project
     private static bool CheckLoadStrategy()
     {
         if (loadStrat == null)
-        {
-            #if WINDOWS
-            loadStrat = new WindowsProjectLoadStrategy();
-            #endif
-        }
+            loadStrat = new ProjectLoadStrategy();
         
         return loadStrat == null;
     }
@@ -84,11 +80,7 @@ public static class Project
     private static bool CheckSaveStrategy()
     {
         if (saveStrat == null)
-        {
-            #if WINDOWS
-            saveStrat = new WindowsProjectSaveStrategy();
-            #endif
-        }
+            saveStrat = new ProjectSaveStrategy();
         
         return saveStrat == null;
     }
@@ -189,9 +181,11 @@ public static class Project
 
     private static void AddEntity()
     {
-        if (entityDatas == null ||  entityDatas.Count == 0)
+        if (entityDatas == null || entityDatas.Count == 0 || 
+            levels == null || levels.Count == 0 || 
+            currentLevel > levels.Count - 1)
             return;
-        Debug.Log("Adding entity!");
+        Debug.Log($"Adding entity to level{currentLevel}!");
         levels[currentLevel].Entities.Add(new Entity(0));
     }
 

@@ -9,9 +9,15 @@ public class Entity
     private float xPos, yPos;
     private int id;
 
+    public Entity() {}
     public Entity(int id)
     {
         this.id = id;
     }
-    public Entity() {}
+    public Entity(Entity other)
+    {
+        id = other.Id;
+        xPos = other.XPosition;
+        yPos = other.YPosition;
+    }
 }

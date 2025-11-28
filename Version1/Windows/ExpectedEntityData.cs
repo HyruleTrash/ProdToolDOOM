@@ -1,14 +1,15 @@
 ﻿using System.Xml;
 
+#if WINDOWS
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
 {
-    private readonly WindowsProjectLoadStrategy referenceLoadStrategy;
+    private readonly ProjectLoadStrategy referenceLoadStrategy;
     private int lastReadId = -1;
     private EntityData entityData = new();
 
-    public ExpectedEntityData(WindowsProjectLoadStrategy referenceLoadStrategy)
+    public ExpectedEntityData(ProjectLoadStrategy referenceLoadStrategy)
     {
         this.referenceLoadStrategy = referenceLoadStrategy;
         name = "EntityData";
@@ -31,3 +32,4 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
         Project.entityDatas.Add(lastReadId, new(entityData));
     }
 }
+#endif

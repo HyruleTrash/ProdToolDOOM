@@ -1,13 +1,14 @@
 ﻿using System.IO.Compression;
 using System.Xml;
 
+#if WINDOWS
 namespace ProdToolDOOM.Version1;
 
-public class WindowsProjectLoadStrategy : IProjectLoadStrategy
+public class ProjectLoadStrategy : IProjectLoadStrategy
 {
     private static List<ExpectedData> expectedData = new ();
     
-    public WindowsProjectLoadStrategy()
+    public ProjectLoadStrategy()
     {
         expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
         {
@@ -15,6 +16,11 @@ public class WindowsProjectLoadStrategy : IProjectLoadStrategy
             Debug.Log($"File project version: {version}");
         } });
         expectedData.Add(new ExpectedLevelData(this));
+        expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
+        {
+            int counter = reader.ReadElementContentAsInt();
+            Project.idCounter = counter;
+        }});
         expectedData.Add(new ExpectedEntityData(this)); 
     }
     
@@ -33,25 +39,25 @@ public class WindowsProjectLoadStrategy : IProjectLoadStrategy
                 ReadData(reader, new(expectedData));
                 
                 // TODO remove this
-                Debug.Log("Levels:");
-                foreach (var level in Project.levels)
-                {
-                    Debug.Log(" Level:");
-                    Debug.Log("  Entities:");
-                    foreach (var entity in level.Entities)
-                    {
-                        Debug.Log("   Entity:");
-                        Debug.Log($"   id: {entity.Id}");
-                        Debug.Log($"   x: {entity.XPosition}, y: {entity.YPosition}");
-                    }
-                }
-                Debug.Log("EntityData:");
-                foreach (var data in Project.entityDatas)
-                {
-                    Debug.Log(" EntityData:");
-                    Debug.Log($"  Id: {data.Key}");
-                    Debug.Log($"  Name: {data.Value.Name}, ImagePath: {data.Value.ImagePath}");
-                }
+                // Debug.Log("Levels:");
+                // foreach (var level in Project.levels)
+                // {
+                //     Debug.Log(" Level:");
+                //     Debug.Log("  Entities:");
+                //     foreach (var entity in level.Entities)
+                //     {
+                //         Debug.Log("   Entity:");
+                //         Debug.Log($"   id: {entity.Id}");
+                //         Debug.Log($"   x: {entity.XPosition}, y: {entity.YPosition}");
+                //     }
+                // }
+                // Debug.Log("EntityData:");
+                // foreach (var data in Project.entityDatas)
+                // {
+                //     Debug.Log(" EntityData:");
+                //     Debug.Log($"  Id: {data.Key}");
+                //     Debug.Log($"  Name: {data.Value.Name}, ImagePath: {data.Value.ImagePath}");
+                // }
             }
             
             return true;
@@ -188,3 +194,4 @@ public class WindowsProjectLoadStrategy : IProjectLoadStrategy
         return true;
     }
 }
+#endif

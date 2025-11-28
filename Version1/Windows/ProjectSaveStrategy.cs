@@ -2,9 +2,10 @@
 using System.IO;
 using System.IO.Compression;
 
+#if WINDOWS
 namespace ProdToolDOOM.Version1;
 
-public class WindowsProjectSaveStrategy : IProjectSaveStrategy
+public class ProjectSaveStrategy : IProjectSaveStrategy
 {
     public bool Save(string path)
     {
@@ -51,9 +52,15 @@ public class WindowsProjectSaveStrategy : IProjectSaveStrategy
         writer.WriteEndElement();
         
         new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.levels, "Levels", writer);
+        
+        writer.WriteStartElement("Id_Counter");
+        writer.WriteString(Project.idCounter.ToString());
+        writer.WriteEndElement();
+        
         new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.entityDatas, "EntityData", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();
     }
 }
+#endif
