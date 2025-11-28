@@ -21,6 +21,8 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
         level = new Level();
+        points = [];
+        lines = [];
         
         referenceLoadStrategy.ReadData(reader, [
             new ExpectedEntitiesData(this) { stopAt = "Entities" },
@@ -34,8 +36,6 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
     public void saveEntry()
     {
         Project.levels.Add(level);
-        level = new Level();
-        Debug.Log("adding Level");
     }
 }
 #endif

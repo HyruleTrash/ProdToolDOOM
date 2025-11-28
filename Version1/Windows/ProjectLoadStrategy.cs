@@ -47,8 +47,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     foreach (var entity in level.Entities)
                     {
                         Debug.Log("   Entity:");
-                        Debug.Log($"   id: {entity.Id}");
-                        Debug.Log($"   position: {entity.Position}");
+                        Debug.Log($"    id: {entity.Id}");
+                        Debug.Log($"    position: {entity.Position}");
                     }
                     Debug.Log("  Points:");
                     foreach (var point in level.Points)
@@ -190,27 +190,19 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         
         int entryDepth = reader.Depth;
         bool hasEntered = false;
-        if (collectionData.collectionName == "Points")
-        {
-            Debug.Log($"depth: {entryDepth} Points: {reader.Name}");
-        }
 
         while (reader.Read())
         {
-            // if (collectionData.collectionName == "Points")
-            //     Debug.Log($"{entryDepth}/{reader.Depth} element: {reader.NodeType} element: {reader.Name}");
             if (reader.Depth > entryDepth)
                 hasEntered = true;
             
             data.loadEntry(reader);
             
-            if ((reader.NodeType == XmlNodeType.EndElement || (hasEntered && entryDepth == reader.Depth)) && reader.Name.Contains("Entry") &&
-                reader.Name.Contains(collectionData.collectionName))
+            if ((reader.NodeType == XmlNodeType.EndElement || (hasEntered && entryDepth == reader.Depth)) && 
+                reader.Name.Contains("Entry") && reader.Name.Contains(collectionData.collectionName))
             {
                 collectionData.collectionIndex++;
                 data.saveEntry();
-                if (collectionData.collectionName == "Points")
-                    Debug.Log($"index update: {collectionData.collectionIndex} / {collectionData.collectionCount}");
                 return true;
             }
         }

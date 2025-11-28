@@ -31,8 +31,13 @@ public class Level
     private List<Line> lines = [];
 
     public Level()
+    { }
+    
+    public Level(Level other)
     {
-        
+        entities = other.Entities;
+        points = other.Points;
+        lines = other.Lines;
     }
 
     public void TEMPDATA()
