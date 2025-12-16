@@ -2,8 +2,13 @@
 
 public static class UIParams
 {
-    public static float borderPadding = 5;
-    public static float borderRadius = 5;
+    public const int minWindowWidth = 10;
+    public const int minWindowHeight = 50;
+    
+    public const float borderPadding = 10;
+    public const float borderRadius = 5;
 
-    public static float minBoxSizeAroundText = 30;
+    public const float minBoxSizeAroundText = 30;
+    
+    public const float minNearSelection = 10;
 }

@@ -19,7 +19,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
-            Project.idCounter = counter;
+            Project.Instance.idCounter = counter;
         }});
         expectedData.Add(new ExpectedEntityData(this)); 
     }
@@ -35,12 +35,12 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             {
                 if (entry.Name != "projectData.xml") continue;
                 using var reader = XmlReader.Create(entry.Open());
-                Project.ResetData();
+                Project.Instance.ResetData();
                 ReadData(reader, new(expectedData));
                 
                 // TODO remove this
-                Debug.Log($"Levels: {Project.levels.Count}");
-                foreach (var level in Project.levels)
+                Debug.Log($"Levels: {Project.Instance.levels.Count}");
+                foreach (var level in Project.Instance.levels)
                 {
                     Debug.Log(" Level:");
                     Debug.Log("  Entities:");
@@ -61,8 +61,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                         Debug.Log($"   Line: {line.Id} to {line.IdOther}");
                     }
                 }
-                Debug.Log($"EntityData: {Project.entityDatas.Count}");
-                foreach (var data in Project.entityDatas)
+                Debug.Log($"EntityData: {Project.Instance.entityDatas.Count}");
+                foreach (var data in Project.Instance.entityDatas)
                 {
                     Debug.Log(" EntityData:");
                     Debug.Log($"  Id: {data.Key}");

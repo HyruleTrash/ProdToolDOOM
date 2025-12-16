@@ -48,16 +48,16 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         writer.WriteStartElement("root");
             
         writer.WriteStartElement("Project_Version");
-        writer.WriteString(Program.PROGRAM_VERSION);
+        writer.WriteString(Program.instance.PROGRAM_VERSION);
         writer.WriteEndElement();
         
-        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.levels, "Levels", writer);
+        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.Instance.levels, "Levels", writer);
         
         writer.WriteStartElement("Id_Counter");
-        writer.WriteString(Project.idCounter.ToString());
+        writer.WriteString(Project.Instance.idCounter.ToString());
         writer.WriteEndElement();
         
-        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.entityDatas, "EntityData", writer);
+        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.Instance.entityDatas, "EntityData", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();

@@ -1,6 +1,7 @@
 ﻿using Gum.Forms.Controls;
 using Gum.Wireframe;
 using MonoGameGum;
+using ProdToolDOOM.Window;
 using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM;
@@ -9,35 +10,25 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-class Program : Game
+public class Program : Game
 {
-    public static string PROGRAM_VERSION = "0.0.1";
-    public Action<Vector2>? onScreenSizeChange = null;
-    private bool shouldCallOnScreenSizeChanged;
-    public bool Fullscreen { get => fullscreen; private set => fullscreen = value; }
-    private bool fullscreen = false;
+    public static Program instance;
+    public readonly string PROGRAM_VERSION = "0.0.1";
+    
     private GraphicsDeviceManager graphics;
     private GumService gum => GumService.Default;
     
+    public readonly Action<Vector2>? onScreenSizeChange;
+    public bool Fullscreen { get => fullscreen; private set => fullscreen = value; }
+    private bool shouldCallOnScreenSizeChanged;
+    private bool fullscreen;
+    private ResizeManager? resizeManager;
+    
+    private List<MouseVisualSetCall> mouseVisualSetCalls = [];
+
+    public Project currentProject;
     public CommandHistory cmdHistory;
     private int currentLevel;
-    
-    public Program()
-    {
-        graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
-        Window.IsBorderless = true;
-        Window.AllowUserResizing = true;
-
-        onScreenSizeChange += size =>
-        {
-            Debug.Log("Screen size change: " + gum.CanvasWidth  + ", " + gum.CanvasHeight);
-            Debug.Log("Screen size change: " + size);
-            gum.CanvasWidth = size.x;
-            gum.CanvasHeight = size.y;
-        };
-    }
     
     [STAThread]
     static void Main(string[] args)
@@ -47,13 +38,41 @@ class Program : Game
         p.Run();
     }
     
+    private Program()
+    {
+        instance = this;
+        currentProject = new Project();
+        cmdHistory = new CommandHistory();
+        
+        graphics = new GraphicsDeviceManager(this);
+        Content.RootDirectory = "Content";
+        
+        IsMouseVisible = true;
+        Window.IsBorderless = true;
+        Window.AllowUserResizing = true;
+
+        onScreenSizeChange += size =>
+        {
+            gum.CanvasWidth = size.x;
+            gum.CanvasHeight = size.y;
+            resizeManager?.ResizeSelectionBoxData(size);
+        };
+    }
+    
     protected override void Initialize()
     {
         gum.Initialize(this);
         LoadUI();
         base.Initialize();
+        
+        resizeManager = new ResizeManager(new Vector2(gum.CanvasWidth, gum.CanvasHeight));
     }
-
+    
+    protected override void LoadContent()
+    {
+        // _spriteBatch = new SpriteBatch(GraphicsDevice); TODO load icons here
+    }
+    
     private void LoadUI()
     {
         var exitPanel = new StackPanel
@@ -84,7 +103,7 @@ class Program : Game
         {
             var handle = Window.Handle;
             if (handle == IntPtr.Zero) return;
-            WindowHelper.Minimize(handle);
+            ProdToolDOOM.Window.Helper.Minimize(handle);
         };
         
         var maximizeButton = new Button
@@ -99,12 +118,12 @@ class Program : Game
 
             if (Fullscreen)
             {
-                WindowHelper.UnMaximize(handle);
+                ProdToolDOOM.Window.Helper.UnMaximize(handle);
                 Fullscreen = false;
             }
             else
             {
-                WindowHelper.Maximize(handle);
+                ProdToolDOOM.Window.Helper.Maximize(handle);
                 Fullscreen = true;
             }
 
@@ -122,14 +141,17 @@ class Program : Game
         mainPanel.Anchor(Anchor.TopLeft);
         mainPanel.AddToRoot();
         
-        Project.LoadUI(mainPanel, gum);
-    }
-    
-    protected override void LoadContent()
-    {
-        // _spriteBatch = new SpriteBatch(GraphicsDevice); TODO load icons here
+        currentProject.LoadUI(mainPanel, gum);
     }
 
+    
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
+        gum.Draw();
+        base.Draw(gameTime);
+    }
+    
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -138,8 +160,18 @@ class Program : Game
 
         gum.Update(gameTime);
         base.Update(gameTime);
+        
+        if (ProdToolDOOM.Window.Helper.HasFocus(Window.Handle))
+            CheckOnHover();
+        resizeManager?.ResizeWindow(graphics, Window);
 
         CheckScreenSizeChange();
+        
+        // Update mouse visual
+        var mouseVisual = GetMouseVisual();
+        if (mouseVisual != null)
+            Mouse.SetCursor(mouseVisual);
+        mouseVisualSetCalls = [new MouseVisualSetCall(MouseCursor.Arrow, 0)];
     }
 
     private void CheckScreenSizeChange()
@@ -151,10 +183,37 @@ class Program : Game
         shouldCallOnScreenSizeChanged = false;
     }
 
-    protected override void Draw(GameTime gameTime)
+    private void CheckOnHover()
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-        gum.Draw();
-        base.Draw(gameTime);
+        var mouseState = Mouse.GetState();
+        var mousePosition = new Vector2(mouseState.X, mouseState.Y);
+        
+        if (Fullscreen)
+            return;
+        resizeManager?.CheckResizePositions(mousePosition, mouseState);
+    }
+
+    public void SetMouseVisual(MouseCursor visualType, int priority)
+    {
+        mouseVisualSetCalls.Add(new MouseVisualSetCall(visualType, priority));
+    }
+
+    private MouseCursor? GetMouseVisual()
+    {
+        MouseVisualSetCall? currentHighestPriorityCall = null;
+        foreach (var mouseVisualSetCall in mouseVisualSetCalls)
+        {
+            if (currentHighestPriorityCall == null)
+            {
+                currentHighestPriorityCall = mouseVisualSetCall;
+                continue;
+            }
+            if (currentHighestPriorityCall.Value.priority < mouseVisualSetCall.priority)
+            {
+                currentHighestPriorityCall = mouseVisualSetCall;
+            }
+        }
+
+        return currentHighestPriorityCall?.type;
     }
 }

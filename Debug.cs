@@ -4,8 +4,14 @@ public static class Debug
 {
     public static void Log(string message)
     {
-        #if DEBUG
+#if DEBUG
         Console.WriteLine(message);
-        #endif
+#endif
+    }
+    public static void Log(object message)
+    {
+#if DEBUG
+        Console.WriteLine(message == null ? "Null" : message.ToString());
+#endif
     }
 }

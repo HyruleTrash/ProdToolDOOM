@@ -9,18 +9,20 @@ using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM;
 
-public static class Project
+public class Project
 {
-    public static Dictionary<int, EntityData> entityDatas = [];
-    public static int idCounter = 0;
-    
-    public static List<Level> levels = [];
-    public static int currentLevel = 0;
-    
-    private static IProjectSaveStrategy saveStrat = null;
-    private static IProjectLoadStrategy loadStrat = null;
+    public static Project Instance => Program.instance.currentProject;
 
-    private static string FilePath
+    public Dictionary<int, EntityData> entityDatas = [];
+    public int idCounter = 0;
+    
+    public List<Level> levels = [];
+    public int currentLevel = 0;
+    
+    private IProjectSaveStrategy saveStrat = null;
+    private IProjectLoadStrategy loadStrat = null;
+
+    private string FilePath
     {
         get => filePath;
         set
@@ -30,26 +32,26 @@ public static class Project
             filePath = value;
         }
     }
-    private static string filePath = string.Empty;
-    private static Action<string> filePathChanged;
-    private static Button loadProjectButton;
-    private static Button saveProjectAsButton;
+    private string filePath = string.Empty;
+    private Action<string> filePathChanged;
+    private Button loadProjectButton;
+    private Button saveProjectAsButton;
     
-    private static StackPanel inProjectStack;
-    private static Button saveProjectButton;
+    private StackPanel inProjectStack;
+    private Button saveProjectButton;
 
-    private static ContainerRuntime toolContainer;
-    private static StackPanel toolStack;
-    private static Button addLevelButton;
-    private static Button addEntityButton;
-    private static Button addEntityDataButton;
+    private ContainerRuntime toolContainer;
+    private StackPanel toolStack;
+    private Button addLevelButton;
+    private Button addEntityButton;
+    private Button addEntityDataButton;
 
-    static Project()
+    public Project()
     {
-        filePathChanged += (string value) => { Debug.Log($"FilePathChanged: {value}"); };
+        filePathChanged = (string value) => { Debug.Log($"FilePathChanged: {value}"); };
     }
 
-    private static void Load()
+    private void Load()
     {
         if (CheckLoadStrategy())
             return;
@@ -71,7 +73,7 @@ public static class Project
     /// Checks the state of the current load strategy
     /// </summary>
     /// <returns>true if strategy is unset, false if it is set</returns>
-    private static bool CheckLoadStrategy()
+    private bool CheckLoadStrategy()
     {
         if (loadStrat == null)
             loadStrat = new ProjectLoadStrategy();
@@ -83,7 +85,7 @@ public static class Project
     /// Checks the state of the current save strategy
     /// </summary>
     /// <returns>true if strategy is unset, false if it is set</returns>
-    private static bool CheckSaveStrategy()
+    private bool CheckSaveStrategy()
     {
         if (saveStrat == null)
             saveStrat = new ProjectSaveStrategy();
@@ -91,7 +93,7 @@ public static class Project
         return saveStrat == null;
     }
 
-    private static void Save(bool newProject = false)
+    private void Save(bool newProject = false)
     {
         if (CheckSaveStrategy())
             return;
@@ -118,7 +120,7 @@ public static class Project
             FilePath = tempPath;
     }
 
-    public static void LoadUI(StackPanel mainPanel, GumService gum)
+    public void LoadUI(StackPanel mainPanel, GumService gum)
     {
         loadProjectButton = new Button
         {
@@ -198,21 +200,21 @@ public static class Project
         toolStack.AddChild(addLevelButton);
     }
 
-    private static void AddLevel()
+    private void AddLevel()
     {
         Debug.Log("Adding level!");
         levels.Add(new Level());
         currentLevel = levels.Count - 1;
     }
 
-    private static void AddEntityData()
+    private void AddEntityData()
     {
         Debug.Log("Adding entity data!");
         entityDatas.Add(idCounter, new EntityData());
         idCounter++;
     }
 
-    private static void AddEntity()
+    private void AddEntity()
     {
         if (entityDatas == null || entityDatas.Count == 0 || 
             levels == null || levels.Count == 0 || 
@@ -222,7 +224,7 @@ public static class Project
         levels[currentLevel].Entities.Add(new Entity(0));
     }
 
-    public static void ResetData()
+    public void ResetData()
     {
         levels = new();
         entityDatas = new();
