@@ -1,6 +1,9 @@
 ﻿
 
 using Gum.Forms.Controls;
+using Gum.Wireframe;
+using MonoGameGum;
+using MonoGameGum.GueDeriving;
 using ProdToolDOOM.Version1;
 using Button = Gum.Forms.Controls.Button;
 
@@ -29,14 +32,17 @@ public static class Project
     }
     private static string filePath = string.Empty;
     private static Action<string> filePathChanged;
-    private static Button LoadProjectButton;
-    private static Button SaveProjectAsButton;
+    private static Button loadProjectButton;
+    private static Button saveProjectAsButton;
     
     private static StackPanel inProjectStack;
-    private static Button SaveProjectButton;
-    private static Button AddLevelButton;
-    private static Button AddEntityButton;
-    private static Button AddEntityDataButton;
+    private static Button saveProjectButton;
+
+    private static ContainerRuntime toolContainer;
+    private static StackPanel toolStack;
+    private static Button addLevelButton;
+    private static Button addEntityButton;
+    private static Button addEntityDataButton;
 
     static Project()
     {
@@ -112,22 +118,22 @@ public static class Project
             FilePath = tempPath;
     }
 
-    public static void LoadUI(StackPanel mainPanel)
+    public static void LoadUI(StackPanel mainPanel, GumService gum)
     {
-        LoadProjectButton = new Button
+        loadProjectButton = new Button
         {
             Text = "Load Project"
         };
-        LoadProjectButton.Click += (sender, args) => Load();
-        mainPanel.AddChild(LoadProjectButton);
+        loadProjectButton.Click += (sender, args) => Load();
+        mainPanel.AddChild(loadProjectButton);
         
-        SaveProjectAsButton = new Button
+        saveProjectAsButton = new Button
         {
             Text = "New Project"
         };
-        SaveProjectAsButton.Click += (sender, args) => Save(true);
-        filePathChanged += (string value) => {SaveProjectAsButton.Text = value == String.Empty ? "New Project" : "Save Project as..."; };
-        mainPanel.AddChild(SaveProjectAsButton);
+        saveProjectAsButton.Click += (sender, args) => Save(true);
+        filePathChanged += (string value) => {saveProjectAsButton.Text = value == String.Empty ? "New Project" : "Save Project as..."; };
+        mainPanel.AddChild(saveProjectAsButton);
         
         inProjectStack = new StackPanel
         {
@@ -136,33 +142,60 @@ public static class Project
         filePathChanged += (string value) => { inProjectStack.IsVisible = value != String.Empty; };
         mainPanel.AddChild(inProjectStack);
         
-        SaveProjectButton = new Button
+        saveProjectButton = new Button
         {
             Text = "Save Project"
         };
-        SaveProjectButton.Click += (sender, args) => Save(false);
-        inProjectStack.AddChild(SaveProjectButton);
+        saveProjectButton.Click += (sender, args) => Save(false);
+        inProjectStack.AddChild(saveProjectButton);
         
-        AddLevelButton = new Button
+        // Tools
+        toolContainer = new ContainerRuntime
+        {
+            Width = gum.CanvasWidth,
+            Height = gum.CanvasHeight,
+            X = 0,
+            Y = 0,
+            Visible = false
+        };
+        filePathChanged += (string value) => { toolContainer.Visible = value != String.Empty; };
+        toolContainer.Anchor(Anchor.Center);
+        toolContainer.AddToRoot();
+
+        toolStack = new StackPanel
+        {
+            Visual =
+            {
+                ChildrenLayout = Gum.Managers.ChildrenLayout.LeftToRightStack,
+                StackSpacing = 4
+            },
+            X = 5,
+            Y = gum.CanvasHeight - UIParams.borderPadding,
+        };
+        toolStack.Anchor(Anchor.BottomLeft);
+        toolContainer.AddChild(toolStack);
+
+        // TODO: turn these into commands
+        addLevelButton = new Button
         {
             Text = "Create new level"
         };
-        AddLevelButton.Click += (sender, args) => AddLevel();
-        inProjectStack.AddChild(AddLevelButton);
+        addLevelButton.Click += (sender, args) => AddLevel();
+        toolStack.AddChild(addLevelButton);
         
-        AddLevelButton = new Button
+        addLevelButton = new Button
         {
             Text = "Add new Entity to project"
         };
-        AddLevelButton.Click += (sender, args) => AddEntityData();
-        inProjectStack.AddChild(AddLevelButton);
+        addLevelButton.Click += (sender, args) => AddEntityData();
+        toolStack.AddChild(addLevelButton);
         
-        AddLevelButton = new Button
+        addLevelButton = new Button
         {
             Text = "Add Entity to level"
         };
-        AddLevelButton.Click += (sender, args) => AddEntity();
-        inProjectStack.AddChild(AddLevelButton);
+        addLevelButton.Click += (sender, args) => AddEntity();
+        toolStack.AddChild(addLevelButton);
     }
 
     private static void AddLevel()

@@ -40,25 +40,6 @@ public class Level
         lines = other.Lines;
     }
 
-    public void TEMPDATA()
-    {
-        points =
-        [
-            new(1, 0),
-            new(-1, 0),
-            new(0, 1),
-            new(0, -1)
-        ];
-
-        lines =
-        [
-            new(0, 1),
-            new(1, 2),
-            new(2, 3),
-            new(3, 4)
-        ];
-    }
-
     public void SetLevelGeometry(List<Vector2> points, List<Line> lines)
     {
         this.points = points;
