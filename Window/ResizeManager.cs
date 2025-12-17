@@ -12,21 +12,18 @@ public class ResizeManager
         public bool currentlyHoveredOver = false;
         public bool isBeingResized = false;
         protected SelectionBox sideSelectionBox = box;
-        protected int savedOldPos;
         protected float mouseOffset;
 
         public void UpdateCurrentlyHoveredOver(Vector2 mousePos) => currentlyHoveredOver = sideSelectionBox.IsInsideBounds(mousePos);
 
         public abstract void SetMouseVisual();
         protected abstract float GetEdgePosition();
-        protected abstract void SavePosValueInMemory(GameWindow window);
         protected abstract float CalculateMouseOffset(float edgePos, Vector2 mouse);
         protected abstract int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos);
         protected abstract void ApplyPreferredBuffer(GraphicsDeviceManager graphics);
         
         public virtual void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
         {
-            SavePosValueInMemory(window);
             mouseOffset = CalculateMouseOffset(GetEdgePosition(), mousePos);
         }
     }
@@ -43,19 +40,19 @@ public class ResizeManager
             return sideSelectionBox.center.x;
         }
 
-        protected override void SavePosValueInMemory(GameWindow window)
-        {
-            savedOldPos = window.Position.X;
-        }
-
         protected override int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos)
         {
-            return Math.Min(Math.Max(graphics.PreferredBackBufferHeight + (int)Math.Ceiling(pos), UIParams.minWindowWidth), 10000);
+            var delta = (int)Math.Ceiling(pos);
+            if (delta > UIParams.minResizePerFrame)
+                delta = UIParams.minResizePerFrame;
+            
+            var desiredDelta = graphics.PreferredBackBufferWidth + delta;
+            return Math.Max(desiredDelta, UIParams.minWindowWidth);
         }
 
         protected override void ApplyPreferredBuffer(GraphicsDeviceManager graphics)
         {
-            graphics.PreferredBackBufferWidth = GetPosWithinWindowBounds(graphics, mouseOffset / 2);
+            graphics.PreferredBackBufferWidth = GetPosWithinWindowBounds(graphics, mouseOffset);
             graphics.ApplyChanges();
         }
     }
@@ -70,11 +67,12 @@ public class ResizeManager
         public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
         {
             base.ResizeSide(graphics, window, mousePos);
+            
+            window.Position = new Point(window.Position.X, window.Position.Y);
 
             ApplyPreferredBuffer(graphics);
             
-            if (window.Position.X != savedOldPos)
-                window.Position = new Point(savedOldPos, window.Position.Y);
+            sideSelectionBox.center.x += mouseOffset;
         }
     }
 
@@ -89,7 +87,7 @@ public class ResizeManager
         {
             base.ResizeSide(graphics, window, mousePos);
             
-            window.Position = new Point(savedOldPos - (int)Math.Ceiling(mouseOffset / 2), window.Position.Y);
+            window.Position = new Point(window.Position.X - (int)Math.Ceiling(mouseOffset), window.Position.Y);
             
             ApplyPreferredBuffer(graphics);
         }
@@ -106,20 +104,20 @@ public class ResizeManager
         {
             return sideSelectionBox.center.y;
         }
-
-        protected override void SavePosValueInMemory(GameWindow window)
-        {
-            savedOldPos = window.Position.Y;
-        }
         
         protected override int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos)
         {
-            return Math.Min(Math.Max(graphics.PreferredBackBufferHeight + (int)Math.Ceiling(pos), UIParams.minWindowHeight), 10000);
+            var delta = (int)Math.Ceiling(pos);
+            if (delta > UIParams.minResizePerFrame)
+                delta = UIParams.minResizePerFrame;
+            
+            var desiredDelta = graphics.PreferredBackBufferHeight + delta;
+            return Math.Max(desiredDelta, UIParams.minWindowHeight);
         }
 
         protected override void ApplyPreferredBuffer(GraphicsDeviceManager graphics)
         {
-            graphics.PreferredBackBufferHeight = GetPosWithinWindowBounds(graphics, mouseOffset / 2);
+            graphics.PreferredBackBufferHeight = GetPosWithinWindowBounds(graphics, mouseOffset);
             graphics.ApplyChanges();
         }
     }
@@ -134,14 +132,12 @@ public class ResizeManager
         public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
         {
             base.ResizeSide(graphics, window, mousePos);
-
-            graphics.PreferredBackBufferHeight = Math.Max(
-                UIParams.minWindowHeight,
-                graphics.PreferredBackBufferHeight + (int)Math.Ceiling(mouseOffset / 2));
-            graphics.ApplyChanges();
             
-            if (window.Position.Y != savedOldPos)
-                window.Position = new Point(window.Position.X, savedOldPos);
+            window.Position = new Point(window.Position.X, window.Position.Y);
+
+            ApplyPreferredBuffer(graphics);
+            
+            sideSelectionBox.center.y += mouseOffset;
         }
     }
 
@@ -156,12 +152,9 @@ public class ResizeManager
         {
             base.ResizeSide(graphics, window, mousePos);
 
-            window.Position = new Point(window.Position.X, savedOldPos - (int)Math.Ceiling(mouseOffset / 2));
+            window.Position = new Point(window.Position.X, window.Position.Y - (int)Math.Ceiling(mouseOffset));
             
-            graphics.PreferredBackBufferHeight = Math.Max(
-                UIParams.minWindowHeight,
-                graphics.PreferredBackBufferHeight + (int)Math.Ceiling(mouseOffset / 2));
-            graphics.ApplyChanges();
+            ApplyPreferredBuffer(graphics);
         }
     }
     
@@ -255,6 +248,7 @@ public class ResizeManager
         var mouse = Mouse.GetState();
         currentSideToResize.ResizeSide(graphics, window, new Vector2(mouse.X, mouse.Y));
 
-        Program.instance.onScreenSizeChange?.Invoke(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+        Vector2 windowSize = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+        Program.instance.onScreenSizeChange?.Invoke(windowSize);
     }
 }
