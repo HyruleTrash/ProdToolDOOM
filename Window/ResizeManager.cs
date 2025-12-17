@@ -9,9 +9,9 @@ public class ResizeManager
 {
     public abstract class Side(SelectionBox box)
     {
-        public bool currentlyHoveredOver = false;
-        public bool isBeingResized = false;
-        protected SelectionBox sideSelectionBox = box;
+        public bool currentlyHoveredOver;
+        public bool isBeingResized;
+        protected readonly SelectionBox sideSelectionBox = box;
         protected float mouseOffset;
 
         public void UpdateCurrentlyHoveredOver(Vector2 mousePos) => currentlyHoveredOver = sideSelectionBox.IsInsideBounds(mousePos);
@@ -32,7 +32,7 @@ public class ResizeManager
     {
         public override void SetMouseVisual()
         {
-            Program.instance.SetMouseVisual(MouseCursor.SizeWE, 10);
+            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 10);
         }
 
         protected override float GetEdgePosition()
@@ -97,7 +97,7 @@ public class ResizeManager
     {
         public override void SetMouseVisual()
         {
-            Program.instance.SetMouseVisual(MouseCursor.SizeNS, 10);
+            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 10);
         }
 
         protected override float GetEdgePosition()
@@ -191,9 +191,9 @@ public class ResizeManager
         }
     }
     
-    private Sides resizeBoxes;
+    private Sides resizeBoxes = null!;
     private bool isResizing;
-    private Side currentSideToResize = null!;
+    private Side? currentSideToResize;
 
     public ResizeManager(Vector2 windowSize)
     {
@@ -220,9 +220,9 @@ public class ResizeManager
         resizeBoxes.bottomSide.UpdateCurrentlyHoveredOver(mousePosition);
 
         if (resizeBoxes.GetHoveredOverX())
-            Program.instance.SetMouseVisual(MouseCursor.SizeWE, 1);
+            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 1);
         else if (resizeBoxes.GetHoveredOverY())
-            Program.instance.SetMouseVisual(MouseCursor.SizeNS, 1);
+            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 1);
 
         if (mouseHeld)
             resizeBoxes.CheckHover(this);
@@ -240,12 +240,12 @@ public class ResizeManager
 
     public void ResizeWindow(GraphicsDeviceManager graphics, GameWindow window)
     {
-        if (Program.instance.Fullscreen || !isResizing)
+        if (Program.instance.Fullscreen || !isResizing || currentSideToResize == null)
             return;
 
         currentSideToResize.SetMouseVisual();
 
-        var mouse = Mouse.GetState();
+        var mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
         currentSideToResize.ResizeSide(graphics, window, new Vector2(mouse.X, mouse.Y));
 
         Vector2 windowSize = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
