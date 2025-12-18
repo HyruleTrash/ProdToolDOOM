@@ -1,46 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace ProdToolDOOM.Window;
 
-public class ResizeManager
+public class ResizeManager : ResizableBox
 {
-    public abstract class Side(SelectionBox box)
+    protected new abstract class SideX(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : ResizableBox.SideX(box)
     {
-        public bool currentlyHoveredOver;
-        public bool isBeingResized;
-        protected readonly SelectionBox sideSelectionBox = box;
-        protected float mouseOffset;
+        protected GraphicsDeviceManager graphics = graphics;
+        protected GameWindow window = window;
 
-        public void UpdateCurrentlyHoveredOver(Vector2 mousePos) => currentlyHoveredOver = sideSelectionBox.IsInsideBounds(mousePos);
-
-        public abstract void SetMouseVisual();
-        protected abstract float GetEdgePosition();
-        protected abstract float CalculateMouseOffset(float edgePos, Vector2 mouse);
-        protected abstract int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos);
-        protected abstract void ApplyPreferredBuffer(GraphicsDeviceManager graphics);
-        
-        public virtual void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
-        {
-            mouseOffset = CalculateMouseOffset(GetEdgePosition(), mousePos);
-        }
-    }
-
-    private abstract class SideX(SelectionBox box) : Side(box)
-    {
-        public override void SetMouseVisual()
-        {
-            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 10);
-        }
-
-        protected override float GetEdgePosition()
-        {
-            return sideSelectionBox.center.x;
-        }
-
-        protected override int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos)
+        protected override int GetPosWithinMinimumBounds(float pos)
         {
             var delta = (int)Math.Ceiling(pos);
             if (delta > UIParams.minResizePerFrame)
@@ -50,62 +20,55 @@ public class ResizeManager
             return Math.Max(desiredDelta, UIParams.minWindowWidth);
         }
 
-        protected override void ApplyPreferredBuffer(GraphicsDeviceManager graphics)
+        protected override void ApplySize()
         {
-            graphics.PreferredBackBufferWidth = GetPosWithinWindowBounds(graphics, mouseOffset);
+            graphics.PreferredBackBufferWidth = GetPosWithinMinimumBounds(mouseOffset);
             graphics.ApplyChanges();
         }
     }
 
-    private class RightSide(SelectionBox box) : SideX(box)
+    protected new class RightSide : SideX
     {
-        protected override float CalculateMouseOffset(float edgePos, Vector2 mouse)
+        public RightSide(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : base(box, graphics, window)
         {
-            return mouse.x - edgePos;
+            mouseOffsetCalculator = new ResizableBox.RightSide();
         }
-
-        public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
+        
+        public override void ResizeSide(Vector2 mousePos)
         {
-            base.ResizeSide(graphics, window, mousePos);
+            base.ResizeSide(mousePos);
             
             window.Position = new Point(window.Position.X, window.Position.Y);
 
-            ApplyPreferredBuffer(graphics);
+            ApplySize();
             
             sideSelectionBox.center.x += mouseOffset;
         }
     }
-
-    private class LeftSide(SelectionBox box) : SideX(box)
+    
+    protected new class LeftSide : SideX
     {
-        protected override float CalculateMouseOffset(float edgePos, Vector2 mouse)
+        public LeftSide(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : base(box, graphics, window)
         {
-            return edgePos - mouse.x;
+            mouseOffsetCalculator = new ResizableBox.LeftSide();
         }
-
-        public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
+        
+        public override void ResizeSide(Vector2 mousePos)
         {
-            base.ResizeSide(graphics, window, mousePos);
+            base.ResizeSide(mousePos);
             
             window.Position = new Point(window.Position.X - (int)Math.Ceiling(mouseOffset), window.Position.Y);
             
-            ApplyPreferredBuffer(graphics);
+            ApplySize();
         }
     }
-    
-    private abstract class SideY(SelectionBox box) : Side(box)
-    {
-        public override void SetMouseVisual()
-        {
-            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 10);
-        }
 
-        protected override float GetEdgePosition()
-        {
-            return sideSelectionBox.center.y;
-        }
-        
-        protected override int GetPosWithinWindowBounds(GraphicsDeviceManager graphics, float pos)
+    protected new abstract class SideY(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : ResizableBox.SideY(box)
+    {
+        protected GraphicsDeviceManager graphics = graphics;
+        protected GameWindow window = window;
+    
+        protected override int GetPosWithinMinimumBounds(float pos)
         {
             var delta = (int)Math.Ceiling(pos);
             if (delta > UIParams.minResizePerFrame)
@@ -115,140 +78,77 @@ public class ResizeManager
             return Math.Max(desiredDelta, UIParams.minWindowHeight);
         }
 
-        protected override void ApplyPreferredBuffer(GraphicsDeviceManager graphics)
+        protected override void ApplySize()
         {
-            graphics.PreferredBackBufferHeight = GetPosWithinWindowBounds(graphics, mouseOffset);
+            graphics.PreferredBackBufferHeight = GetPosWithinMinimumBounds(mouseOffset);
             graphics.ApplyChanges();
         }
     }
 
-    private class BottomSide(SelectionBox box) : SideY(box)
+    protected new class BottomSide : SideY
     {
-        protected override float CalculateMouseOffset(float edgePos, Vector2 mouse)
+        public BottomSide(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : base(box, graphics, window)
         {
-            return mouse.y - edgePos;
+            mouseOffsetCalculator = new ResizableBox.BottomSide();
         }
-
-        public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
+    
+        public override void ResizeSide(Vector2 mousePos)
         {
-            base.ResizeSide(graphics, window, mousePos);
+            base.ResizeSide(mousePos);
             
             window.Position = new Point(window.Position.X, window.Position.Y);
 
-            ApplyPreferredBuffer(graphics);
+            ApplySize();
             
             sideSelectionBox.center.y += mouseOffset;
         }
     }
 
-    private class TopSide(SelectionBox box) : SideY(box)
+    protected new class TopSide : SideY
     {
-        protected override float CalculateMouseOffset(float edgePos, Vector2 mouse)
+        public TopSide(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : base(box, graphics, window)
         {
-            return edgePos - mouse.y;
+            mouseOffsetCalculator = new ResizableBox.TopSide();
         }
-
-        public override void ResizeSide(GraphicsDeviceManager graphics, GameWindow window, Vector2 mousePos)
+        
+        public override void ResizeSide(Vector2 mousePos)
         {
-            base.ResizeSide(graphics, window, mousePos);
+            base.ResizeSide(mousePos);
 
             window.Position = new Point(window.Position.X, window.Position.Y - (int)Math.Ceiling(mouseOffset));
             
-            ApplyPreferredBuffer(graphics);
+            ApplySize();
         }
     }
     
-    private class Sides(SelectionBox rightSide, SelectionBox leftSide, SelectionBox topSide, SelectionBox bottomSide)
-    {
-        public RightSide rightSide = new(rightSide);
-        public LeftSide leftSide = new(leftSide);
-        public TopSide topSide = new(topSide);
-        public BottomSide bottomSide = new(bottomSide);
-        
-        public bool GetHoveredOverX() => rightSide.currentlyHoveredOver || leftSide.currentlyHoveredOver;
-        public bool GetHoveredOverY() => topSide.currentlyHoveredOver || bottomSide.currentlyHoveredOver;
-        public void CheckHover(ResizeManager manager)
-        {
-            void Check(Side side)
-            {
-                if (!side.currentlyHoveredOver) return;
-                manager.TriggerResize(side);
-                side.isBeingResized = true;
-            }
-            
-            Check(rightSide);
-            Check(leftSide);
-            Check(topSide);
-            Check(bottomSide);
-        }
-        public void StopAnyResizing()
-        {
-            Side[] sides = [rightSide, leftSide, topSide, bottomSide];
-            foreach (var s in sides)
-            {
-                s.isBeingResized = false;
-            }
-        }
-    }
+    private GraphicsDeviceManager graphics;
+    private GameWindow window;
     
-    private Sides resizeBoxes = null!;
-    private bool isResizing;
-    private Side? currentSideToResize;
-
-    public ResizeManager(Vector2 windowSize)
+    public ResizeManager(Vector2 windowSize, GraphicsDeviceManager graphics, GameWindow window)
     {
+        this.graphics = graphics;
+        this.window = window;
         ResizeSelectionBoxData(windowSize);
     }
     
     public void ResizeSelectionBoxData(Vector2 windowSize)
     {
         resizeBoxes = new Sides(
-            new SelectionBox(new Vector2(windowSize.x, windowSize.y / 2), UIParams.minNearSelection, windowSize.y),
-            new SelectionBox(new Vector2(0, windowSize.y / 2), UIParams.minNearSelection, windowSize.y),
-            new SelectionBox(new Vector2(windowSize.x / 2, 0), windowSize.x, UIParams.minNearSelection),
-            new SelectionBox(new Vector2(windowSize.x / 2, windowSize.y), windowSize.x, UIParams.minNearSelection)
+            new RightSide(new SelectionBox(new Vector2(windowSize.x, windowSize.y / 2), UIParams.minNearSelection, windowSize.y), graphics, window),
+            new LeftSide(new SelectionBox(new Vector2(0, windowSize.y / 2), UIParams.minNearSelection, windowSize.y), graphics, window),
+            new TopSide(new SelectionBox(new Vector2(windowSize.x / 2, 0), windowSize.x, UIParams.minNearSelection), graphics, window),
+            new BottomSide(new SelectionBox(new Vector2(windowSize.x / 2, windowSize.y), windowSize.x, UIParams.minNearSelection), graphics, window)
         );
     }
-
-    public void CheckResizePositions(Vector2 mousePosition, MouseState mouseState)
-    {
-        var mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
-
-        resizeBoxes.rightSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.leftSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.topSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.bottomSide.UpdateCurrentlyHoveredOver(mousePosition);
-
-        if (resizeBoxes.GetHoveredOverX())
-            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 1);
-        else if (resizeBoxes.GetHoveredOverY())
-            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 1);
-
-        if (mouseHeld)
-            resizeBoxes.CheckHover(this);
-        else{
-            resizeBoxes.StopAnyResizing();
-            isResizing = false;
-        }
-    }
     
-    public void TriggerResize(Side side)
+    public override bool ShouldResize() => Program.instance.Fullscreen || base.ShouldResize();
+
+    public override bool ResizeWindow()
     {
-        isResizing = true;
-        currentSideToResize = side;
-    }
-
-    public void ResizeWindow(GraphicsDeviceManager graphics, GameWindow window)
-    {
-        if (Program.instance.Fullscreen || !isResizing || currentSideToResize == null)
-            return;
-
-        currentSideToResize.SetMouseVisual();
-
-        var mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        currentSideToResize.ResizeSide(graphics, window, new Vector2(mouse.X, mouse.Y));
-
-        Vector2 windowSize = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+        if (!base.ResizeWindow())
+            return false;
+        var windowSize = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
         Program.instance.onScreenSizeChange?.Invoke(windowSize);
+        return true;
     }
 }

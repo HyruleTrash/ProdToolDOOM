@@ -50,7 +50,7 @@ public class WindowInstance : Game
         LoadUI();
         base.Initialize();
         
-        resizeManager = new ResizeManager(new Vector2(gum.CanvasWidth, gum.CanvasHeight));
+        resizeManager = new ResizeManager(new Vector2(gum.CanvasWidth, gum.CanvasHeight), graphics, Window);
     }
     
     protected virtual void LoadUI()
@@ -165,6 +165,6 @@ public class WindowInstance : Game
         if (Fullscreen)
             return;
         resizeManager?.CheckResizePositions(mousePosition, mouseState);
-        resizeManager?.ResizeWindow(graphics, Window);
+        resizeManager?.ResizeWindow();
     }
 }
