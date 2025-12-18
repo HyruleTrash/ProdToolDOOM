@@ -9,7 +9,7 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
 {
     public bool Save(string path)
     {
-        if (path == String.Empty || path == null)
+        if (path == string.Empty)
             return false;
 
         var usedPath = path;
