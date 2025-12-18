@@ -37,6 +37,12 @@ public class Program : WindowInstance
     {
         // _spriteBatch = new SpriteBatch(GraphicsDevice); TODO load icons here
     }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        SetShortcuts(BaseShortcuts.baseShortcuts);
+    }
     
     protected override void LoadUI()
     {

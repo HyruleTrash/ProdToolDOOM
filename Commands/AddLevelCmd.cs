@@ -2,15 +2,21 @@
 
 public class AddLevelCmd(Project project) : ICommand
 {
+    private Level? level;
+    
     public void Execute()
     {
         Debug.Log("Adding level!");
-        project.levels.Add(new Level());
+        level ??= new Level();
+        project.levels.Add(level);
         project.currentLevel = project.levels.Count - 1;
     }
 
     public void Undo()
     {
-        throw new NotImplementedException();
+        if (level is null)
+            return;
+        Debug.Log("removing level!");
+        project.levels.Remove(level);
     }
 }

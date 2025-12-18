@@ -27,6 +27,8 @@ public class WindowInstance : Game
     protected StackPanel topBarRight;
     protected StackPanel topBarLeft;
 
+    public ShortcutManager shortcutManager = new ();
+
     protected WindowInstance()
     {
         graphics = new GraphicsDeviceManager(this);
@@ -43,6 +45,8 @@ public class WindowInstance : Game
             resizeManager?.ResizeSelectionBoxData(size);
         };
     }
+
+    public void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => shortcutManager.AddShortCuts(shortcuts);
     
     protected override void Initialize()
     {
@@ -131,12 +135,15 @@ public class WindowInstance : Game
     
     protected override void Update(GameTime gameTime)
     {
+        KeyboardState keyboardState = Keyboard.GetState();
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape))
+            keyboardState.IsKeyDown(Keys.Escape))
             Exit();
 
         gum.Update(gameTime);
         base.Update(gameTime);
+
+        shortcutManager.Update(gameTime, keyboardState);
         
         if (ProdToolDOOM.Window.Helper.HasFocus(Window.Handle))
             CheckOnHover();

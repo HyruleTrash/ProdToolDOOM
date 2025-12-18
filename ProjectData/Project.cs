@@ -14,8 +14,8 @@ public class Project
 {
     public static Project Instance => Program.instance.currentProject;
     // file reading
-    public IProjectSaveStrategy saveStrat;
-    public IProjectLoadStrategy loadStrat;
+    public IProjectSaveStrategy? saveStrat;
+    public IProjectLoadStrategy? loadStrat;
     public string FilePath
     {
         get => filePath;
@@ -35,14 +35,14 @@ public class Project
     public int currentLevel = 0;
     // UI
     private readonly ProjectFeature[] projectFeatures;
-    private StackPanel inProjectStack;
+    private StackPanel inProjectStack = null!;
     private readonly ProjectFeature[] inProjectFeatures;
-    private ContainerRuntime toolContainer;
-    private ToolBarFeature toolBar;
+    private ContainerRuntime toolContainer = null!;
+    private ToolBarFeature toolBar = null!;
 
     public Project()
     {
-        filePathChanged = (string value) => { Debug.Log($"FilePathChanged: {value}"); };
+        filePathChanged = newPath => { Debug.Log($"FilePathChanged: {newPath}"); };
         projectFeatures =
         [
             new LoadFeature(this), 

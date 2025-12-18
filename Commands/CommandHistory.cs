@@ -4,25 +4,29 @@ namespace ProdToolDOOM;
 
 public class CommandHistory
 {
-    private Stack<ICommand> history = new Stack<ICommand>();
-    private Stack<ICommand> redoStack = new Stack<ICommand>();
+    private readonly Stack<ICommand> history = new();
+    private readonly Stack<ICommand> redoStack = new();
 
-    public void ApplyCmd(ICommand cmd)
+    public void ApplyCmd(ICommand cmd, bool flushRedoStack = true)
     {
         cmd.Execute();
         history.Push(cmd);
+        if (flushRedoStack)
+            redoStack.Clear();
     }
 
     public void UndoCmd()
     {
-        ICommand latest = history.Pop();
+        if (history.Count == 0) return;
+        var latest = history.Pop();
         latest.Undo();
         redoStack.Push(latest);
     }
 
     public void RedoCmd()
     {
-        ICommand latest = redoStack.Pop();
-        ApplyCmd(latest);
+        if (redoStack.Count == 0) return;
+        var latest = redoStack.Pop();
+        ApplyCmd(latest, false);
     }
 }
