@@ -51,11 +51,11 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         writer.WriteString(Program.instance.PROGRAM_VERSION);
         writer.WriteEndElement();
         writer.WriteStartElement("Id_Counter");
-        writer.WriteString(Project.Instance.idCounter.ToString());
+        writer.WriteString(Project.instance.idCounter.ToString());
         writer.WriteEndElement();
         
-        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.Instance.entityDatas, "EntityData", writer);
-        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.Instance.levels, "Levels", writer);
+        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.instance.entityDatas, "EntityData", writer);
+        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.instance.levels, "Levels", writer);
         
         writer.WriteEndElement();
         writer.WriteEndDocument();

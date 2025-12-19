@@ -2,6 +2,7 @@
 using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
 using MonoGameGum;
+using ProdToolDOOM.ProjectFeatures.Tools;
 using Button = Gum.Forms.Controls.Button;
 using static Microsoft.Xna.Framework.Color;
 
@@ -13,10 +14,13 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
     private Button addLevelButton = null!;
     private Button addNewEntityButton = null!;
     private Button addNewEntityToLevelButton = null!;
-    
+    private Button addPointToLevelButton = null!;
+
     private void AddLevel() => Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(project));
     private void AddEntityData() => Program.instance.cmdHistory.ApplyCmd(new AddEntityDataCmd(project));
     private void AddEntity() => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(project));
+    
+    private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     
     public override void LoadUI(object? parent)
     {
@@ -52,7 +56,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         UIParams.SetDefaultButton((ButtonVisual)addNewEntityButton.Visual);
         addNewEntityButton.Click += (_, _) => AddEntityData();
         AddUI(toolStack, addNewEntityButton);
-
+        
         addNewEntityToLevelButton = new Button
         {
             Text = "Add Entity to level",
@@ -61,5 +65,14 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         UIParams.SetDefaultButton((ButtonVisual)addNewEntityToLevelButton.Visual);
         addNewEntityToLevelButton.Click += (_, _) => AddEntity();
         AddUI(toolStack, addNewEntityToLevelButton);
+        
+        addPointToLevelButton = new Button
+        {
+            Text = "Add point",
+            Height = UIParams.minButtonHeight
+        };
+        UIParams.SetDefaultButton((ButtonVisual)addPointToLevelButton.Visual);
+        addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
+        AddUI(toolStack, addPointToLevelButton);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace ProdToolDOOM.Window;
+using Point = Microsoft.Xna.Framework.Point;
 
 public class ResizeComponent : ResizableBox
 {

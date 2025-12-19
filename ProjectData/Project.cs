@@ -12,7 +12,7 @@ namespace ProdToolDOOM;
 
 public class Project
 {
-    public static Project Instance => Program.instance.currentProject;
+    public static Project instance => Program.instance.currentProject;
     // file reading
     public IProjectSaveStrategy? saveStrat;
     public IProjectLoadStrategy? loadStrat;

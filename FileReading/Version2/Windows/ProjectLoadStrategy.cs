@@ -26,13 +26,13 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     return;
             }
         } });
-        expectedData.Add(new ExpectedLevelData(this));
         expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
-            Project.Instance.idCounter = counter;
+            Project.instance.idCounter = counter;
         }});
         expectedData.Add(new ExpectedEntityData(this)); 
+        expectedData.Add(new ExpectedLevelData(this));
     }
     
     public bool Load(string path)
@@ -46,7 +46,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             {
                 if (entry.Name != "projectData.xml") continue;
                 using var reader = XmlReader.Create(entry.Open());
-                Project.Instance.ResetData();
+                Project.instance.ResetData();
                 ReadData(reader, new(expectedData));
 
                 if (shouldQuit)
@@ -56,8 +56,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 }
                 
                 // TODO remove this
-                Debug.Log($"Levels: {Project.Instance.levels.Count}");
-                foreach (var level in Project.Instance.levels)
+                Debug.Log($"Levels: {Project.instance.levels.Count}");
+                foreach (var level in Project.instance.levels)
                 {
                     Debug.Log(" Level:");
                     Debug.Log("  Entities:");
@@ -78,8 +78,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                         Debug.Log($"   Line: {line.Id} to {line.IdOther}");
                     }
                 }
-                Debug.Log($"EntityData: {Project.Instance.entityDatas.Count}");
-                foreach (var data in Project.Instance.entityDatas)
+                Debug.Log($"EntityData: {Project.instance.entityDatas.Count}");
+                foreach (var data in Project.instance.entityDatas)
                 {
                     Debug.Log(" EntityData:");
                     Debug.Log($"  Id: {data.Key}");

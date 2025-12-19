@@ -29,7 +29,7 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
-        Project.Instance.entityDatas.Add(lastReadId, new(entityData));
+        Project.instance.entityDatas.Add(lastReadId, new(entityData));
     }
 }
 #endif

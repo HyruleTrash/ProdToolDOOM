@@ -27,10 +27,10 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
     public void saveEntry()
     {
         var setEntity = new Entity(entity);
-        referenceLevelData.level.Entities.Add(setEntity);
+        referenceLevelData.level.Add(setEntity);
         try
         {
-            Project.Instance.entityDatas[setEntity.Id].AddEntityRegistration(setEntity);
+            Project.instance.entityDatas[setEntity.Id].AddEntityRegistration(setEntity);
         }
         catch (Exception e)
         {

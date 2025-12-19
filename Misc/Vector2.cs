@@ -1,6 +1,6 @@
 ﻿namespace ProdToolDOOM;
 
-public struct Vector2(float x, float y)
+public class Vector2(float x, float y)
 {
     public float x = x;
     public float y = y;

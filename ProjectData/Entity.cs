@@ -1,15 +1,11 @@
 ﻿namespace ProdToolDOOM;
 
-public class Entity
+public class Entity : Level.Object
 {
-    public Vector2 Position { get => position; set  => position = value; }
     public int Id { get => id; set => id = value; }
-    
-    private Vector2 position;
     private int id;
 
-    public Entity() {}
-    public Entity(int id)
+    public Entity(int id = -1)
     {
         this.id = id;
     }

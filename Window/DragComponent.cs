@@ -37,9 +37,7 @@ public class DragComponent : IHoverable
         if (rectangleVisual == null || lineRectangleVisual == null)
             return;
         rectangleVisual.Width = selectionBox.size.x;
-        rectangleVisual.X = selectionBox.center.x;
         lineRectangleVisual.Width = selectionBox.size.x;
-        lineRectangleVisual.X = selectionBox.center.x;
     }
 
     public bool CheckHover(MouseState mouseState, float dt)
@@ -60,11 +58,11 @@ public class DragComponent : IHoverable
 
     private void UpdateWindowPosition(float dt)
     {
-        if (lastWindowPos == null)
+        if (lastWindowPos is null)
             return;
 
         var currentWindowPos = new Vector2(window.Position.X, window.Position.Y);
-        var difference = currentWindowPos - lastWindowPos.Value;
+        var difference = currentWindowPos - lastWindowPos;
         Helper.SetWindowPosition(window.Handle, currentWindowPos - difference * dt * speed);
     }
 

@@ -16,7 +16,7 @@ public class AddEntityCmd(Project project) : ICommand
         Debug.Log($"Adding entity to level {levelId}!");
         
         project.entityDatas[0].AddEntityRegistration(entity);
-        project.levels[levelId.Value].Entities.Add(entity);
+        project.levels[levelId.Value].Add(entity);
     }
 
     public void Undo()
@@ -26,6 +26,6 @@ public class AddEntityCmd(Project project) : ICommand
         Debug.Log($"Removing entity from level {levelId}!");
         
         project.entityDatas[entity.Id].RemoveEntityRegistration(entity);
-        project.levels[levelId.Value].Entities.Remove(entity);
+        project.levels[levelId.Value].Remove(entity);
     }
 }

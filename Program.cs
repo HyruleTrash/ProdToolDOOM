@@ -1,11 +1,5 @@
-﻿using Gum.Forms.Controls;
-using Gum.Wireframe;
-using Button = Gum.Forms.Controls.Button;
-using MonoGameGum;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using ProdToolDOOM.Window;
+﻿using Microsoft.Xna.Framework;
+using ProdToolDOOM.ProjectFeatures.Tools;
 
 namespace ProdToolDOOM;
 
@@ -17,9 +11,10 @@ public class Program : WindowInstance
     public Project currentProject;
     public CommandHistory cmdHistory;
     private int currentLevel;
-    
+    public ToolManager? toolManager;
+
     [STAThread]
-    static void Main(string[] args)
+    static void Main(string[] _)
     {
         Debug.Log("Starting application...");
         var p = new Program();
@@ -31,6 +26,7 @@ public class Program : WindowInstance
         instance = this;
         currentProject = new Project();
         cmdHistory = new CommandHistory();
+        toolManager = new ToolManager();
     }
     
     protected override void LoadContent()
@@ -53,5 +49,10 @@ public class Program : WindowInstance
     protected override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
+        
+        var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
+        var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        toolManager?.Update(mouseState, dt);
     }
 }
