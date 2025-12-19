@@ -1,11 +1,10 @@
 ﻿using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
 using MonoGameGum;
-using ProdToolDOOM.Window;
-using Button = Gum.Forms.Controls.Button;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -18,10 +17,11 @@ public class WindowInstance : Game
     protected GumService gum => GumService.Default;
     
     public readonly Action<Vector2>? onScreenSizeChange;
-    public bool Fullscreen { get => fullscreen; private set => fullscreen = value; }
+    public bool Fullscreen { get; private set; }
+
     private bool shouldCallOnScreenSizeChanged;
-    private bool fullscreen;
-    private ResizeManager? resizeManager;
+    private Window.ResizeComponent? resizeComponent;
+    private Window.DragComponent? dragComponent;
 
     public Mouse mouse = new();
     protected StackPanel topBarRight;
@@ -42,7 +42,8 @@ public class WindowInstance : Game
         {
             gum.CanvasWidth = size.x;
             gum.CanvasHeight = size.y;
-            resizeManager?.ResizeSelectionBoxData(size);
+            resizeComponent?.ResizeSelectionBoxData(size);
+            dragComponent?.Update(size);
         };
     }
 
@@ -51,14 +52,19 @@ public class WindowInstance : Game
     protected override void Initialize()
     {
         gum.Initialize(this);
-        LoadUI();
         base.Initialize();
         
-        resizeManager = new ResizeManager(new Vector2(gum.CanvasWidth, gum.CanvasHeight), graphics, Window);
+        var windowSize = new Vector2(gum.CanvasWidth, gum.CanvasHeight);
+        resizeComponent = new Window.ResizeComponent(windowSize, graphics, Window);
+        dragComponent = new Window.DragComponent(windowSize, Window);
+        
+        LoadUI();
     }
     
     protected virtual void LoadUI()
     {
+        dragComponent.LoadUI();
+        
         topBarRight = new StackPanel
         {
             Visual =
@@ -74,15 +80,19 @@ public class WindowInstance : Game
         var exitButton = new Button
         {
             Text = "X",
-            Width = UIParams.minBoxSizeAroundText
+            Width = UIParams.minBoxSize,
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)exitButton.Visual);
         exitButton.Click += (sender, args) => Exit();
         
         var minimizeButton = new Button
         {
             Text = "_",
-            Width = UIParams.minBoxSizeAroundText
+            Width = UIParams.minBoxSize,
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)minimizeButton.Visual);
         minimizeButton.Click += (sender, args) =>
         {
             var handle = Window.Handle;
@@ -93,8 +103,9 @@ public class WindowInstance : Game
         var maximizeButton = new Button
         {
             Text = "[ ]",
-            Width = UIParams.minBoxSizeAroundText
+            Width = UIParams.minBoxSize
         };
+        UIParams.SetDefaultButton((ButtonVisual)maximizeButton.Visual);
         maximizeButton.Click += (sender, args) =>
         {
             var handle = Window.Handle;
@@ -139,14 +150,16 @@ public class WindowInstance : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             keyboardState.IsKeyDown(Keys.Escape))
             Exit();
+        
+        var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         gum.Update(gameTime);
         base.Update(gameTime);
 
-        shortcutManager.Update(gameTime, keyboardState);
+        shortcutManager.Update(keyboardState, dt);
         
         if (ProdToolDOOM.Window.Helper.HasFocus(Window.Handle))
-            CheckOnHover();
+            CheckOnHover(dt);
 
         CheckScreenSizeChange();
         
@@ -162,16 +175,19 @@ public class WindowInstance : Game
         shouldCallOnScreenSizeChanged = false;
     }
 
-    private void CheckOnHover()
+    private void CheckOnHover(float dt)
     {
         var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        var mousePosition = new Vector2(mouseState.X, mouseState.Y);
         
-        // TODO Check any other resizable elements
+        // TODO Check any other hover elements
         
         if (Fullscreen)
             return;
-        resizeManager?.CheckResizePositions(mousePosition, mouseState);
-        resizeManager?.ResizeWindow();
+        var dragging = dragComponent?.CheckHover(mouseState, dt);
+        if (dragging is null or false)
+        {
+            resizeComponent?.CheckHover(mouseState, dt);
+            resizeComponent?.ResizeWindow();
+        }
     }
 }

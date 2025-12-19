@@ -3,7 +3,7 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace ProdToolDOOM.Window;
 
-public class ResizeManager : ResizableBox
+public class ResizeComponent : ResizableBox
 {
     protected new abstract class SideX(SelectionBox box, GraphicsDeviceManager graphics, GameWindow window) : ResizableBox.SideX(box)
     {
@@ -124,7 +124,7 @@ public class ResizeManager : ResizableBox
     private GraphicsDeviceManager graphics;
     private GameWindow window;
     
-    public ResizeManager(Vector2 windowSize, GraphicsDeviceManager graphics, GameWindow window)
+    public ResizeComponent(Vector2 windowSize, GraphicsDeviceManager graphics, GameWindow window)
     {
         this.graphics = graphics;
         this.window = window;

@@ -1,4 +1,6 @@
-﻿using Button = Gum.Forms.Controls.Button;
+﻿using Gum.Forms.DefaultVisuals;
+using Button = Gum.Forms.Controls.Button;
+using static Microsoft.Xna.Framework.Color;
 
 namespace ProdToolDOOM.ProjectFeatures;
 
@@ -18,12 +20,15 @@ public class SaveNewFeature : SaveFeature
         
         saveProjectAsButton = new Button
         {
-            Text = "New Project"
+            Text = "New Project",
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)saveProjectAsButton.Visual);
+        
         saveProjectAsButton.Click += (_, _) => Save();
-        project.filePathChanged += (string value) =>
+        project.filePathChanged += (newPath) =>
         {
-            saveProjectAsButton.Text = value == string.Empty ? "New Project" : "Save Project as...";
+            saveProjectAsButton.Text = newPath == string.Empty ? "New Project" : "Save Project as...";
         };
         AddUI(parent, saveProjectAsButton);
     }

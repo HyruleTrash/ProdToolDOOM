@@ -1,6 +1,6 @@
 ﻿using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
 using MonoGameGum;
-using static System.String;
 using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM.ProjectFeatures;
@@ -16,8 +16,11 @@ public class LoadFeature(Project project) : ProjectFeature
         
         loadProjectButton = new Button
         {
-            Text = "Load Project"
+            Text = "Load Project",
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)loadProjectButton.Visual);
+        
         loadProjectButton.Click += (sender, args) => Load();
         AddUI(parent, loadProjectButton);
     }
@@ -29,7 +32,7 @@ public class LoadFeature(Project project) : ProjectFeature
         Debug.Log("Loading project file...");
 
         var tempPath = project.FilePath;
-        if (tempPath == Empty)
+        if (tempPath == string.Empty)
         {
             tempPath = FileExplorerHelper.OpenFileExplorer();
             Debug.Log(tempPath);

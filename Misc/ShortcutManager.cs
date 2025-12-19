@@ -22,7 +22,7 @@ public class ShortcutManager
     public ShortcutManager()
     {
         shortCuts = [];
-        pressTimer = new Timer(240, () => ableToUseShortCuts = true)
+        pressTimer = new Timer(60, () => ableToUseShortCuts = true)
         {
             running = false
         };
@@ -83,11 +83,11 @@ public class ShortcutManager
     
     private static int CalculatePriority(ShortCut shortCut) => shortCut.keyCombination.Length;
 
-    public void Update(GameTime time, KeyboardState keyboardState)
+    public void Update(KeyboardState keyboardState, float dt)
     {
         if (!ableToUseShortCuts)
         {
-            pressTimer.Update(time.ElapsedGameTime.Milliseconds);
+            pressTimer.Update(dt);
             if (lastPressed != null && !CheckShortcut(keyboardState, lastPressed))
                 ableToUseShortCuts = true;
             return;

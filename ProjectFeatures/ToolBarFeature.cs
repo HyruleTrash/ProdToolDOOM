@@ -1,7 +1,9 @@
 ﻿using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
 using MonoGameGum;
 using Button = Gum.Forms.Controls.Button;
+using static Microsoft.Xna.Framework.Color;
 
 namespace ProdToolDOOM.ProjectFeatures;
 
@@ -35,22 +37,28 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         
         addLevelButton = new Button
         {
-            Text = "Create new level"
+            Text = "Create new level",
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)addLevelButton.Visual);
         addLevelButton.Click += (_, _) => AddLevel();
         AddUI(toolStack, addLevelButton);
 
         addNewEntityButton = new Button
         {
-            Text = "Add new Entity to project"
+            Text = "Add new Entity to project",
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)addNewEntityButton.Visual);
         addNewEntityButton.Click += (_, _) => AddEntityData();
         AddUI(toolStack, addNewEntityButton);
 
         addNewEntityToLevelButton = new Button
         {
-            Text = "Add Entity to level"
+            Text = "Add Entity to level",
+            Height = UIParams.minButtonHeight
         };
+        UIParams.SetDefaultButton((ButtonVisual)addNewEntityToLevelButton.Visual);
         addNewEntityToLevelButton.Click += (_, _) => AddEntity();
         AddUI(toolStack, addNewEntityToLevelButton);
     }

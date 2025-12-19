@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace ProdToolDOOM;
 
-public class ResizableBox
+public class ResizableBox : IHoverable
 {
     protected abstract class Side(SelectionBox box)
     {
@@ -125,6 +126,12 @@ public class ResizableBox
     protected Sides resizeBoxes = null!;
     protected bool isResizing;
     protected Side? currentSideToResize;
+    
+    public bool CheckHover(MouseState mouseState, float dt)
+    {
+        CheckResizePositions(new Vector2(mouseState.X, mouseState.Y), mouseState);
+        return resizeBoxes.GetHoveredOverX() || resizeBoxes.GetHoveredOverY();
+    }
     
     public void CheckResizePositions(Vector2 mousePosition, MouseState mouseState)
     {

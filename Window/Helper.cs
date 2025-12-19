@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.Xna.Framework;
 
 namespace ProdToolDOOM.Window;
 
@@ -13,6 +14,8 @@ public static class Helper
     private static extern void SDL_RestoreWindow(IntPtr window);
     [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern uint SDL_GetWindowFlags(IntPtr window);
+    [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+    private static extern bool SDL_SetWindowPosition(IntPtr window, int x, int y);
     
     public static void Minimize(IntPtr window) => SDL_MinimizeWindow(window);
     public static void Maximize(IntPtr window) => SDL_MaximizeWindow(window);
@@ -23,6 +26,8 @@ public static class Helper
         var flags = SDL_GetWindowFlags(windowHandle);
         return (flags & 0x00000200) != 0;
     }
-
+    
+    public static bool SetWindowPosition(IntPtr windowHandle, Vector2 newPos) => SetWindowPosition(windowHandle, (int)Math.Round(newPos.x), (int)Math.Round(newPos.y));
+    public static bool SetWindowPosition(IntPtr windowHandle, int x, int y) => SDL_SetWindowPosition(windowHandle, x, y);
 #endif
 }
