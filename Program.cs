@@ -12,7 +12,7 @@ namespace ProdToolDOOM;
 public class Program : WindowInstance
 {
     public static Program instance = null!;
-    public readonly string PROGRAM_VERSION = "0.0.1";
+    public readonly string PROGRAM_VERSION = "0.0.2";
 
     public Project currentProject;
     public CommandHistory cmdHistory;
