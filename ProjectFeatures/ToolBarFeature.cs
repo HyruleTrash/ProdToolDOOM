@@ -18,7 +18,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
 
     private void AddLevel() => Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(project));
     private void AddEntityData() => Program.instance.cmdHistory.ApplyCmd(new AddEntityDataCmd(project));
-    private void AddEntity() => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(project));
+    private void AddEntity() => Program.instance.toolManager?.SetTool(typeof(EntityPlacerTool));
     
     private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     

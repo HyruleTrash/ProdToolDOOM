@@ -8,6 +8,7 @@ public class ToolManager
     public ITool? CurrentTool { get; set; }
     public static Dictionary<Type, ITool> tools = new()
     {
+        {typeof(EntityPlacerTool), new EntityPlacerTool()},
         {typeof(PointPlacerTool), new PointPlacerTool()}
     };
 

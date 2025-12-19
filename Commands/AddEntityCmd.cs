@@ -1,6 +1,6 @@
 ﻿namespace ProdToolDOOM;
 
-public class AddEntityCmd(Project project) : ICommand
+public class AddEntityCmd(Project project, Vector2 initialPosition) : ICommand
 {
     private Entity? entity;
     private int? levelId;
@@ -10,7 +10,7 @@ public class AddEntityCmd(Project project) : ICommand
         if (project.entityDatas.Count == 0 || project.levels.Count == 0 ||
             project.currentLevel > project.levels.Count - 1)
             return;
-        entity ??= new Entity(0);
+        entity ??= new Entity(0, initialPosition);
         levelId ??= project.currentLevel;
         
         Debug.Log($"Adding entity to level {levelId}!");

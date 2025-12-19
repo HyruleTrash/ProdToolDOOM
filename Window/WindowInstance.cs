@@ -38,16 +38,16 @@ public class WindowInstance : Game
         Window.IsBorderless = true;
         Window.AllowUserResizing = true;
 
-        onScreenSizeChange += size =>
+        onScreenSizeChange += windowSize =>
         {
-            gum.CanvasWidth = size.x;
-            gum.CanvasHeight = size.y;
-            resizeComponent?.ResizeSelectionBoxData(size);
-            dragComponent?.Update(size);
+            gum.CanvasWidth = windowSize.x;
+            gum.CanvasHeight = windowSize.y;
+            resizeComponent?.ResizeSelectionBoxData(windowSize);
+            dragComponent?.Update(windowSize);
         };
     }
 
-    public void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => shortcutManager.AddShortCuts(shortcuts);
+    protected void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => shortcutManager.AddShortCuts(shortcuts);
     
     protected override void Initialize()
     {
@@ -189,5 +189,29 @@ public class WindowInstance : Game
             resizeComponent?.CheckHover(mouseState, dt);
             resizeComponent?.ResizeWindow();
         }
+    }
+    
+    public GameWindow GetWindow() => Window;
+    public bool IsInsideWindowBounds(Vector2 point)
+    {
+        // Convert the mouse position into Gum's centered coordinate system
+        var canvasCenter = new Vector2(gum.CanvasWidth, gum.CanvasHeight) * 0.5f;
+        var centeredPoint = new Vector2(point.x - canvasCenter.x, canvasCenter.y - point.y);
+
+        // Window bounds in Gum's centered coordinate system
+        var windowLeft = Window.ClientBounds.Width * 0.5f;
+        var windowRight = -Window.ClientBounds.Width * 0.5f;
+        var windowTop = -Window.ClientBounds.Height * 0.5f;
+        var windowBottom = Window.ClientBounds.Height * 0.5f;
+
+        bool insideWidth = centeredPoint.x >= windowRight && centeredPoint.x <= windowLeft;
+        bool insideHeight = centeredPoint.y >= windowTop && centeredPoint.y <= windowBottom;
+
+        return insideWidth && insideHeight;
+    }
+
+    public bool WasMouseClickConsumedByGum()
+    {
+        return gum.Cursor.WindowOver != null;
     }
 }

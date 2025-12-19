@@ -21,9 +21,8 @@ public class DragComponent : IHoverable
     private Vector2 firstMousePos;
     private Vector2 lastMousePos;
     private Vector2 firstWindowPos;
-    private Vector2? lastWindowPos;
     
-    private const float speed = 20;
+    private const float speed = 50;
 
     public DragComponent(Vector2 windowSize, GameWindow window)
     {
@@ -42,28 +41,17 @@ public class DragComponent : IHoverable
 
     public bool CheckHover(MouseState mouseState, float dt)
     {
-        UpdateWindowPosition(dt);
         var mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
-        var mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
+        var mousePos = new Vector2(mouseState.Position);
         if ((mouseHeld && dragging) || (mouseHeld && selectionBox.IsInsideBounds(mousePos)))
         {
-            Drag(mousePos, dt);
+            Vector2 mouseScreen = mousePos + new Vector2(window.Position.X, window.Position.Y) - new Vector2((float)window.ClientBounds.Width / 2, (float)window.ClientBounds.Height / 2);
+            Drag(mouseScreen, dt);
             return true;
         }
         
         dragging = false;
-        lastWindowPos = null;
         return false;
-    }
-
-    private void UpdateWindowPosition(float dt)
-    {
-        if (lastWindowPos is null)
-            return;
-
-        var currentWindowPos = new Vector2(window.Position.X, window.Position.Y);
-        var difference = currentWindowPos - lastWindowPos;
-        Helper.SetWindowPosition(window.Handle, currentWindowPos - difference * dt * speed);
     }
 
     private void Drag(Vector2 mousePos, float dt)
@@ -80,12 +68,12 @@ public class DragComponent : IHoverable
         if (mousePos == lastMousePos)
             return;
         
-        var difference = lastMousePos - firstMousePos;
+        var delta = mousePos - firstMousePos;
 
-        if (difference.Magnitude >= 1)
+        if (delta.Magnitude >= 1)
         {
-            var newWindowPos = firstWindowPos + difference;
-            lastWindowPos = newWindowPos;
+            var newPos = firstWindowPos + delta;
+            window.Position = new Microsoft.Xna.Framework.Point((int)Math.Round(newPos.x), (int)Math.Round(newPos.y));
         }
         
         lastMousePos = mousePos;

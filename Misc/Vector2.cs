@@ -2,11 +2,14 @@
 
 public class Vector2(float x, float y)
 {
+    public static Vector2 Zero => new(0f, 0f);
+    
     public float x = x;
     public float y = y;
 
     public Vector2() : this(0, 0) { }
     public Vector2(Vector2 vector) : this(vector.x, vector.y) { }
+    public Vector2(Microsoft.Xna.Framework.Point vector) : this(vector.X, vector.Y) { }
     
     public float Magnitude => (float)Math.Sqrt(x * x + y * y);
 
