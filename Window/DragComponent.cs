@@ -85,7 +85,7 @@ public class DragComponent : IHoverable
         {
             Width = selectionBox.size.x,
             Height = height,
-            Color = Color.Gray,
+            Color = UIParams.defaultFillColor,
             X = selectionBox.center.x
         };
         rectangleVisual.Anchor(Anchor.Top);
@@ -95,8 +95,9 @@ public class DragComponent : IHoverable
         {
             Width = selectionBox.size.x,
             Height = height,
-            Color = Color.DimGray,
-            X = selectionBox.center.x
+            Color = UIParams.defaultOutlineColor,
+            X = selectionBox.center.x,
+            LineWidth = UIParams.defaultLineWidth
         };
         lineRectangleVisual.Anchor(Anchor.Top);
         rectangleVisual.AddChild(lineRectangleVisual);

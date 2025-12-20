@@ -44,16 +44,16 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
             Text = "Create new level",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)addLevelButton.Visual);
+        UIParams.SetDefaultButton(addLevelButton);
         addLevelButton.Click += (_, _) => AddLevel();
         AddUI(toolStack, addLevelButton);
-
+        
         addNewEntityButton = new Button
         {
             Text = "Add new Entity to project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)addNewEntityButton.Visual);
+        UIParams.SetDefaultButton(addNewEntityButton);
         addNewEntityButton.Click += (_, _) => AddEntityData();
         AddUI(toolStack, addNewEntityButton);
         
@@ -62,7 +62,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
             Text = "Add Entity to level",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)addNewEntityToLevelButton.Visual);
+        UIParams.SetDefaultButton(addNewEntityToLevelButton);
         addNewEntityToLevelButton.Click += (_, _) => AddEntity();
         AddUI(toolStack, addNewEntityToLevelButton);
         
@@ -71,7 +71,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
             Text = "Add point",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)addPointToLevelButton.Visual);
+        UIParams.SetDefaultButton(addPointToLevelButton);
         addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
         AddUI(toolStack, addPointToLevelButton);
     }

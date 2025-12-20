@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ProdToolDOOM.ProjectFeatures.Tools;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace ProdToolDOOM;
 
@@ -12,6 +14,10 @@ public class Program : WindowInstance
     public CommandHistory cmdHistory;
     private int currentLevel;
     public ToolManager? toolManager;
+    
+    // TODO REMOVE TEMP
+    private SpriteBatch spriteBatch;
+    private Texture2D pointIcon;
 
     [STAThread]
     static void Main(string[] _)
@@ -31,7 +37,9 @@ public class Program : WindowInstance
     
     protected override void LoadContent()
     {
-        // _spriteBatch = new SpriteBatch(GraphicsDevice); TODO load icons here
+        spriteBatch = new SpriteBatch(GraphicsDevice);
+        
+        pointIcon = Content.Load<Texture2D>("Icons/Point");
     }
 
     protected override void Initialize()
@@ -45,7 +53,16 @@ public class Program : WindowInstance
         base.LoadUI();
         currentProject.LoadUI(topBarLeft, gum);
     }
-    
+
+    protected override void Draw(GameTime gameTime)
+    {
+        base.Draw(gameTime);
+        
+        spriteBatch.Begin();
+        spriteBatch.Draw(pointIcon, Microsoft.Xna.Framework.Vector2.Zero, null, Color.White, 0.0f, Microsoft.Xna.Framework.Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        spriteBatch.End();
+    }
+
     protected override void Update(GameTime gameTime)
     {
         base.Update(gameTime);

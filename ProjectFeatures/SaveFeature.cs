@@ -29,7 +29,7 @@ public class SaveFeature : ProjectFeature
             Text = "Save Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)saveProjectButton.Visual);
+        UIParams.SetDefaultButton(saveProjectButton);
         
         saveProjectButton.Click += (_, _) => Save();
         AddUI(parent, saveProjectButton);

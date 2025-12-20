@@ -19,7 +19,7 @@ public class LoadFeature(Project project) : ProjectFeature
             Text = "Load Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)loadProjectButton.Visual);
+        UIParams.SetDefaultButton(loadProjectButton);
         
         loadProjectButton.Click += (sender, args) => Load();
         AddUI(parent, loadProjectButton);

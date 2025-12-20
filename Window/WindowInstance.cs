@@ -83,8 +83,8 @@ public class WindowInstance : Game
             Width = UIParams.minBoxSize,
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)exitButton.Visual);
-        exitButton.Click += (sender, args) => Exit();
+        UIParams.SetDefaultButton(exitButton);
+        exitButton.Click += (_, _) => Exit();
         
         var minimizeButton = new Button
         {
@@ -92,8 +92,8 @@ public class WindowInstance : Game
             Width = UIParams.minBoxSize,
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton((ButtonVisual)minimizeButton.Visual);
-        minimizeButton.Click += (sender, args) =>
+        UIParams.SetDefaultButton(minimizeButton);
+        minimizeButton.Click += (_, _) =>
         {
             var handle = Window.Handle;
             if (handle == IntPtr.Zero) return;
@@ -105,8 +105,8 @@ public class WindowInstance : Game
             Text = "[ ]",
             Width = UIParams.minBoxSize
         };
-        UIParams.SetDefaultButton((ButtonVisual)maximizeButton.Visual);
-        maximizeButton.Click += (sender, args) =>
+        UIParams.SetDefaultButton(maximizeButton);
+        maximizeButton.Click += (_, _) =>
         {
             var handle = Window.Handle;
             if (handle == IntPtr.Zero) return;
@@ -139,7 +139,7 @@ public class WindowInstance : Game
     
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(UIParams.canvasColor);
         gum.Draw();
         base.Draw(gameTime);
     }
