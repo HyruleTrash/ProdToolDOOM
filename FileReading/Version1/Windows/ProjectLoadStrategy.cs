@@ -6,9 +6,14 @@ namespace ProdToolDOOM.Version1;
 
 public class ProjectLoadStrategy : IProjectLoadStrategy
 {
-    private static List<ExpectedData> expectedData = new ();
+    private List<ExpectedData> expectedData = [];
     
     public ProjectLoadStrategy()
+    {
+        SetExpectedData();
+    }
+
+    private void SetExpectedData()
     {
         expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
         {
@@ -26,6 +31,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     
     public bool Load(string path)
     {
+        SetExpectedData();
+        
         if (path == string.Empty || path == null)
             return false;
         try
