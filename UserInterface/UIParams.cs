@@ -1,5 +1,9 @@
-﻿using Gum.DataTypes.Variables;
+﻿using Gum.DataTypes;
+using Gum.DataTypes.Variables;
 using Gum.Forms.DefaultVisuals;
+using Gum.Managers;
+using Gum.Wireframe;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using RenderingLibrary;
@@ -28,6 +32,8 @@ public static class UIParams
     public static readonly Color defaultOutlineColor = new (175, 153, 222);
     public static readonly Color canvasColor = new (36, 28, 47);
 
+    private static Dictionary<Button, CustomButtonVisual> custombuttons = [];
+    
     public static void SetDefaultButton(Button button)
     {
         CustomButtonVisual customVisual = new(button);
@@ -47,54 +53,81 @@ public static class UIParams
         
         visual.ApplyState(enabled);
     }
-}
 
-public class CustomButtonVisual
-{
-    private RectangleRuntime buttonOutline;
-    private ButtonVisual visual;
-
-    public CustomButtonVisual(Button button)
+    public static void AddIconToButton(Button button, Texture2D iconTex)
     {
-        visual = (ButtonVisual)button.Visual;
-        
-        buttonOutline = new RectangleRuntime
+        var icon = new SpriteRuntime
         {
-            Width = visual.GetAbsoluteWidth(),
-            Height = visual.GetAbsoluteHeight(),
-            Color = UIParams.defaultOutlineColor,
-            LineWidth = UIParams.defaultLineWidth,
-            Visible = visual.Visible,
+            Texture = iconTex,
+            TextureAddress = TextureAddress.Custom,
+            TextureWidth = iconTex.Width,
+            TextureHeight = iconTex.Height,
             IgnoredByParentSize = true
         };
-        
-        visual.SizeChanged += (_, __) =>
-        {
-            buttonOutline.Width = visual.GetAbsoluteWidth();
-            buttonOutline.Height = visual.GetAbsoluteHeight();
-        };
+        icon.Anchor(Anchor.Center);
+        button.AddChild(icon);
 
-        button.AddChild(buttonOutline);
+        if (!custombuttons.TryGetValue(button, out var buttonVisual)) return;
+        buttonVisual.SetIcon(icon);
+        var visual = (ButtonVisual)button.Visual;
+        visual.HeightUnits = DimensionUnitType.ScreenPixel;
+        visual.Background.ApplyState(visual.States.Enabled);
     }
     
-    public void EnabledState()
+    private class CustomButtonVisual
     {
-        visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
-        visual.Background.Color = UIParams.defaultFillColor;
-        buttonOutline.Color = UIParams.defaultOutlineColor;
-    }
+        private RectangleRuntime buttonOutline;
+        private ButtonVisual visual;
+        private SpriteRuntime? icon;
 
-    public void PushState()
-    {
-        visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
-        visual.Background.Color = UIParams.canvasColor;
-        buttonOutline.Color = UIParams.defaultOutlineColor;
-    }
+        public CustomButtonVisual(Button button)
+        {
+            visual = (ButtonVisual)button.Visual;
+            
+            buttonOutline = new RectangleRuntime
+            {
+                Width = visual.GetAbsoluteWidth(),
+                Height = visual.GetAbsoluteHeight(),
+                Color = defaultOutlineColor,
+                LineWidth = defaultLineWidth,
+                Visible = visual.Visible,
+                IgnoredByParentSize = true
+            };
+            
+            visual.SizeChanged += (_, __) =>
+            {
+                buttonOutline.Width = visual.GetAbsoluteWidth();
+                buttonOutline.Height = visual.GetAbsoluteHeight();
+            };
 
-    public void HighlightedState()
-    {
-        visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
-        visual.Background.Color = UIParams.defaultOutlineColor;
-        buttonOutline.Color = UIParams.defaultFillColor;
+            button.AddChild(buttonOutline);
+            custombuttons.Add(button, this);
+        }
+        
+        public void SetIcon(SpriteRuntime sprite) => icon = sprite;
+        
+        public void EnabledState()
+        {
+            visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
+            visual.Background.Color = defaultFillColor;
+            buttonOutline.Color = defaultOutlineColor;
+            if (icon != null) icon.Color = defaultOutlineColor;
+        }
+
+        public void PushState()
+        {
+            visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
+            visual.Background.Color = canvasColor;
+            buttonOutline.Color = defaultOutlineColor;
+            if (icon != null) icon.Color = defaultOutlineColor;
+        }
+
+        public void HighlightedState()
+        {
+            visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
+            visual.Background.Color = defaultOutlineColor;
+            buttonOutline.Color = defaultFillColor;
+            if (icon != null) icon.Color = defaultFillColor;
+        }
     }
 }

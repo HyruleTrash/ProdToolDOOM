@@ -1,12 +1,14 @@
-﻿using Gum.Forms.Controls;
-using Gum.Forms.DefaultVisuals;
+﻿using Gum.DataTypes;
+using Gum.Forms.Controls;
+using Gum.Managers;
 using Gum.Wireframe;
 using MonoGameGum;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using Color = Microsoft.Xna.Framework.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace ProdToolDOOM;
@@ -26,6 +28,11 @@ public class WindowInstance : Game
     public Mouse mouse = new();
     protected StackPanel topBarRight;
     protected StackPanel topBarLeft;
+    
+    private SpriteBatch spriteBatchIcons;
+    private Texture2D closeIcon;
+    private Texture2D minimizeIcon;
+    private Texture2D maximizeIcon;
 
     public ShortcutManager shortcutManager = new ();
 
@@ -61,6 +68,15 @@ public class WindowInstance : Game
         LoadUI();
     }
     
+    protected override void LoadContent()
+    {
+        spriteBatchIcons = new SpriteBatch(GraphicsDevice);
+        
+        closeIcon = Content.Load<Texture2D>("Icons/Cross");
+        minimizeIcon = Content.Load<Texture2D>("Icons/Minimize");
+        maximizeIcon = Content.Load<Texture2D>("Icons/Expand");
+    }
+    
     protected virtual void LoadUI()
     {
         dragComponent.LoadUI();
@@ -81,18 +97,20 @@ public class WindowInstance : Game
         {
             Text = "X",
             Width = UIParams.minBoxSize,
-            Height = UIParams.minButtonHeight
+            Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(exitButton);
+        UIParams.AddIconToButton(exitButton, closeIcon);
         exitButton.Click += (_, _) => Exit();
         
         var minimizeButton = new Button
         {
-            Text = "_",
+            Text = "",
             Width = UIParams.minBoxSize,
-            Height = UIParams.minButtonHeight
+            Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(minimizeButton);
+        UIParams.AddIconToButton(minimizeButton, minimizeIcon);
         minimizeButton.Click += (_, _) =>
         {
             var handle = Window.Handle;
@@ -102,10 +120,12 @@ public class WindowInstance : Game
         
         var maximizeButton = new Button
         {
-            Text = "[ ]",
-            Width = UIParams.minBoxSize
+            Text = "",
+            Width = UIParams.minBoxSize,
+            Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(maximizeButton);
+        UIParams.AddIconToButton(maximizeButton, maximizeIcon);
         maximizeButton.Click += (_, _) =>
         {
             var handle = Window.Handle;
