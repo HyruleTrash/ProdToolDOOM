@@ -89,7 +89,6 @@ public class DragComponent : IHoverable
             X = selectionBox.center.x
         };
         rectangleVisual.Anchor(Anchor.Top);
-        rectangleVisual.AddToRoot();
         
         lineRectangleVisual = new RectangleRuntime
         {
@@ -97,9 +96,14 @@ public class DragComponent : IHoverable
             Height = height,
             Color = UIParams.defaultOutlineColor,
             X = selectionBox.center.x,
-            LineWidth = UIParams.defaultLineWidth
+            LineWidth = UIParams.defaultOutLineWidth
         };
         lineRectangleVisual.Anchor(Anchor.Top);
         rectangleVisual.AddChild(lineRectangleVisual);
+    }
+    
+    public void FinalizeUI()
+    {
+        rectangleVisual.AddToRoot();
     }
 }

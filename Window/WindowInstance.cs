@@ -18,7 +18,7 @@ public class WindowInstance : Game
     protected GraphicsDeviceManager graphics;
     protected GumService gum => GumService.Default;
     
-    public readonly Action<Vector2>? onScreenSizeChange;
+    public Action<Vector2>? onScreenSizeChange;
     public bool Fullscreen { get; private set; }
 
     private bool shouldCallOnScreenSizeChanged;
@@ -64,8 +64,10 @@ public class WindowInstance : Game
         var windowSize = new Vector2(gum.CanvasWidth, gum.CanvasHeight);
         resizeComponent = new Window.ResizeComponent(windowSize, graphics, Window);
         dragComponent = new Window.DragComponent(windowSize, Window);
-        
+
+        LoadUIContainers();
         LoadUI();
+        FinalizeUI();
     }
     
     protected override void LoadContent()
@@ -76,8 +78,8 @@ public class WindowInstance : Game
         minimizeIcon = Content.Load<Texture2D>("Icons/Minimize");
         maximizeIcon = Content.Load<Texture2D>("Icons/Expand");
     }
-    
-    protected virtual void LoadUI()
+
+    private void LoadUIContainers()
     {
         dragComponent.LoadUI();
         
@@ -91,8 +93,17 @@ public class WindowInstance : Game
             Y = UIParams.borderPadding
         };
         topBarRight.Anchor(Anchor.TopRight);
-        topBarRight.AddToRoot();
         
+        topBarLeft = new StackPanel
+        {
+            X = UIParams.borderPadding,
+            Y = UIParams.borderPadding
+        };
+        topBarLeft.Anchor(Anchor.TopLeft);
+    }
+    
+    protected virtual void LoadUI()
+    {
         var exitButton = new Button
         {
             Text = "X",
@@ -147,13 +158,12 @@ public class WindowInstance : Game
         topBarRight.AddChild(maximizeButton);
         topBarRight.AddChild(minimizeButton);
         topBarRight.AddChild(exitButton);
-        
-        topBarLeft = new StackPanel
-        {
-            X = UIParams.borderPadding,
-            Y = UIParams.borderPadding
-        };
-        topBarLeft.Anchor(Anchor.TopLeft);
+    }
+
+    private void FinalizeUI()
+    {
+        dragComponent?.FinalizeUI();
+        topBarRight.AddToRoot();
         topBarLeft.AddToRoot();
     }
     
@@ -178,7 +188,7 @@ public class WindowInstance : Game
 
         shortcutManager.Update(keyboardState, dt);
         
-        if (ProdToolDOOM.Window.Helper.HasFocus(Window.Handle))
+        if (IsFocused())
             CheckOnHover(dt);
 
         CheckScreenSizeChange();
@@ -233,5 +243,10 @@ public class WindowInstance : Game
     public bool WasMouseClickConsumedByGum()
     {
         return gum.Cursor.WindowOver != null;
+    }
+    
+    public bool IsFocused()
+    {
+        return ProdToolDOOM.Window.Helper.HasFocus(Window.Handle);
     }
 }

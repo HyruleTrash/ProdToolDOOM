@@ -14,24 +14,31 @@ namespace ProdToolDOOM;
 
 public static class UIParams
 {
+    // window specific
     public const int minWindowWidth = 500;
     public const int minWindowHeight = 100;
     public const int minResizePerFrame = 200;
     
+    // box specific
     public const float borderPadding = 10;
     public const float borderRadius = 5;
 
     public const float minBoxSize = 32;
+    public const float defaultOutLineWidth = 2;
+    
+    // dealing with text in buttons
     public const float minButtonHeight = (minBoxSize / 2 - defaultFontSize / 2) - 1;
     public const float defaultFontSize = 18;
-    public const float defaultLineWidth = 2;
     
+    // selection box
     public const float minNearSelection = 10;
     
+    // ui colors
     public static readonly Color defaultFillColor = new (206, 209, 214);
     public static readonly Color defaultOutlineColor = new (175, 153, 222);
     public static readonly Color canvasColor = new (36, 28, 47);
 
+    // button specific
     private static Dictionary<Button, CustomButtonVisual> custombuttons = [];
     
     public static void SetDefaultButton(Button button)
@@ -76,12 +83,14 @@ public static class UIParams
     
     private class CustomButtonVisual
     {
+        private Button button;
         private RectangleRuntime buttonOutline;
         private ButtonVisual visual;
         private SpriteRuntime? icon;
 
         public CustomButtonVisual(Button button)
         {
+            this.button = button;
             visual = (ButtonVisual)button.Visual;
             
             buttonOutline = new RectangleRuntime
@@ -89,7 +98,7 @@ public static class UIParams
                 Width = visual.GetAbsoluteWidth(),
                 Height = visual.GetAbsoluteHeight(),
                 Color = defaultOutlineColor,
-                LineWidth = defaultLineWidth,
+                LineWidth = defaultOutLineWidth,
                 Visible = visual.Visible,
                 IgnoredByParentSize = true
             };
@@ -101,7 +110,15 @@ public static class UIParams
             };
 
             button.AddChild(buttonOutline);
+            
             custombuttons.Add(button, this);
+            visual.ParentChanged += (_, __) =>
+            {
+                if(visual.Parent == null) // removed / disposed
+                {
+                    custombuttons.Remove(button);
+                }
+            };
         }
         
         public void SetIcon(SpriteRuntime sprite) => icon = sprite;
@@ -111,6 +128,7 @@ public static class UIParams
             visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
             visual.Background.Color = defaultFillColor;
             buttonOutline.Color = defaultOutlineColor;
+            visual.TextInstance.Color = defaultOutlineColor;
             if (icon != null) icon.Color = defaultOutlineColor;
         }
 
@@ -119,6 +137,7 @@ public static class UIParams
             visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
             visual.Background.Color = canvasColor;
             buttonOutline.Color = defaultOutlineColor;
+            visual.TextInstance.Color = defaultOutlineColor;
             if (icon != null) icon.Color = defaultOutlineColor;
         }
 
@@ -127,6 +146,7 @@ public static class UIParams
             visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid); 
             visual.Background.Color = defaultOutlineColor;
             buttonOutline.Color = defaultFillColor;
+            visual.TextInstance.Color = defaultFillColor;
             if (icon != null) icon.Color = defaultFillColor;
         }
     }

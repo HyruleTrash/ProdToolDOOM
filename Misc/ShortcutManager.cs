@@ -22,7 +22,7 @@ public class ShortcutManager
     public ShortcutManager()
     {
         shortCuts = [];
-        pressTimer = new Timer(60, () => ableToUseShortCuts = true)
+        pressTimer = new Timer(1, () => ableToUseShortCuts = true)
         {
             running = false
         };
@@ -89,7 +89,10 @@ public class ShortcutManager
         {
             pressTimer.Update(dt);
             if (lastPressed != null && !CheckShortcut(keyboardState, lastPressed))
+            {
                 ableToUseShortCuts = true;
+                lastPressed = null;
+            }
             return;
         }
 
@@ -133,9 +136,13 @@ public class ShortcutManager
         }
 
         if (!isBeingPressed) return false;
-        
+
         if (lastPressed != shortCut || !pressTimer.running)
+        {
+            Debug.Log($"Calling {shortCut.keyCombinationString}");
             shortCut.action.Invoke();
+        }
+
         return true;
     }
 }

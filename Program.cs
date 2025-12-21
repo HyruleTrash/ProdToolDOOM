@@ -26,7 +26,7 @@ public class Program : WindowInstance
     private Program()
     {
         instance = this;
-        currentProject = new Project();
+        currentProject = new Project(gum);
         cmdHistory = new CommandHistory();
         toolManager = new ToolManager();
     }
@@ -34,9 +34,6 @@ public class Program : WindowInstance
     protected override void LoadContent()
     {
         base.LoadContent();
-        spriteBatch = new SpriteBatch(GraphicsDevice);
-        
-        pointIcon = Content.Load<Texture2D>("Icons/Cross");
     }
 
     protected override void Initialize()
@@ -47,8 +44,8 @@ public class Program : WindowInstance
     
     protected override void LoadUI()
     {
+        currentProject.LoadUI(topBarLeft);
         base.LoadUI();
-        currentProject.LoadUI(topBarLeft, gum);
     }
 
     protected override void Draw(GameTime gameTime)

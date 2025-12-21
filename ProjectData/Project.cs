@@ -38,10 +38,13 @@ public class Project
     private StackPanel inProjectStack = null!;
     private readonly ProjectFeature[] inProjectFeatures;
     private ContainerRuntime toolContainer = null!;
-    private ToolBarFeature toolBar = null!;
+    private ToolBarFeature toolBar;
+    public ContainerRuntime canvasContainer = null!;
+    private readonly GumService gum;
 
-    public Project()
+    public Project(GumService gum)
     {
+        this.gum = gum;
         filePathChanged = newPath => { Debug.Log($"FilePathChanged: {newPath}"); };
         projectFeatures =
         [
@@ -52,6 +55,7 @@ public class Project
         [
             new SaveFeature(this)
         ];
+        toolBar = new ToolBarFeature(gum, this);
     }
 
     /// <summary>
@@ -78,7 +82,7 @@ public class Project
         return saveStrat == null;
     }
 
-    public void LoadUI(StackPanel mainPanel, GumService gum)
+    public void LoadUI(StackPanel mainPanel)
     {
         foreach (var projectFeature in projectFeatures)
         {
@@ -97,6 +101,15 @@ public class Project
             projectFeature.LoadUI(inProjectStack);
         }
 
+        canvasContainer = new ContainerRuntime
+        {
+            Width = gum.CanvasWidth,
+            Height = gum.CanvasHeight,
+            X = 0,
+            Y = 0,
+        };
+        canvasContainer.AddToRoot();
+
         // Tools
         toolContainer = new ContainerRuntime
         {
@@ -107,10 +120,16 @@ public class Project
             Visible = false
         };
         filePathChanged += (newPath) => { toolContainer.Visible = newPath != string.Empty; };
-        toolContainer.Anchor(Anchor.Center);
         toolContainer.AddToRoot();
+        
+        Program.instance.onScreenSizeChange += size =>
+        {
+            canvasContainer.Width = size.x;
+            canvasContainer.Height = size.y;
+            toolContainer.Width = size.x;
+            toolContainer.Height = size.y;
+        };
 
-        toolBar = new ToolBarFeature(gum, this);
         toolBar.LoadUI(toolContainer);
     }
 
