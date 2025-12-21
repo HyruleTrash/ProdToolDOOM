@@ -29,4 +29,10 @@ public class CommandHistory
         var latest = redoStack.Pop();
         ApplyCmd(latest, false);
     }
+
+    public void Reset()
+    {
+        history.Clear();
+        redoStack.Clear();
+    }
 }

@@ -1,6 +1,8 @@
 ﻿
 #if WINDOWS
 using System.Xml;
+using Microsoft.Xna.Framework.Graphics;
+
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
@@ -9,6 +11,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
     public List<Vector2> points = [];
     public List<Line> lines = [];
     private readonly ProjectLoadStrategy referenceLoadStrategy;
+    private Texture2D? pointTexture;
 
     public ExpectedLevelData(ProjectLoadStrategy referenceLoadStrategy)
     {
@@ -30,7 +33,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
             new ExpectedLinesData(this)  { stopAt = "Lines" }
         ]);
         
-        level.SetLevelGeometry(points, lines);
+        level.SetLines(lines);
     }
 
     public void saveEntry()

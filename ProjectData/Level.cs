@@ -1,4 +1,6 @@
-﻿namespace ProdToolDOOM;
+﻿using MonoGameGum.GueDeriving;
+
+namespace ProdToolDOOM;
 
 public class Level
 {
@@ -13,6 +15,7 @@ public class Level
     
     public List<Vector2> Points { get => points; }
     public List<Line> Lines { get => lines; }
+    
     private List<Vector2> points = [];
     private List<Line> lines = [];
 
@@ -25,12 +28,6 @@ public class Level
         entities = other.Entities;
         points = other.Points;
         lines = other.Lines;
-    }
-
-    public void SetLevelGeometry(List<Vector2> points, List<Line> lines)
-    {
-        this.points = points;
-        this.lines = lines;
     }
 
     public void Add(Object? levelObject)
@@ -63,5 +60,11 @@ public class Level
                 points.Remove(point.Position);
                 break;
         }
+    }
+
+    // TODO: improve this function call
+    public void SetLines(List<Line> list)
+    {
+        lines = list;
     }
 }

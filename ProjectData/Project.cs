@@ -138,5 +138,7 @@ public class Project
         levels = new();
         entityDatas = new();
         currentLevel = 0;
+        Program.instance.cmdHistory.Reset();
+        canvasContainer.Children?.Clear();
     }
 }

@@ -34,7 +34,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 }

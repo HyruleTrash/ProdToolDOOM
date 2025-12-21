@@ -6,7 +6,6 @@ namespace ProdToolDOOM.Version2;
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 {
     public Level level = new ();
-    public List<Vector2> points = [];
     public List<Line> lines = [];
     private readonly ProjectLoadStrategy referenceLoadStrategy;
 
@@ -21,7 +20,6 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
         level = new Level();
-        points = [];
         lines = [];
         
         referenceLoadStrategy.ReadData(reader, [
@@ -30,7 +28,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
             new ExpectedLinesData(this)  { stopAt = "Lines" }
         ]);
         
-        level.SetLevelGeometry(points, lines);
+        level.SetLines(lines);
     }
 
     public void saveEntry()

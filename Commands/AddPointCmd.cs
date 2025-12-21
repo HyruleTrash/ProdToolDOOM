@@ -8,50 +8,31 @@ namespace ProdToolDOOM;
 public class AddPointCmd(Project project, Vector2 initialPosition, Texture2D pointTexture) : ICommand, IDisposable
 {
     private Point? point;
-    private int? levelId;
-    private SpriteRuntime? icon;
     
     public void Execute()
     {
         if (project.levels.Count == 0 || project.currentLevel > project.levels.Count - 1)
             return;
-        levelId ??= project.currentLevel;
-        point ??= new Point(initialPosition);
+        int levelId = project.currentLevel;
+        point ??= new Point(initialPosition, pointTexture, levelId);
         
         Debug.Log($"Adding point to level {levelId} {point.Position}!");
-        project.levels[levelId.Value].Add(point);
-        
-        if (icon == null)
-        {
-            icon = new SpriteRuntime
-            {
-                Texture = pointTexture,
-                TextureAddress = TextureAddress.Custom,
-                TextureWidth = pointTexture.Width,
-                TextureHeight = pointTexture.Height,
-                IgnoredByParentSize = true
-            };
-            // icon.Anchor(Anchor.Center);
-            project.canvasContainer.AddChild(icon);
-        }
-
-        icon.Visible = true;
-        icon.X = point.Position.x - (float)pointTexture.Width / 2;
-        icon.Y = point.Position.y - (float)pointTexture.Height / 2;
+        project.levels[levelId].Add(point);
     }
 
     public void Undo()
     {
-        if (point == null || levelId == null)
+        if (point == null)
             return;
-        Debug.Log($"Removing point from level {levelId}!");
+        Debug.Log($"Removing point from level {point.LevelId}!");
         
-        project.levels[levelId.Value].Remove(point);
-        if (icon != null) icon.Visible = false;
+        project.levels[point.LevelId].Remove(point);
+        if (point.icon != null) point.icon.Visible = false;
     }
 
     public void Dispose()
     {
-        if (icon != null) icon.Parent = null;
+        if (point?.icon?.Visible == false)
+            point?.Dispose();
     }
 }

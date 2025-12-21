@@ -36,7 +36,7 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            Debug.LogError(e.Message);
             return false;
         }
     }
