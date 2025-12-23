@@ -62,4 +62,7 @@ public class Program : WindowInstance
         var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         toolManager?.Update(mouseState, dt);
     }
+
+    public static float GetWindowWidth() => instance.Window.ClientBounds.Width;
+    public static float GetWindowHeight() => instance.Window.ClientBounds.Height;
 }

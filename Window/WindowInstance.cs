@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
+using ProdToolDOOM.ProjectFeatures;
 using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -34,7 +35,8 @@ public class WindowInstance : Game
     private Texture2D minimizeIcon;
     private Texture2D maximizeIcon;
 
-    public ShortcutManager shortcutManager = new ();
+    public ShortcutManager shortcutManager = new();
+    public rightClickManager rightClickManager = new();
 
     protected WindowInstance()
     {
@@ -187,6 +189,7 @@ public class WindowInstance : Game
         base.Update(gameTime);
 
         shortcutManager.Update(keyboardState, dt);
+        rightClickManager.Update(Microsoft.Xna.Framework.Input.Mouse.GetState());
         
         if (IsFocused())
             CheckOnHover(dt);
@@ -224,15 +227,18 @@ public class WindowInstance : Game
     public GameWindow GetWindow() => Window;
     public bool IsInsideWindowBounds(Vector2 point)
     {
+        var width = Window.ClientBounds.Width - UIParams.minNearSelection;
+        var height = Window.ClientBounds.Height - UIParams.minNearSelection;
+        
         // Convert the mouse position into Gum's centered coordinate system
         var canvasCenter = new Vector2(gum.CanvasWidth, gum.CanvasHeight) * 0.5f;
         var centeredPoint = new Vector2(point.x - canvasCenter.x, canvasCenter.y - point.y);
 
         // Window bounds in Gum's centered coordinate system
-        var windowLeft = Window.ClientBounds.Width * 0.5f;
-        var windowRight = -Window.ClientBounds.Width * 0.5f;
-        var windowTop = -Window.ClientBounds.Height * 0.5f;
-        var windowBottom = Window.ClientBounds.Height * 0.5f;
+        var windowLeft = width * 0.5f;
+        var windowRight = -width * 0.5f;
+        var windowTop = -height * 0.5f;
+        var windowBottom = height * 0.5f;
 
         bool insideWidth = centeredPoint.x >= windowRight && centeredPoint.x <= windowLeft;
         bool insideHeight = centeredPoint.y >= windowTop && centeredPoint.y <= windowBottom;
@@ -240,13 +246,7 @@ public class WindowInstance : Game
         return insideWidth && insideHeight;
     }
 
-    public bool WasMouseClickConsumedByGum()
-    {
-        return gum.Cursor.WindowOver != null;
-    }
-    
-    public bool IsFocused()
-    {
-        return ProdToolDOOM.Window.Helper.HasFocus(Window.Handle);
-    }
+    public bool WasMouseClickConsumedByGum() => gum.Cursor.WindowOver != null;
+
+    public bool IsFocused() => ProdToolDOOM.Window.Helper.HasFocus(Window.Handle);
 }

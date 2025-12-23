@@ -15,8 +15,12 @@ public abstract class BasePlacerTool : ITool
         
         lastMousePosition = new Vector2(mouse.X, mouse.Y);
         var program = Program.instance;
-        if (program.IsFocused() && program.IsInsideWindowBounds(lastMousePosition) && !program.WasMouseClickConsumedByGum())
+        if (program.IsFocused() && program.IsInsideWindowBounds(lastMousePosition) &&
+            !program.WasMouseClickConsumedByGum())
+        {
+            lastMousePosition -= new Vector2(Program.GetWindowWidth() / 2, Program.GetWindowHeight() / 2);
             toCall.Invoke();
+        }
         
         ableToPlace = false;
     }
