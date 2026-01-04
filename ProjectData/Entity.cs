@@ -16,4 +16,14 @@ public class Entity : Level.Object
         id = other.Id;
         position = other.Position;
     }
+
+    public override void ShowSelectionVisual()
+    {
+        // throw new NotImplementedException();
+    }
+
+    public override void HideSelectionVisual()
+    {
+        // throw new NotImplementedException();
+    }
 }

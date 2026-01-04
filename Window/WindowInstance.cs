@@ -30,13 +30,12 @@ public class WindowInstance : Game
     protected StackPanel topBarRight;
     protected StackPanel topBarLeft;
     
-    private SpriteBatch spriteBatchIcons;
     private Texture2D closeIcon;
     private Texture2D minimizeIcon;
     private Texture2D maximizeIcon;
 
     public ShortcutManager shortcutManager = new();
-    public rightClickManager rightClickManager = new();
+    public rightClickManager rightClickManager;
 
     protected WindowInstance()
     {
@@ -74,8 +73,6 @@ public class WindowInstance : Game
     
     protected override void LoadContent()
     {
-        spriteBatchIcons = new SpriteBatch(GraphicsDevice);
-        
         closeIcon = Content.Load<Texture2D>("Icons/Cross");
         minimizeIcon = Content.Load<Texture2D>("Icons/Minimize");
         maximizeIcon = Content.Load<Texture2D>("Icons/Expand");
@@ -167,6 +164,7 @@ public class WindowInstance : Game
         dragComponent?.FinalizeUI();
         topBarRight.AddToRoot();
         topBarLeft.AddToRoot();
+        rightClickManager = new();
     }
     
     protected override void Draw(GameTime gameTime)

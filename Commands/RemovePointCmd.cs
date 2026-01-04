@@ -2,20 +2,20 @@
 
 namespace ProdToolDOOM;
 
-public class RemovePointCmd(Project project) : ICommand
+public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted) : ICommand
 {
     private Point? point;
     
     public void Execute()
     {
-        if (rightClickManager.instance.currentSelection is not Point tempPoint)
+        if (tempPoint == null)
             return;
-        point = tempPoint;
+        point ??= tempPoint;
         Debug.Log($"Removing point from level {point.LevelId}!");
         
         project.levels[point.LevelId].Remove(point);
-        if (point.icon != null) point.icon.Visible = false;
-        rightClickManager.instance.Reset();
+        if (point.icon != null) point.Hide();
+        onExecuted?.Invoke();
     }
 
     public void Undo()

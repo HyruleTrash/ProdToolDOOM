@@ -12,13 +12,6 @@ public class PointPlacerTool : BasePlacerTool
     {
         pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
         toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddPointCmd(Project.instance, lastMousePosition, pointTexture));
-
-        rightClickManager.instance.AddOptions<Point>([
-            new rightClickManager.RightClickOption(
-                "Remove", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemovePointCmd(Project.instance))
-            )
-        ]);
     }
 
     public override void SetVisuals()

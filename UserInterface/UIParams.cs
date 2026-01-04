@@ -37,6 +37,7 @@ public static class UIParams
     public static readonly Color defaultFillColor = new (206, 209, 214);
     public static readonly Color defaultOutlineColor = new (175, 153, 222);
     public static readonly Color canvasColor = new (36, 28, 47);
+    public static readonly Color selectionColor = new (96, 101, 234);
 
     // button specific
     private static Dictionary<Button, CustomButtonVisual> custombuttons = [];

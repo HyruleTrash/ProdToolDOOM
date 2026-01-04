@@ -23,8 +23,17 @@ public class rightClickManager
     }
     
     private Dictionary<Type, RightClickStack> registry = new();
+    
+    public struct RightClickVisualSetCall(Type givenType, Vector2 position, object currentSelection, int givenPriority)
+    {
+        public readonly Type type = givenType;
+        public readonly Vector2 position = position;
+        public readonly int priority = givenPriority;
+        public readonly object currentSelection = currentSelection;
+    }
+    private List<RightClickVisualSetCall> visualSetCalls = [];
+    public RightClickVisualSetCall? currentVisual;
     private RightClickStack? currentStack;
-    public object? currentSelection;
 
     private ContainerRuntime rightClickPopUp;
     private SelectionBox selectionBox;
@@ -64,33 +73,62 @@ public class rightClickManager
         return true;
     }
 
-    public void ShowOptions<T>(Vector2 position)
+    public void ShowOptions<T>(Vector2 position, object selection, int priority)
     {
-        if (currentStack != null) currentStack.rightClickOptionStack.Visual.Parent = null;
-        if (!registry.TryGetValue(typeof(T), out var stack))
-            return;
+        visualSetCalls.Add(new RightClickVisualSetCall(typeof(T), position, selection, priority));
+    }
+    
+    public void Update(MouseState mouseState)
+    {
+        ShowHighestPriority();
+        if (!rightClickPopUp.Visible || !selectionBox.IsInsideBounds(new Vector2(mouseState.X, mouseState.Y)))
+            Reset();
+    }
+
+    private void ShowHighestPriority()
+    {
+        if (currentVisual != null) return;
+        currentVisual = GetHighestPriority();
+        if (currentVisual == null) return;
         
-        rightClickPopUp.X = position.x;
-        rightClickPopUp.Y = position.y;
+        if (currentStack != null) currentStack.rightClickOptionStack.Visual.Parent = null;
+        if (!registry.TryGetValue(currentVisual.Value.type, out var stack))
+            return;
+            
+        rightClickPopUp.X = currentVisual.Value.position.x;
+        rightClickPopUp.Y = currentVisual.Value.position.y;
         rightClickPopUp.Visible = true;
         rightClickPopUp.AddChild(stack.rightClickOptionStack);
         currentStack = stack;
 
         var size = new Vector2(rightClickPopUp.GetAbsoluteWidth(), rightClickPopUp.GetAbsoluteHeight());
         var offset = new Vector2(UIParams.minNearSelection, UIParams.minNearSelection);
-        selectionBox = new SelectionBox(position + (size / 2), size + offset);
+        selectionBox = new SelectionBox(currentVisual.Value.position + (size / 2), size + offset);
     }
-    
-    public void Update(MouseState getState)
+
+    private RightClickVisualSetCall? GetHighestPriority()
     {
-        if (!rightClickPopUp.Visible || selectionBox.IsInsideBounds(new Vector2(getState.X, getState.Y))) return;
-        Reset();
+        RightClickVisualSetCall? highestPriority = null;
+        foreach (var setCall in visualSetCalls)
+        {
+            if (highestPriority == null)
+            {
+                highestPriority = setCall;
+                continue;
+            }
+            if (highestPriority.Value.priority < setCall.priority)
+            {
+                highestPriority = setCall;
+            }
+        }
+        return highestPriority;
     }
-    
+
     public void Reset()
     {
         rightClickPopUp.Visible = false;
         currentStack = null;
-        currentSelection = null;
+        currentVisual = null;
+        visualSetCalls.Clear();
     }
 }

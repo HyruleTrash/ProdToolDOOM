@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProdToolDOOM.ProjectFeatures;
 using ProdToolDOOM.ProjectFeatures.Tools;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -30,27 +31,19 @@ public class Program : WindowInstance
         cmdHistory = new CommandHistory();
         toolManager = new ToolManager();
     }
-    
-    protected override void LoadContent()
-    {
-        base.LoadContent();
-    }
 
     protected override void Initialize()
     {
         base.Initialize();
         SetShortcuts(BaseShortcuts.baseShortcuts);
+        var rightClickRegister = new RightClickRegister(rightClickManager);
+        rightClickRegister = null;
     }
     
     protected override void LoadUI()
     {
         currentProject.LoadUI(topBarLeft);
         base.LoadUI();
-    }
-
-    protected override void Draw(GameTime gameTime)
-    {
-        base.Draw(gameTime);
     }
 
     protected override void Update(GameTime gameTime)

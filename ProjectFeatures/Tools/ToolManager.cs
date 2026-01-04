@@ -11,10 +11,19 @@ public class ToolManager
         {typeof(EntityPlacerTool), new EntityPlacerTool()},
         {typeof(PointPlacerTool), new PointPlacerTool()}
     };
+    private bool wasPressed = false;
+    private bool dragging = false;
+    private bool shouldResetDrag = false;
+    public DragSelect? dragSelect;
 
     public void SetTool(ITool tool)
     {
         CurrentTool?.UnEquip();
+        if (CurrentTool is not null && CurrentTool == tool)
+        {
+            CurrentTool = null;
+            return;
+        }  
         CurrentTool = tool;
         tool.SetVisuals();
     }
@@ -27,8 +36,37 @@ public class ToolManager
 
     public void Update(MouseState mouse, float dt)
     {
-        if (mouse.LeftButton == ButtonState.Pressed)
-            CurrentTool?.Call(mouse);
+        dragSelect ??= new DragSelect();
+        
+        var released = mouse.LeftButton == ButtonState.Released;
+        var pressed = mouse.LeftButton == ButtonState.Pressed;
+
+        if (pressed && !Program.instance.WasMouseClickConsumedByGum())
+        {
+            if (shouldResetDrag)
+            {
+                dragSelect.Reset();
+                shouldResetDrag = false;
+            }
+            dragging = dragSelect.UpdateDrag(mouse);
+        }
+        if (released)
+            shouldResetDrag = true;
+        
+        if (!wasPressed && pressed)
+            wasPressed = true;
+
+        if (wasPressed && !dragging)
+        {
+            if (CurrentTool is not null && released)
+            {
+                CurrentTool?.Call(mouse);
+                wasPressed = false;
+                dragSelect.Reset();
+            }
+        }
+
         CurrentTool?.Update(dt, mouse);
+        dragSelect.Update(mouse);
     }
 }

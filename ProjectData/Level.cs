@@ -4,10 +4,13 @@ namespace ProdToolDOOM;
 
 public class Level
 {
-    public class Object
+    public abstract class Object
     {
         public Vector2 Position { get => position; set => position = value; }
         protected Vector2 position;
+
+        public abstract void ShowSelectionVisual();
+        public abstract void HideSelectionVisual();
     }
     
     public List<Entity> Entities { get => entities; set => entities = value; }

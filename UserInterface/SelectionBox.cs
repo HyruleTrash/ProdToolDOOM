@@ -4,6 +4,12 @@ public class SelectionBox
 {
     public Vector2 center;
     public Vector2 size;
+
+    public SelectionBox()
+    {
+        center = Vector2.Zero;
+        size = Vector2.Zero;
+    }
     
     public SelectionBox(Vector2 center, Vector2 size)
     {
