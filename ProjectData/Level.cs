@@ -65,6 +65,13 @@ public class Level
         }
     }
 
+    public void UpdatePointPosition(Point point, Vector2 newPosition)
+    {
+        points.Remove(point.Position);
+        points.Add(newPosition);
+        point.Position = newPosition;
+    }
+
     // TODO: improve this function call
     public void SetLines(List<Line> list)
     {

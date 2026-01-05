@@ -36,7 +36,7 @@ public class ResizableBox : IHoverable
     {
         public override void SetMouseVisual()
         {
-            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 10);
+            Program.instance.Mouse.SetVisual(MouseCursor.SizeWE, 10);
         }
 
         protected override float GetEdgePosition()
@@ -65,7 +65,7 @@ public class ResizableBox : IHoverable
     {
         public override void SetMouseVisual()
         {
-            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 10);
+            Program.instance.Mouse.SetVisual(MouseCursor.SizeNS, 10);
         }
 
         protected override float GetEdgePosition()
@@ -143,9 +143,9 @@ public class ResizableBox : IHoverable
         resizeBoxes.bottomSide.UpdateCurrentlyHoveredOver(mousePosition);
 
         if (resizeBoxes.GetHoveredOverX())
-            Program.instance.mouse.SetVisual(MouseCursor.SizeWE, 1);
+            Program.instance.Mouse.SetVisual(MouseCursor.SizeWE, 1);
         else if (resizeBoxes.GetHoveredOverY())
-            Program.instance.mouse.SetVisual(MouseCursor.SizeNS, 1);
+            Program.instance.Mouse.SetVisual(MouseCursor.SizeNS, 1);
 
         if (mouseHeld)
             resizeBoxes.CheckHover(this);

@@ -3,7 +3,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace ProdToolDOOM.ProjectFeatures.Tools;
 
-public abstract class BasePlacerTool : ITool
+public abstract class BasePlacerTool(WindowInstance windowRef) : ITool
 {
     private bool ableToPlace = true;
     protected Vector2 lastMousePosition = Vector2.Zero;
@@ -18,7 +18,7 @@ public abstract class BasePlacerTool : ITool
         if (program.IsFocused() && program.IsInsideWindowBounds(lastMousePosition) &&
             !program.WasMouseClickConsumedByGum())
         {
-            lastMousePosition -= new Vector2(Program.GetWindowWidth() / 2, Program.GetWindowHeight() / 2);
+            lastMousePosition -= new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
             toCall.Invoke();
         }
         
@@ -30,8 +30,9 @@ public abstract class BasePlacerTool : ITool
         ableToPlace = true;
     }
 
-    public void Update(float dt, MouseState mouse)
+    public void Update(float dt, WindowInstance windowRef)
     {
+        var mouse = windowRef.Mouse.currentMouseState;
         if (!ableToPlace && mouse.LeftButton == ButtonState.Released)
             ableToPlace = true;
     }

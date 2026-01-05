@@ -6,7 +6,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace ProdToolDOOM.ProjectFeatures.Tools;
 
-public class DragSelect
+public class DragSelect : IBaseUpdatable
 {
     private Vector2? firstMousePos;
     private SelectionBox selectionBox = new();
@@ -48,6 +48,9 @@ public class DragSelect
         foreach (var obj in selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
         selectedObjects = newSelection;
         
+        if (selectedObjects.Count == 0) 
+            UnSelect();
+        
         return result;
     }
 
@@ -56,11 +59,11 @@ public class DragSelect
     /// </summary>
     /// <param name="mouse">Current mouse state</param>
     /// <returns>if user is currently drag selecting</returns>
-    public bool UpdateDrag(MouseState mouse)
+    public bool UpdateDrag(MouseState mouse, WindowInstance windowRef)
     {
-        if (Project.instance.levels.Count == 0)
+        if (Project.instance.levels.Count == 0 || windowRef.Mouse.IsDragging)
             return false;
-        var lastMousePos = new Vector2(mouse.Position) - new Vector2(Program.GetWindowWidth() / 2, Program.GetWindowHeight() / 2);
+        var lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
         
         levelRef ??= Project.instance.levels[Project.instance.currentLevel];
         firstMousePos ??= new Vector2(lastMousePos);
@@ -103,15 +106,29 @@ public class DragSelect
         levelRef = null;
         firstMousePos = null;
     }
-    
-    public void Update(MouseState mouse)
+
+    public void UnSelect()
     {
+        Reset();
+        foreach (var obj in selectedObjects)
+        {
+            if (obj is not null)
+                obj.HideSelectionVisual();
+        }
+        selectedObjects.Clear();
+
+        visual.Visible = false;
+    }
+    
+    public void Update(float dt, WindowInstance windowRef)
+    {
+        var mouse = windowRef.Mouse.currentMouseState;
         if (selectedObjects.Count == 0) return;
         var mousePos = new Vector2(mouse.Position) -
-                       new Vector2(Program.GetWindowWidth(), Program.GetWindowHeight()) / 2;
+                       new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
         if (mouse.RightButton == ButtonState.Pressed && selectionBox.IsInsideBounds(mousePos))
         {
-            mousePos += new Vector2(Program.GetWindowWidth(), Program.GetWindowHeight()) / 2;
+            mousePos = new Vector2(mouse.Position);
             rightClickManager.instance.ShowOptions<DragSelect>(mousePos, this, 2);
         }
     }

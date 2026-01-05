@@ -6,7 +6,7 @@ using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM.ProjectFeatures;
 
-public class rightClickManager
+public class rightClickManager : IBaseUpdatable
 {
     public static rightClickManager instance = Program.instance.rightClickManager;
     public class RightClickOption(string text, Action toCall)
@@ -78,8 +78,9 @@ public class rightClickManager
         visualSetCalls.Add(new RightClickVisualSetCall(typeof(T), position, selection, priority));
     }
     
-    public void Update(MouseState mouseState)
+    public void Update(float dt, WindowInstance windowRef)
     {
+        var mouseState = windowRef.Mouse.currentMouseState;
         ShowHighestPriority();
         if (!rightClickPopUp.Visible || !selectionBox.IsInsideBounds(new Vector2(mouseState.X, mouseState.Y)))
             Reset();

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using ProdToolDOOM.ProjectFeatures.Tools;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace ProdToolDOOM;
 
@@ -8,11 +10,31 @@ public struct MouseVisualSetCall(MouseCursor givenType, int givenPriority)
     public readonly int priority = givenPriority;
 }
 
-public class Mouse
+public class Mouse(WindowInstance windowRef) : IBaseUpdatable
 {
-    private List<MouseVisualSetCall> visualSetCalls = [];
+    public MouseState currentMouseState;
+
+    public bool IsDragging
+    {
+        get => isDragging;
+        set
+        {
+            isDragging = value;
+            if (value)
+                dragSelect?.UnSelect();
+        }
+    }
+
+    private bool isDragging = false;
+    public bool isDragSelecting;
     
-    public void Update()
+    public DragSelect? dragSelect;
+    private bool shouldResetDrag;
+    
+    private List<MouseVisualSetCall> visualSetCalls = [];
+    private WindowInstance windowRef = windowRef;
+    
+    public void UpdateVisual()
     {
         var mouseVisual = GetVisual();
         if (mouseVisual != null)
@@ -42,5 +64,30 @@ public class Mouse
         }
 
         return currentHighestPriorityCall?.type;
+    }
+
+    public Vector2 GetMousePosition() => new Vector2(currentMouseState.Position) -
+                                         new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
+
+    public void Update(float dt, WindowInstance _)
+    {
+        dragSelect ??= new DragSelect();
+        
+        var pressed = currentMouseState.LeftButton == ButtonState.Pressed;
+        var released = currentMouseState.LeftButton == ButtonState.Released;
+        
+        if (pressed && !windowRef.WasMouseClickConsumedByGum())
+        {
+            if (shouldResetDrag)
+            {
+                dragSelect.Reset();
+                shouldResetDrag = false;
+            }
+            isDragSelecting = dragSelect.UpdateDrag(currentMouseState, windowRef);
+        }
+        if (released)
+            shouldResetDrag = true;
+        
+        dragSelect.Update(dt, windowRef);
     }
 }

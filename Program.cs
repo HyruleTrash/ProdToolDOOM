@@ -29,15 +29,15 @@ public class Program : WindowInstance
         instance = this;
         currentProject = new Project(gum);
         cmdHistory = new CommandHistory();
-        toolManager = new ToolManager();
     }
 
     protected override void Initialize()
     {
         base.Initialize();
+        toolManager = new ToolManager(this);
+        UpdateRegister.Add(toolManager);
         SetShortcuts(BaseShortcuts.baseShortcuts);
-        var rightClickRegister = new RightClickRegister(rightClickManager);
-        rightClickRegister = null;
+        RightClickRegister.Register(rightClickManager);
     }
     
     protected override void LoadUI()
@@ -45,17 +45,4 @@ public class Program : WindowInstance
         currentProject.LoadUI(topBarLeft);
         base.LoadUI();
     }
-
-    protected override void Update(GameTime gameTime)
-    {
-        base.Update(gameTime);
-        
-        var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        
-        var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        toolManager?.Update(mouseState, dt);
-    }
-
-    public static float GetWindowWidth() => instance.Window.ClientBounds.Width;
-    public static float GetWindowHeight() => instance.Window.ClientBounds.Height;
 }

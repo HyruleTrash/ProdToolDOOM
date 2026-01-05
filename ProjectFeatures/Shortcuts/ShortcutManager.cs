@@ -4,7 +4,7 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace ProdToolDOOM;
 
-public class ShortcutManager
+public class ShortcutManager : IBaseUpdatable
 {
     public class ShortCut(Keys[] keyCombination, Action action)
     {
@@ -83,8 +83,9 @@ public class ShortcutManager
     
     private static int CalculatePriority(ShortCut shortCut) => shortCut.keyCombination.Length;
 
-    public void Update(KeyboardState keyboardState, float dt)
+    public void Update(float dt, WindowInstance windowRef)
     {
+        var keyboardState = windowRef.KeyboardState;
         if (!ableToUseShortCuts)
         {
             pressTimer.Update(dt);

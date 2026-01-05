@@ -2,7 +2,7 @@
 
 public class EntityPlacerTool : BasePlacerTool
 {
-    public EntityPlacerTool()
+    public EntityPlacerTool(WindowInstance windowRef) : base(windowRef)
     {
         toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.instance, lastMousePosition));
     }

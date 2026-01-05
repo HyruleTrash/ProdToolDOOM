@@ -1,8 +1,8 @@
 ﻿namespace ProdToolDOOM.ProjectFeatures;
 
-public class RightClickRegister
+public static class RightClickRegister
 {
-    public RightClickRegister(rightClickManager manager)
+    public static void Register(rightClickManager manager)
     {
         manager.AddOptions<Point>([
             new rightClickManager.RightClickOption(

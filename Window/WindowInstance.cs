@@ -26,7 +26,6 @@ public class WindowInstance : Game
     private Window.ResizeComponent? resizeComponent;
     private Window.DragComponent? dragComponent;
 
-    public Mouse mouse = new();
     protected StackPanel topBarRight;
     protected StackPanel topBarLeft;
     
@@ -34,7 +33,13 @@ public class WindowInstance : Game
     private Texture2D minimizeIcon;
     private Texture2D maximizeIcon;
 
-    public ShortcutManager shortcutManager = new();
+    public List<IBaseUpdatable> UpdateRegister { get; set; }
+    private List<IBaseUpdatable> updateRegister = [];
+    public KeyboardState KeyboardState { get; private set; }
+    protected float dt;
+    public Mouse Mouse { get; private set; }
+    
+    public ShortcutManager shortcutManager;
     public rightClickManager rightClickManager;
 
     protected WindowInstance()
@@ -51,8 +56,12 @@ public class WindowInstance : Game
             gum.CanvasWidth = windowSize.x;
             gum.CanvasHeight = windowSize.y;
             resizeComponent?.ResizeSelectionBoxData(windowSize);
-            dragComponent?.Update(windowSize);
+            dragComponent?.UpdateSize(windowSize);
         };
+
+        UpdateRegister = [];
+        Mouse = new Mouse(this);
+        UpdateRegister.Add(Mouse);
     }
 
     protected void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => shortcutManager.AddShortCuts(shortcuts);
@@ -65,6 +74,9 @@ public class WindowInstance : Game
         var windowSize = new Vector2(gum.CanvasWidth, gum.CanvasHeight);
         resizeComponent = new Window.ResizeComponent(windowSize, graphics, Window);
         dragComponent = new Window.DragComponent(windowSize, Window);
+
+        shortcutManager = new ShortcutManager();
+        UpdateRegister.Add(shortcutManager);
 
         LoadUIContainers();
         LoadUI();
@@ -164,7 +176,9 @@ public class WindowInstance : Game
         dragComponent?.FinalizeUI();
         topBarRight.AddToRoot();
         topBarLeft.AddToRoot();
+        
         rightClickManager = new();
+        UpdateRegister.Add(rightClickManager);
     }
     
     protected override void Draw(GameTime gameTime)
@@ -176,25 +190,30 @@ public class WindowInstance : Game
     
     protected override void Update(GameTime gameTime)
     {
-        KeyboardState keyboardState = Keyboard.GetState();
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            keyboardState.IsKeyDown(Keys.Escape))
-            Exit();
+        KeyboardState = Keyboard.GetState();
+        dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        Mouse.currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         
-        var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            KeyboardState.IsKeyDown(Keys.Escape))
+            Exit();
 
         gum.Update(gameTime);
         base.Update(gameTime);
 
-        shortcutManager.Update(keyboardState, dt);
-        rightClickManager.Update(Microsoft.Xna.Framework.Input.Mouse.GetState());
+        updateRegister = UpdateRegister.ToList();
+        foreach (var baseUpdatable in updateRegister)
+        {
+            if (baseUpdatable is null)
+                continue;
+            baseUpdatable.Update(dt, this);
+        }
         
         if (IsFocused())
             CheckOnHover(dt);
 
         CheckScreenSizeChange();
-        
-        mouse.Update();
+        Mouse.UpdateVisual();
     }
 
     private void CheckScreenSizeChange()
@@ -247,4 +266,12 @@ public class WindowInstance : Game
     public bool WasMouseClickConsumedByGum() => gum.Cursor.WindowOver != null;
 
     public bool IsFocused() => ProdToolDOOM.Window.Helper.HasFocus(Window.Handle);
+
+    public Vector2 GetWindowSize()
+    {
+        return new Vector2(GetWindowWidth(), GetWindowHeight());
+    }
+    
+    public float GetWindowWidth() => Window.ClientBounds.Width;
+    public float GetWindowHeight() => Window.ClientBounds.Height;
 }

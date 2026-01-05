@@ -21,16 +21,14 @@ public class DragComponent : IHoverable
     private Vector2 firstMousePos;
     private Vector2 lastMousePos;
     private Vector2 firstWindowPos;
-    
-    private const float speed = 50;
 
     public DragComponent(Vector2 windowSize, GameWindow window)
     {
-        Update(windowSize);
+        UpdateSize(windowSize);
         this.window = window;
     }
     
-    public void Update(Vector2 windowSize)
+    public void UpdateSize(Vector2 windowSize)
     {
         selectionBox = new SelectionBox(new Vector2(windowSize.x / 2, (float)height / 2), windowSize.x, height);
         if (rectangleVisual == null || lineRectangleVisual == null)
@@ -64,7 +62,7 @@ public class DragComponent : IHoverable
             firstWindowPos = new Vector2(window.Position.X, window.Position.Y);
             return;
         }
-        Program.instance.mouse.SetVisual(MouseCursor.Hand, 10);
+        Program.instance.Mouse.SetVisual(MouseCursor.Hand, 10);
         if (mousePos == lastMousePos)
             return;
         

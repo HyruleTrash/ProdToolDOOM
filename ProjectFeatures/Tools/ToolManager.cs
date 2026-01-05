@@ -3,18 +3,20 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace ProdToolDOOM.ProjectFeatures.Tools;
 
-public class ToolManager
+public class ToolManager : IBaseUpdatable
 {
     public ITool? CurrentTool { get; set; }
-    public static Dictionary<Type, ITool> tools = new()
-    {
-        {typeof(EntityPlacerTool), new EntityPlacerTool()},
-        {typeof(PointPlacerTool), new PointPlacerTool()}
-    };
+    public static Dictionary<Type, ITool> tools;
     private bool wasPressed = false;
-    private bool dragging = false;
-    private bool shouldResetDrag = false;
-    public DragSelect? dragSelect;
+
+    public ToolManager(WindowInstance windowRef)
+    {
+        tools = new Dictionary<Type, ITool>
+        {
+            {typeof(EntityPlacerTool), new EntityPlacerTool(windowRef)},
+            {typeof(PointPlacerTool), new PointPlacerTool(windowRef)}
+        };
+    }
 
     public void SetTool(ITool tool)
     {
@@ -34,39 +36,26 @@ public class ToolManager
         SetTool(foundTool);
     }
 
-    public void Update(MouseState mouse, float dt)
+    public void Update(float dt, WindowInstance windowRef)
     {
-        dragSelect ??= new DragSelect();
+        var mouse = windowRef.Mouse.currentMouseState;
         
         var released = mouse.LeftButton == ButtonState.Released;
         var pressed = mouse.LeftButton == ButtonState.Pressed;
-
-        if (pressed && !Program.instance.WasMouseClickConsumedByGum())
-        {
-            if (shouldResetDrag)
-            {
-                dragSelect.Reset();
-                shouldResetDrag = false;
-            }
-            dragging = dragSelect.UpdateDrag(mouse);
-        }
-        if (released)
-            shouldResetDrag = true;
         
         if (!wasPressed && pressed)
             wasPressed = true;
 
-        if (wasPressed && !dragging)
+        if (wasPressed && !windowRef.Mouse.isDragSelecting)
         {
             if (CurrentTool is not null && released)
             {
                 CurrentTool?.Call(mouse);
                 wasPressed = false;
-                dragSelect.Reset();
+                windowRef.Mouse.dragSelect?.Reset();
             }
         }
 
-        CurrentTool?.Update(dt, mouse);
-        dragSelect.Update(mouse);
+        CurrentTool?.Update(dt, windowRef);
     }
 }
