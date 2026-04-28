@@ -16,12 +16,20 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
     
     public void loadEntry(XmlReader reader)
     {
+        Debug.Log($"tempest log: {reader.NodeType}, {reader.Name}");
         if (reader.NodeType != XmlNodeType.Element)
             return;
-        level = new Level();
+
+        if (reader.Name == "Level")
+        {
+            this.level ??= new Level();
+            reader.Read();
+        }
         
         if (reader.Name == "IdCounter")
             level.levelObjectIdCounter = reader.ReadElementContentAsInt();
+        
+        Debug.Log($"temp log: {level.levelObjectIdCounter}, {reader.Name}");
         
         referenceLoadStrategy.ReadData(reader, [
             new ExpectedEntitiesData(this) { stopAt = "Entities" },
@@ -32,7 +40,10 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
+        if (level == null) return;
+        Debug.Log("Saving Level Data");
         Project.instance.levels.Add(level);
+        level = null;
     }
 }
 #endif

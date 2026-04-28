@@ -30,6 +30,18 @@ public class ReflectionSerializer<T, TU> where T : notnull
             return;
         }
         
+        if (obj is IList list)
+        {
+            SerializeList((List<T>)list, type.Name, writer);
+            return;
+        }
+
+        if (obj is IDictionary dict)
+        {
+            SerializeDictionary(dict, type.Name, writer);
+            return;
+        }
+        
         if (type.IsGenericType)
         {
             SerializeProperty(obj, type.Name, writer);
@@ -77,33 +89,29 @@ public class ReflectionSerializer<T, TU> where T : notnull
 
     private bool CheckIfList(object value, string propName, TU writer, Type type)
     {
-        if (type.GetGenericTypeDefinition() == typeof(List<>))
-        {
-            IList foundList = ((IList)value);
-            if (foundList.Count > 0)
-            {
-                Type elementType = type.GetGenericArguments()[0];
+        if (type.GetGenericTypeDefinition() != typeof(List<>)) return false;
+        
+        IList foundList = ((IList)value);
+        // if (foundList.Count <= 0) return false;
+        Type elementType = type.GetGenericArguments()[0];
                 
-                // new ReflectionSerializer, with T being elementType, and U remaining the same
-                var serializerType = typeof(ReflectionSerializer<,>)
-                    .MakeGenericType(elementType, typeof(TU));
+        // new ReflectionSerializer, with T being elementType, and U remaining the same
+        var serializerType = typeof(ReflectionSerializer<,>)
+            .MakeGenericType(elementType, typeof(TU));
                 
-                object? serializerInstance = Activator.CreateInstance(serializerType);
+        object? serializerInstance = Activator.CreateInstance(serializerType);
                 
-                // Then Trigger SerializeList inside that, passing allong foundList, with prop.Name and writer
-                MethodInfo? serializeMethod = serializerType.GetMethod(
-                    nameof(SerializeList),
-                    BindingFlags.Instance | BindingFlags.Public,
-                    null,
-                    [type, typeof(string), typeof(TU)],
-                    null
-                );
+        // Then Trigger SerializeList inside that, passing allong foundList, with prop.Name and writer
+        MethodInfo? serializeMethod = serializerType.GetMethod(
+            nameof(SerializeList),
+            BindingFlags.Instance | BindingFlags.Public,
+            null,
+            [type, typeof(string), typeof(TU)],
+            null
+        );
                 
-                serializeMethod?.Invoke(serializerInstance, [foundList, propName, writer]);
-                return true;
-            }
-        }
-        return false;
+        serializeMethod?.Invoke(serializerInstance, [foundList, propName, writer]);
+        return true;
     }
 
     private bool CheckIfDictionary(object value, string propName, TU writer, Type type)
@@ -131,7 +139,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
     
     public void SerializeList(List<T> list, string name, TU writer)
     {
-        if (list.Count <= 0) return;
+        // if (list.Count <= 0) return;
         #if WINDOWS
         writer.WriteStartElement($"{name}");
         writer.WriteAttributeString("collectionType", "List");
@@ -150,7 +158,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
     
     public void SerializeDictionary(IDictionary dict, string name, TU writer)
     {
-        if (dict.Count <= 0) return;
+        // if (dict.Count <= 0) return;
         #if WINDOWS
         writer.WriteStartElement($"{name}");
         writer.WriteAttributeString("collectionType", "Dictionary");

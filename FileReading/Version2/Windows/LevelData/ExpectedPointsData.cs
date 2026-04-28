@@ -28,11 +28,11 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
             return;
 
         if (reader.Name == "LevelId")
-        {
             point.LevelId = reader.ReadElementContentAsInt();
+        else if (reader.Name == "LevelObjectId")
             point.LevelObjectId = reader.ReadElementContentAsInt();
+        else if (reader.Name == "Position")
             point.Position = Vector2.FromString(reader.ReadElementContentAsString());
-        }
     }
 
     public void saveEntry()

@@ -27,9 +27,6 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
             entityData.Name = reader.ReadElementContentAsString();
     }
 
-    public void saveEntry()
-    {
-        Project.instance.entityDatas.Add(lastReadId, new(entityData));
-    }
+    public void saveEntry() => Project.instance.entityDatas.Add(lastReadId, new(entityData));
 }
 #endif
