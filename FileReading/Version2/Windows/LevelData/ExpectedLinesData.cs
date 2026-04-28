@@ -21,11 +21,9 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
 
         this.line ??= new(Project.instance);
         
-        if (reader.Name == "Id")
-            this.line.Id = reader.ReadElementContentAsInt();
-        else if (reader.Name == "IdOther")
-            this.line.IdOther = reader.ReadElementContentAsInt();
-        else if (reader.Name == "LevelId") this.line.LevelId = reader.ReadElementContentAsInt();
+        if (reader.Name == "Id") this.line.Id = reader.ReadElementContentAsInt();
+        if (reader.Name == "IdOther") this.line.IdOther = reader.ReadElementContentAsInt();
+        if (reader.Name == "LevelId") this.line.LevelId = reader.ReadElementContentAsInt();
     }
 
     public void saveEntry()

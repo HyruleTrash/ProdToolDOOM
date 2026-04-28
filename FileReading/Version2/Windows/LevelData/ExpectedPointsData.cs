@@ -23,15 +23,11 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
             this.point = new Point(Vector2.Zero, pointTexture, -1, -1, Program.instance,
                 Project.instance);
         }
-        // Debug.Log($"{reader.Name} {reader.NodeType}");
-        if (reader.NodeType != XmlNodeType.Element)
-            return;
+        if (reader.NodeType != XmlNodeType.Element) return;
 
-        if (reader.Name == "LevelId")
-            this.point.LevelId = reader.ReadElementContentAsInt();
-        else if (reader.Name == "LevelObjectId")
-            this.point.LevelObjectId = reader.ReadElementContentAsInt();
-        else if (reader.Name == "Position") this.point.Position = Vector2.FromString(reader.ReadElementContentAsString());
+        if (reader.Name == "LevelId") this.point.LevelId = reader.ReadElementContentAsInt();
+        if (reader.Name == "LevelObjectId") this.point.LevelObjectId = reader.ReadElementContentAsInt();
+        if (reader.Name == "Position") this.point.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }
 
     public void saveEntry()

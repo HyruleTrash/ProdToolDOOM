@@ -18,7 +18,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     private void SetExpectedData()
     {
         this.expectedData.Clear();
-        this.expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Project_Version", load = reader =>
         {
             string version = reader.ReadElementContentAsString();
             switch (version)
@@ -32,14 +32,14 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     return;
             }
         } });
-        this.expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Id_Counter", load = reader =>
         {
             int counter = reader.ReadElementContentAsInt();
             Project.instance.entityDataIdCounter = counter;
         }});
         this.expectedData.Add(new ExpectedEntityData(this));
         this.expectedData.Add(new ExpectedLevelData(this));
-        this.expectedData.Add(new ExpectedData() { name = "Current_Level", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Current_Level", load = reader =>
         {
             int levelId = reader.ReadElementContentAsInt();
             Project.instance.CurrentLevel = levelId;
@@ -72,6 +72,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 
                 // TODO remove this
                 Debug.Log($"Levels: {Project.instance.levels.Count}");
+                Debug.Log($"Current level: {Project.instance.CurrentLevel}");
                 foreach (Level level in Project.instance.levels)
                 {
                     Debug.Log(" Level:");
@@ -175,7 +176,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             return;
         }
                     
-        while (reader.Read())
+        while (true)
         {
             if (this.shouldQuit)
                 return;
@@ -192,6 +193,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 Debug.Log($"Collection read finished (count) {collectionData.collectionName}");
                 break;
             }
+
+            reader.Read();
         }
     }
     
@@ -234,7 +237,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         int entryDepth = reader.Depth;
         bool hasEntered = false;
 
-        while (reader.Read())
+        while (true)
         {
             if (reader.Depth > entryDepth)
                 hasEntered = true;
@@ -248,6 +251,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 data.saveEntry();
                 return true;
             }
+
+            reader.Read();
         }
 
         return true;

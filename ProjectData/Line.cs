@@ -154,4 +154,7 @@ public class Line : Level.Object, IDisposable
     }
 
     private void CreateRemoveCommand() => this.removeCommand ??= new RemoveLineCmd(Project.instance, this);
+    
+    public override string ToString() =>
+        $"Line [position: {this.position}, firstPnt: {this.Id}, SecondPnt: {this.IdOther}, levelId: {this.levelId}]";
 }

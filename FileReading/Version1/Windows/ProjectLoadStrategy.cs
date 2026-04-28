@@ -15,13 +15,13 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
 
     private void SetExpectedData()
     {
-        this.expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Project_Version", load = (XmlReader reader) =>
         {
             string version = reader.ReadElementContentAsString();
             Debug.Log($"File project version: {version}");
         } });
         this.expectedData.Add(new ExpectedLevelData(this));
-        this.expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
             Project.instance.entityDataIdCounter = counter;

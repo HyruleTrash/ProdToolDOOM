@@ -32,8 +32,6 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
             new ExpectedPointsData(this) { stopAt = "Points" },
             new ExpectedLinesData(this)  { stopAt = "Lines" }
         ]);
-        
-        Debug.Log($"{reader.Name}, {reader.NodeType} aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 
     public void saveEntry()

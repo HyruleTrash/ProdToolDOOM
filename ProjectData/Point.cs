@@ -149,8 +149,5 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         if (this.selectedIcon != null) this.selectedIcon.Visible = false;
     }
 
-    public override string ToString()
-    {
-        return $"Point [position: {this.Position}, id: {this.LevelObjectId}, levelId: {this.LevelId}]";
-    }
+    public override string ToString() => $"Point [position: {this.Position}, id: {this.LevelObjectId}, levelId: {this.LevelId}]";
 }
