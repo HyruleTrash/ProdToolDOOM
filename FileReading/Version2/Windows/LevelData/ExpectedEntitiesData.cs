@@ -25,7 +25,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
-        Entity setEntity = new Entity(this.entity);
+        Entity setEntity = new(this.entity);
         this.referenceLevelData.level.Add(setEntity);
         try
         {

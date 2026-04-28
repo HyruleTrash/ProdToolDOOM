@@ -18,7 +18,7 @@ public static class FileExplorerHelper
         public string OpenFile(string initialDirectory = "c:\\")
         {
             #if WINDOWS
-            using OpenFileDialog openFileDialog = new OpenFileDialog();
+            using OpenFileDialog openFileDialog = new();
             
             openFileDialog.InitialDirectory = initialDirectory;
             openFileDialog.Filter = "wapd files (*.wapd)|*.wapd";
@@ -38,7 +38,7 @@ public static class FileExplorerHelper
         public string SaveFile(string initialDirectory = "c:\\")
         {
             #if WINDOWS
-            using SaveFileDialog saveFileDialog = new SaveFileDialog();
+            using SaveFileDialog saveFileDialog = new();
             
             saveFileDialog.InitialDirectory = initialDirectory;
             saveFileDialog.Filter = "wapd files (*.wapd)|*.wapd";

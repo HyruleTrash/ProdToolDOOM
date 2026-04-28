@@ -53,7 +53,7 @@ public class rightClickManager : IBaseUpdatable
         if (this.registry.ContainsKey(typeof(T)))
             return false;
 
-        RightClickStack entry = new RightClickStack(options)
+        RightClickStack entry = new(options)
         {
             rightClickOptionStack = new StackPanel()
         };
@@ -102,8 +102,8 @@ public class rightClickManager : IBaseUpdatable
         this.rightClickPopUp.AddChild(stack.rightClickOptionStack);
         this.currentStack = stack;
 
-        Vector2 size = new Vector2(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
-        Vector2 offset = new Vector2(UIParams.minNearSelection, UIParams.minNearSelection);
+        Vector2 size = new(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
+        Vector2 offset = new(UIParams.minNearSelection, UIParams.minNearSelection);
         this.selectionBox = new SelectionBox(this.currentVisual.Value.position + (size / 2), size + offset);
     }
 

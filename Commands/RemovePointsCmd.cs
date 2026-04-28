@@ -12,7 +12,7 @@ public class RemovePointsCmd(Project project, Func<bool, Point[]> getPoints) : I
         this.points ??= getPoints.Invoke(true);
         foreach (Point point in this.points)
         {
-            RemovePointCmd cmd = new RemovePointCmd(project, point, null);
+            RemovePointCmd cmd = new(project, point, null);
             cmd.Execute();
             this.actions.Add(cmd);
         }

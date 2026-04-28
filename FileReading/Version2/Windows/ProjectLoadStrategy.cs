@@ -123,7 +123,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     
     public void ReadData(XmlReader reader, List<ExpectedData> searchData)
     {
-        CollectionData collectionData = new CollectionData();
+        CollectionData collectionData = new();
         
         while (reader.Read())
         {

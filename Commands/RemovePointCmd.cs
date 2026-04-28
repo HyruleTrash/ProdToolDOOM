@@ -25,6 +25,6 @@ public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted
         
         Debug.Log($"Adding point to level {this.point.LevelId} {this.point.Position}!");
         project.levels[this.point.LevelId].Add(this.point);
-        if (this.point.icon != null) this.point.icon.Visible = true;
+        if (this.point.icon != null) this.point.Show();
     }
 }

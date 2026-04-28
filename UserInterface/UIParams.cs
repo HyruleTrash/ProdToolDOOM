@@ -64,7 +64,7 @@ public static class UIParams
 
     public static void AddIconToButton(Button button, Texture2D iconTex)
     {
-        SpriteRuntime icon = new SpriteRuntime
+        SpriteRuntime icon = new()
         {
             Texture = iconTex,
             TextureAddress = TextureAddress.Custom,

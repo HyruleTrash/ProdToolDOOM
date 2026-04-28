@@ -27,7 +27,7 @@ public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D 
         Debug.Log($"Removing point from level {this.point.LevelId}!");
         
         projectRef.levels[this.point.LevelId].Remove(this.point);
-        if (this.point.icon != null) this.point.icon.Visible = false;
+        if (this.point.icon != null) this.point.Hide();
     }
 
     public void Dispose()

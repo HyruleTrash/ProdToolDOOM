@@ -20,7 +20,7 @@ public class Program : WindowInstance
     static void Main(string[] _)
     {
         Debug.Log("Starting application...");
-        Program p = new Program();
+        Program p = new();
         p.Run();
     }
     

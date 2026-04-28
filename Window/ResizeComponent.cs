@@ -147,7 +147,7 @@ public class ResizeComponent : ResizableBox
     {
         if (!base.ResizeWindow())
             return false;
-        Vector2 windowSize = new Vector2(this.graphics.PreferredBackBufferWidth, this.graphics.PreferredBackBufferHeight);
+        Vector2 windowSize = new(this.graphics.PreferredBackBufferWidth, this.graphics.PreferredBackBufferHeight);
         Program.instance.onScreenSizeChange?.Invoke(windowSize);
         return true;
     }

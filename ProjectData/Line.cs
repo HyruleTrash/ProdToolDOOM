@@ -3,7 +3,7 @@ using Color = Microsoft.Xna.Framework.Color;
 
 namespace ProdToolDOOM;
 
-public class Line : Level.Object
+public class Line : Level.Object, IDisposable
 {
     public int Id { get => this.point1Id; set => this.point1Id = value; }
     public int IdOther { get => this.point2Id; set => this.point2Id = value; }
@@ -19,6 +19,7 @@ public class Line : Level.Object
     private ContainerRuntime? iconContainer;
     
     private Project projectRef;
+    private RemoveLineCmd removeCommand;
 
     public Line(Project projectRef, int point1Id, int point2Id, int levelId) : this(projectRef)
     {
@@ -53,6 +54,7 @@ public class Line : Level.Object
         float distance = Vector2.GetDistance(point1Pos, point2Pos);
         Vector2 direction = Vector2.GetDirection(point1Pos, point2Pos);
         this.midPoint = point1Pos + direction * (distance / 2f);
+        this.position = this.midPoint;
 
         this.iconContainer = new ContainerRuntime
         {
@@ -104,7 +106,19 @@ public class Line : Level.Object
         this.iconContainer.Y = this.midPoint.y + screenSize.y / 2;
     }
     
-    public override void Hide()
+    public void Dispose()
+    {
+        if (this.icon == null) return;
+        if (this.iconContainer != null)
+            this.iconContainer.Parent = null;
+    }
+
+    protected override void OnShow()
+    {
+        if (this.icon != null) this.icon.Visible = true;
+    }
+
+    protected override void OnHide()
     {
         if (this.selectedIcon != null) this.selectedIcon.Visible = false;
         if (this.icon != null) this.icon.Visible = false;
@@ -119,4 +133,27 @@ public class Line : Level.Object
     {
         if (this.selectedIcon != null) this.selectedIcon.Visible = false;
     }
+
+    public void EvaluateVisibility()
+    {
+        Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
+        Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
+        if (point1 == null || point2 == null)
+        {
+            CreateRemoveCommand();
+            this.removeCommand.Execute();
+            return;
+        }
+        Debug.Log($"{point1.visible}, {point2.visible}");
+        if (point1.visible && point2.visible)
+        {
+            this.removeCommand?.Undo();
+            return;
+        }
+
+        CreateRemoveCommand();
+        this.removeCommand.Execute();
+    }
+
+    private void CreateRemoveCommand() => this.removeCommand ??= new RemoveLineCmd(Project.instance, this);
 }

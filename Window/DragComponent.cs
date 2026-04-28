@@ -40,7 +40,7 @@ public class DragComponent : IHoverable
     public bool CheckHover(MouseState mouseState, float dt)
     {
         bool mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
-        Vector2 mousePos = new Vector2(mouseState.Position);
+        Vector2 mousePos = new(mouseState.Position);
         if ((mouseHeld && this.dragging) || (mouseHeld && this.selectionBox.IsInsideBounds(mousePos)))
         {
             Vector2 mouseScreen = mousePos + new Vector2(this.window.Position.X, this.window.Position.Y) - new Vector2((float)this.window.ClientBounds.Width / 2, (float)this.window.ClientBounds.Height / 2);

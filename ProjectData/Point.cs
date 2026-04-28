@@ -25,6 +25,8 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
     private readonly WindowInstance windowRef;
     private readonly Project projectRef;
 
+    public Action onDispose;
+
     public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef)
     {
         this.windowRef = windowRef;
@@ -122,10 +124,16 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
 
     public void Dispose()
     {
-        if (this.icon != null) this.iconContainer.Parent = null;
+        if (this.iconContainer != null) this.iconContainer.Parent = null;
+        this.onDispose?.Invoke();
     }
 
-    public override void Hide()
+    protected override void OnShow()
+    {
+        if (this.icon != null) this.icon.Visible = true;
+    }
+
+    protected override void OnHide()
     {
         if (this.selectedIcon != null) this.selectedIcon.Visible = false;
         if (this.icon != null) this.icon.Visible = false;

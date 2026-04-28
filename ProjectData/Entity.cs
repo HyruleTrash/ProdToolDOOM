@@ -18,7 +18,12 @@ public class Entity : Level.Object
         this.position = other.position;
     }
 
-    public override void Hide()
+    protected override void OnShow()
+    {
+        // throw new NotImplementedException();
+    }
+
+    protected override void OnHide()
     {
         // throw new NotImplementedException();
     }

@@ -71,7 +71,7 @@ public class WindowInstance : Game
         this.gum.Initialize(this);
         base.Initialize();
         
-        Vector2 windowSize = new Vector2(this.gum.CanvasWidth, this.gum.CanvasHeight);
+        Vector2 windowSize = new(this.gum.CanvasWidth, this.gum.CanvasHeight);
         this.resizeComponent = new Window.ResizeComponent(windowSize, this.graphics, this.Window);
         this.dragComponent = new Window.DragComponent(windowSize, this.Window);
 
@@ -115,7 +115,7 @@ public class WindowInstance : Game
     
     protected virtual void LoadUI()
     {
-        Button exitButton = new Button
+        Button exitButton = new()
         {
             Text = "X",
             Width = UIParams.minBoxSize,
@@ -125,7 +125,7 @@ public class WindowInstance : Game
         UIParams.AddIconToButton(exitButton, this.closeIcon);
         exitButton.Click += (_, _) => Exit();
         
-        Button minimizeButton = new Button
+        Button minimizeButton = new()
         {
             Text = "",
             Width = UIParams.minBoxSize,
@@ -140,7 +140,7 @@ public class WindowInstance : Game
             ProdToolDOOM.Window.Helper.Minimize(handle);
         };
         
-        Button maximizeButton = new Button
+        Button maximizeButton = new()
         {
             Text = "",
             Width = UIParams.minBoxSize,
@@ -248,7 +248,7 @@ public class WindowInstance : Game
         
         // Convert the mouse position into Gum's centered coordinate system
         Vector2 canvasCenter = new Vector2(this.gum.CanvasWidth, this.gum.CanvasHeight) * 0.5f;
-        Vector2 centeredPoint = new Vector2(point.x - canvasCenter.x, canvasCenter.y - point.y);
+        Vector2 centeredPoint = new(point.x - canvasCenter.x, canvasCenter.y - point.y);
 
         // Window bounds in Gum's centered coordinate system
         float windowLeft = width * 0.5f;
