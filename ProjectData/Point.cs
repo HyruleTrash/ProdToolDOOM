@@ -32,10 +32,13 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         this.windowRef = windowRef;
         this.projectRef = projectRef;
         this.position = point;
-        this.pointTextureRef  = pointTexture;
+        this.pointTextureRef = pointTexture;
         this.LevelObjectId = levelObjectId;
         this.LevelId = levelId;
+    }
 
+    public void Init()
+    {
         this.iconContainer = new ContainerRuntime
         {
             Width = this.pointTextureRef.Width,
@@ -49,7 +52,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
             TextureWidth = this.pointTextureRef.Width,
             TextureHeight = this.pointTextureRef.Height,
             IgnoredByParentSize = true,
-            Visible = projectRef.CurrentLevel == levelId
+            Visible = this.projectRef.CurrentLevel == this.LevelId
         };
         this.iconContainer.AddChild(this.icon);
         this.selectedIcon = new SpriteRuntime
@@ -64,16 +67,15 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         this.selectedIcon.Color = Color.Blue;
         this.iconContainer.AddChild(this.selectedIcon);
         
-        if (this.icon.Visible)
-            projectRef.canvasContainer.AddChild(this.iconContainer);
+        if (this.icon.Visible) this.projectRef.canvasContainer.AddChild(this.iconContainer);
 
         this.iconContainer.RightClick += HandleRightClick;
         this.iconContainer.Dragging += HandleLeftClickHold;
 
-        UpdateVisualPosition(windowRef.GetWindowSize());
-        windowRef.onScreenSizeChange += UpdateVisualPosition;
-        
-        projectRef.onCurrentLevelChanged += OnLevelChanged;
+        UpdateVisualPosition(this.windowRef.GetWindowSize());
+        this.windowRef.onScreenSizeChange += UpdateVisualPosition;
+
+        this.projectRef.onCurrentLevelChanged += OnLevelChanged;
     }
 
     private void OnLevelChanged(int newLevelId)

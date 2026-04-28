@@ -15,6 +15,7 @@ public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D 
             return;
         int levelId = projectRef.CurrentLevel;
         this.point ??= new Point(initialPosition, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, windowRef, projectRef);
+        this.point.Init();
         
         Debug.Log($"Adding point to level {levelId} {this.point.position}!");
         projectRef.levels[levelId].Add(this.point);

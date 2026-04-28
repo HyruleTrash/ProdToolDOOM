@@ -39,7 +39,6 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         if (this.level == null) return;
         Debug.Log("Saving Level Data");
         Project.instance.levels.Add(this.level);
-        foreach (Line line in this.level.Lines) line.Init();
         this.level = null;
     }
 }

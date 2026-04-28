@@ -95,6 +95,13 @@ public class Line : Level.Object, IDisposable
         
         UpdateVisualPosition(screenSize);
         Program.instance.onScreenSizeChange += UpdateVisualPosition;
+        
+        point1.onDispose += EvaluateVisibility;
+        point1.onShowEvent += EvaluateVisibility;
+        point1.onHideEvent += EvaluateVisibility;
+        point2.onDispose += EvaluateVisibility;
+        point2.onShowEvent += EvaluateVisibility;
+        point2.onHideEvent += EvaluateVisibility;
     }
     
     public void UpdateVisualPosition(Vector2 screenSize)
@@ -109,6 +116,29 @@ public class Line : Level.Object, IDisposable
         if (this.icon == null) return;
         if (this.iconContainer != null)
             this.iconContainer.Parent = null;
+        
+        Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
+        Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
+
+        try
+        {
+            if (point1 != null)
+            {
+                point1.onDispose -= EvaluateVisibility;
+                point1.onShowEvent -= EvaluateVisibility;
+                point1.onHideEvent -= EvaluateVisibility;
+                return;
+            }
+
+            if (point2 == null) return;
+            point2.onDispose -= EvaluateVisibility;
+            point2.onShowEvent -= EvaluateVisibility;
+            point2.onHideEvent -= EvaluateVisibility;
+        }
+        catch (Exception _)
+        {
+            // ignored
+        }
     }
 
     protected override void OnShow()
