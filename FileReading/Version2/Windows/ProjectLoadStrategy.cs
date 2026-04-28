@@ -106,7 +106,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         }
         catch (Exception e)
         {
-            Debug.LogError(e.Message);
+            Debug.LogError(e);
             return false;
         }
     }
@@ -125,7 +125,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     {
         CollectionData collectionData = new();
         
-        while (reader.Read())
+        while (true)
         {
             foreach (ExpectedData dataInstance in searchData)
             {
@@ -136,25 +136,25 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     reader.Name == dataInstance.stopAt)
                 {
                     dataInstance.found = true;
+                    Debug.Log("Exiting due to stop at: " + reader.Name);
                     continue;
                 }
                 
-                if (dataInstance.name != reader.Name || reader.NodeType != XmlNodeType.Element)
+                if (dataInstance.name != reader.Name)
                     continue;
                 if (dataInstance is IExpectedCollectionData expectedCollectionData)
-                {
                     CheckCollection(reader, collectionData, expectedCollectionData);
-                }
                 else
-                {
                     dataInstance.load.Invoke(reader);
-                }
 
                 dataInstance.found = true;
             }
             
             if (searchData.All(data => data.found))
                 break;
+            foreach (ExpectedData dataInstance in searchData) Debug.Log($"Status: {dataInstance.name}, {dataInstance.stopAt}, {dataInstance.found}");
+
+            reader.Read();
         }
     }
 
@@ -168,6 +168,12 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     {
         if (!IsCollection(reader, collectionData, out collectionData))
             return;
+        
+        if (collectionData.collectionCount == 0)
+        {
+            Debug.Log($"Skipping empty collection: {collectionData.collectionName}");
+            return;
+        }
                     
         while (reader.Read())
         {

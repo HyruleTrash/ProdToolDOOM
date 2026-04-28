@@ -12,6 +12,7 @@ public class AddLineCmd(Project projectRef, Point point1, Point point2) : IComma
         if (this.points == null || this.points.Length < 2)
             return;
         this.line ??= new Line(projectRef, this.points[0].LevelObjectId, this.points[1].LevelObjectId, levelId);
+        this.line.Init();
 
         this.points[0].onDispose += this.line.EvaluateVisibility;
         this.points[0].onShowEvent += this.line.EvaluateVisibility;

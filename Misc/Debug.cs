@@ -27,4 +27,10 @@ public static class Debug
         Console.WriteLine(message == null ? "Error!!! Null" : $"Error!!! {message}");
 #endif
     }
+    public static void LogError(Exception e)
+    {
+#if DEBUG
+        Console.WriteLine($"Error!!! {e.Message} {e.StackTrace}");
+#endif
+    }
 }

@@ -27,14 +27,12 @@ public class Line : Level.Object, IDisposable
         this.point1Id = point1Id;
         this.point2Id = point2Id;
         this.projectRef = projectRef;
-        Init();
     }
     public Line(Project projectRef, Line line) : this(projectRef)
     {
         this.levelId = line.levelId;
         this.point1Id = line.Id;
         this.point2Id = line.IdOther;
-        Init();
     }
     public Line(Project projectRef) => this.projectRef = projectRef;
 

@@ -81,7 +81,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         }
         catch (Exception e)
         {
-            Debug.LogError(e.Message);
+            Debug.LogError(e);
             return false;
         }
     }
