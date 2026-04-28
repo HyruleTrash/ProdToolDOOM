@@ -7,8 +7,8 @@ public class SelectionBox
 
     public SelectionBox()
     {
-        center = Vector2.Zero;
-        size = Vector2.Zero;
+        this.center = Vector2.Zero;
+        this.size = Vector2.Zero;
     }
     
     public SelectionBox(Vector2 center, Vector2 size)
@@ -20,16 +20,16 @@ public class SelectionBox
     public SelectionBox(Vector2 center, float width, float height)
     {
         this.center = center;
-        size = new Vector2(width, height);
+        this.size = new Vector2(width, height);
     }
 
     public bool IsInsideBounds(Vector2 point)
     {
-        float halfWidth = size.x * 0.5f;
-        float halfHeight = size.y * 0.5f;
+        float halfWidth = this.size.x * 0.5f;
+        float halfHeight = this.size.y * 0.5f;
 
-        bool insideWidth = point.x >= center.x - halfWidth && point.x <= center.x + halfWidth;
-        bool insideHeight = point.y >= center.y - halfHeight && point.y <= center.y + halfHeight;
+        bool insideWidth = point.x >= this.center.x - halfWidth && point.x <= this.center.x + halfWidth;
+        bool insideHeight = point.y >= this.center.y - halfHeight && point.y <= this.center.y + halfHeight;
         
         return insideWidth && insideHeight;
     }

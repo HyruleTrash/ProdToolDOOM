@@ -21,8 +21,8 @@ public class ShortcutManager : IBaseUpdatable
 
     public ShortcutManager()
     {
-        shortCuts = [];
-        pressTimer = new Timer(1, () => ableToUseShortCuts = true)
+        this.shortCuts = [];
+        this.pressTimer = new Timer(1, () => this.ableToUseShortCuts = true)
         {
             running = false
         };
@@ -37,29 +37,28 @@ public class ShortcutManager : IBaseUpdatable
     {
         shortCut.keyCombinationString = GenerateKeyCombinationString(shortCut);
         shortCut.priority = CalculatePriority(shortCut);
-        if (shortCuts.TryGetValue(shortCut.priority, out List<ShortCut>? existingShortcuts))
+        if (this.shortCuts.TryGetValue(shortCut.priority, out List<ShortCut>? existingShortcuts))
             existingShortcuts.Add(shortCut);
         else
-            shortCuts.Add(shortCut.priority, [shortCut]);
+            this.shortCuts.Add(shortCut.priority, [shortCut]);
     }
 
     public void AddShortCuts(ShortCut[] shortcuts)
     {
-        foreach (var t in shortcuts)
+        foreach (ShortCut t in shortcuts)
             AddShortCut(t);
     }
 
     public void RemoveShortCut(string shortCutName)
     {
-        foreach (var shortCutList in shortCuts)
+        foreach (KeyValuePair<int, List<ShortCut>> shortCutList in this.shortCuts)
         {
-            var shouldStop = false;
-            foreach (var shortCut in shortCutList.Value)
+            bool shouldStop = false;
+            foreach (ShortCut shortCut in shortCutList.Value)
             {
                 if (shortCut.keyCombinationString != shortCutName) continue;
                 shortCutList.Value.Remove(shortCut);
-                if (shortCutList.Value.Count == 0)
-                    shortCuts.Remove(shortCutList.Key);
+                if (shortCutList.Value.Count == 0) this.shortCuts.Remove(shortCutList.Key);
                 shouldStop = true;
                 break;
             }
@@ -70,10 +69,10 @@ public class ShortcutManager : IBaseUpdatable
     
     private static string GenerateKeyCombinationString(ShortCut shortCut)
     {
-        var result = "";
-        for (var i = 0; i < shortCut.keyCombination.Length; i++)
+        string result = "";
+        for (int i = 0; i < shortCut.keyCombination.Length; i++)
         {
-            var key = shortCut.keyCombination[i];
+            Keys key = shortCut.keyCombination[i];
             result += $"{key}";
             if (i != shortCut.keyCombination.Length - 1)
                 result += "+";
@@ -85,37 +84,37 @@ public class ShortcutManager : IBaseUpdatable
 
     public void Update(float dt, WindowInstance windowRef)
     {
-        var keyboardState = windowRef.KeyboardState;
-        if (!ableToUseShortCuts)
+        KeyboardState keyboardState = windowRef.KeyboardState;
+        if (!this.ableToUseShortCuts)
         {
-            pressTimer.Update(dt);
-            if (lastPressed != null && !CheckShortcut(keyboardState, lastPressed))
+            this.pressTimer.Update(dt);
+            if (this.lastPressed != null && !CheckShortcut(keyboardState, this.lastPressed))
             {
-                ableToUseShortCuts = true;
-                lastPressed = null;
+                this.ableToUseShortCuts = true;
+                this.lastPressed = null;
             }
             return;
         }
 
         if (!CheckShortcuts(keyboardState)) return;
-        ableToUseShortCuts = false;
-        pressTimer.Reset();
+        this.ableToUseShortCuts = false;
+        this.pressTimer.Reset();
     }
 
     private bool CheckShortcuts(KeyboardState keyboardState)
     {
-        if (shortCuts.Count == 0) return false;
+        if (this.shortCuts.Count == 0) return false;
         
-        var shortcutFound = false;
-        for (var index = shortCuts.Count - 1; index >= 0; index--)
+        bool shortcutFound = false;
+        for (int index = this.shortCuts.Count - 1; index >= 0; index--)
         {
-            var shortCutList = shortCuts.Values[index];
+            List<ShortCut> shortCutList = this.shortCuts.Values[index];
             
-            foreach (var shortCut in shortCutList)
+            foreach (ShortCut shortCut in shortCutList)
             {
                 if (!CheckShortcut(keyboardState, shortCut)) continue;
                 shortcutFound = true;
-                lastPressed = shortCut;
+                this.lastPressed = shortCut;
                 break;
             }
 
@@ -128,8 +127,8 @@ public class ShortcutManager : IBaseUpdatable
 
     private bool CheckShortcut(KeyboardState keyboardState, ShortCut shortCut)
     {
-        var isBeingPressed = true;
-        foreach (var key in shortCut.keyCombination)
+        bool isBeingPressed = true;
+        foreach (Keys key in shortCut.keyCombination)
         {
             if (keyboardState.IsKeyDown(key)) continue;
             isBeingPressed = false;
@@ -138,7 +137,7 @@ public class ShortcutManager : IBaseUpdatable
 
         if (!isBeingPressed) return false;
 
-        if (lastPressed != shortCut || !pressTimer.running)
+        if (this.lastPressed != shortCut || !this.pressTimer.running)
         {
             Debug.Log($"Calling {shortCut.keyCombinationString}");
             shortCut.action.Invoke();

@@ -16,12 +16,11 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
 
     public bool IsDragging
     {
-        get => isDragging;
+        get => this.isDragging;
         set
         {
-            isDragging = value;
-            if (value)
-                dragSelect?.UnSelect();
+            this.isDragging = value;
+            if (value) this.dragSelect?.UnSelect();
         }
     }
 
@@ -36,21 +35,21 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
     
     public void UpdateVisual()
     {
-        var mouseVisual = GetVisual();
+        MouseCursor? mouseVisual = GetVisual();
         if (mouseVisual != null)
             Microsoft.Xna.Framework.Input.Mouse.SetCursor(mouseVisual);
-        visualSetCalls = [new MouseVisualSetCall(MouseCursor.Arrow, 0)];
+        this.visualSetCalls = [new MouseVisualSetCall(MouseCursor.Arrow, 0)];
     }
 
     public void SetVisual(MouseCursor visualType, int priority)
     {
-        visualSetCalls.Add(new MouseVisualSetCall(visualType, priority));
+        this.visualSetCalls.Add(new MouseVisualSetCall(visualType, priority));
     }
 
     private MouseCursor? GetVisual()
     {
         MouseVisualSetCall? currentHighestPriorityCall = null;
-        foreach (var mouseVisualSetCall in visualSetCalls)
+        foreach (MouseVisualSetCall mouseVisualSetCall in this.visualSetCalls)
         {
             if (currentHighestPriorityCall == null)
             {
@@ -66,28 +65,28 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
         return currentHighestPriorityCall?.type;
     }
 
-    public Vector2 GetMousePosition() => new Vector2(currentMouseState.Position) -
-                                         new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
+    public Vector2 GetMousePosition() => new Vector2(this.currentMouseState.Position) -
+                                         new Vector2(this.windowRef.GetWindowWidth(), this.windowRef.GetWindowHeight()) / 2;
 
     public void Update(float dt, WindowInstance _)
     {
-        dragSelect ??= new DragSelect();
+        this.dragSelect ??= new DragSelect();
         
-        var pressed = currentMouseState.LeftButton == ButtonState.Pressed;
-        var released = currentMouseState.LeftButton == ButtonState.Released;
+        bool pressed = this.currentMouseState.LeftButton == ButtonState.Pressed;
+        bool released = this.currentMouseState.LeftButton == ButtonState.Released;
         
-        if (pressed && !windowRef.WasMouseClickConsumedByGum())
+        if (pressed && !this.windowRef.WasMouseClickConsumedByGum())
         {
-            if (shouldResetDrag)
+            if (this.shouldResetDrag)
             {
-                dragSelect.Reset();
-                shouldResetDrag = false;
+                this.dragSelect.Reset();
+                this.shouldResetDrag = false;
             }
-            isDragSelecting = dragSelect.UpdateDrag(currentMouseState, windowRef);
+
+            this.isDragSelecting = this.dragSelect.UpdateDrag(this.currentMouseState, this.windowRef);
         }
-        if (released)
-            shouldResetDrag = true;
-        
-        dragSelect.Update(dt, windowRef);
+        if (released) this.shouldResetDrag = true;
+
+        this.dragSelect.Update(dt, this.windowRef);
     }
 }

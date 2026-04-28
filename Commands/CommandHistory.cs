@@ -10,29 +10,28 @@ public class CommandHistory
     public void ApplyCmd(ICommand cmd, bool flushRedoStack = true)
     {
         cmd.Execute();
-        history.Push(cmd);
-        if (flushRedoStack)
-            redoStack.Clear();
+        this.history.Push(cmd);
+        if (flushRedoStack) this.redoStack.Clear();
     }
 
     public void UndoCmd()
     {
-        if (history.Count == 0) return;
-        var latest = history.Pop();
+        if (this.history.Count == 0) return;
+        ICommand latest = this.history.Pop();
         latest.Undo();
-        redoStack.Push(latest);
+        this.redoStack.Push(latest);
     }
 
     public void RedoCmd()
     {
-        if (redoStack.Count == 0) return;
-        var latest = redoStack.Pop();
+        if (this.redoStack.Count == 0) return;
+        ICommand latest = this.redoStack.Pop();
         ApplyCmd(latest, false);
     }
 
     public void Reset()
     {
-        history.Clear();
-        redoStack.Clear();
+        this.history.Clear();
+        this.redoStack.Clear();
     }
 }

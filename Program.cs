@@ -20,29 +20,29 @@ public class Program : WindowInstance
     static void Main(string[] _)
     {
         Debug.Log("Starting application...");
-        var p = new Program();
+        Program p = new Program();
         p.Run();
     }
     
     private Program()
     {
         instance = this;
-        currentProject = new Project(gum);
-        cmdHistory = new CommandHistory();
+        this.currentProject = new Project(this.gum);
+        this.cmdHistory = new CommandHistory();
     }
 
     protected override void Initialize()
     {
         base.Initialize();
-        toolManager = new ToolManager(this);
-        UpdateRegister.Add(toolManager);
+        this.toolManager = new ToolManager(this);
+        this.UpdateRegister.Add(this.toolManager);
         SetShortcuts(BaseShortcuts.baseShortcuts);
-        RightClickRegister.Register(rightClickManager);
+        RightClickRegister.Register(this.rightClickManager);
     }
     
     protected override void LoadUI()
     {
-        currentProject.LoadUI(topBarLeft);
+        this.currentProject.LoadUI(this.topBarLeft);
         base.LoadUI();
     }
 }

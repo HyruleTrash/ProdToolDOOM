@@ -9,7 +9,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
 
     public ExpectedEntitiesData(ExpectedLevelData referenceLevelData)
     {
-        name = "Entities";
+        this.name = "Entities";
         this.referenceLevelData = referenceLevelData;
     }
         
@@ -19,14 +19,13 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
             return;
 
         if (reader.Name == "DataId")
-            entity.DataId = reader.ReadElementContentAsInt();
-        else if (reader.Name == "Position")
-            entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
+            this.entity.DataId = reader.ReadElementContentAsInt();
+        else if (reader.Name == "Position") this.entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }
 
     public void saveEntry()
     {
-        referenceLevelData.level.Add(new Entity(entity));
+        this.referenceLevelData.level.Add(new Entity(this.entity));
     }
 }
 #endif

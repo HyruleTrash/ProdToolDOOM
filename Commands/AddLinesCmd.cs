@@ -7,32 +7,32 @@ public class AddLinesCmd(Project project, Func<bool, Point[]> getPoints) : IComm
     
     public void Execute()
     {
-        points ??= getPoints.Invoke(false);
+        this.points ??= getPoints.Invoke(false);
 
-        if (points.Length == 0)
+        if (this.points.Length == 0)
             return;
-        if (points.Length == 2)
+        if (this.points.Length == 2)
         {
-            var cmd = new AddLineCmd(project, points[0], points[1]);
+            AddLineCmd cmd = new AddLineCmd(project, this.points[0], this.points[1]);
             cmd.Execute();
-            actions.Add(cmd);
+            this.actions.Add(cmd);
             return;
         }
         
         // TODO sort points based on circle around middle position
 
-        for (var index = 0; index < points.Length; index++)
+        for (int index = 0; index < this.points.Length; index++)
         {
-            var point1 = points[index];
-            var point2 = points[index + 1 == points.Length - 1 ? 0 : index + 1];
-            var cmd = new AddLineCmd(project, point1, point2);
+            Point point1 = this.points[index];
+            Point point2 = this.points[index + 1 == this.points.Length - 1 ? 0 : index + 1];
+            AddLineCmd cmd = new AddLineCmd(project, point1, point2);
             cmd.Execute();
-            actions.Add(cmd);
+            this.actions.Add(cmd);
         }
     }
 
     public void Undo()
     {
-        foreach (var action in actions) action.Undo();
+        foreach (AddLineCmd action in this.actions) action.Undo();
     }
 }

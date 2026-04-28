@@ -26,7 +26,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
     {
         if (!ShouldLoadUI(parent))
             return;
-        toolStack = new StackPanel
+        this.toolStack = new StackPanel
         {
             Visual =
             {
@@ -36,43 +36,43 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
             X = 5,
             Y = gum.CanvasHeight - UIParams.borderPadding,
         };
-        toolStack.Anchor(Anchor.BottomLeft);
-        AddUI(parent, toolStack);
-        
-        addLevelButton = new Button
+        this.toolStack.Anchor(Anchor.BottomLeft);
+        AddUI(parent, this.toolStack);
+
+        this.addLevelButton = new Button
         {
             Text = "Create new level",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(addLevelButton);
-        addLevelButton.Click += (_, _) => AddLevel();
-        AddUI(toolStack, addLevelButton);
-        
-        addNewEntityButton = new Button
+        UIParams.SetDefaultButton(this.addLevelButton);
+        this.addLevelButton.Click += (_, _) => AddLevel();
+        AddUI(this.toolStack, this.addLevelButton);
+
+        this.addNewEntityButton = new Button
         {
             Text = "Add new Entity to project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(addNewEntityButton);
-        addNewEntityButton.Click += (_, _) => AddEntityData();
-        AddUI(toolStack, addNewEntityButton);
-        
-        addNewEntityToLevelButton = new Button
+        UIParams.SetDefaultButton(this.addNewEntityButton);
+        this.addNewEntityButton.Click += (_, _) => AddEntityData();
+        AddUI(this.toolStack, this.addNewEntityButton);
+
+        this.addNewEntityToLevelButton = new Button
         {
             Text = "Add Entity to level",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(addNewEntityToLevelButton);
-        addNewEntityToLevelButton.Click += (_, _) => AddEntity();
-        AddUI(toolStack, addNewEntityToLevelButton);
-        
-        addPointToLevelButton = new Button
+        UIParams.SetDefaultButton(this.addNewEntityToLevelButton);
+        this.addNewEntityToLevelButton.Click += (_, _) => AddEntity();
+        AddUI(this.toolStack, this.addNewEntityToLevelButton);
+
+        this.addPointToLevelButton = new Button
         {
             Text = "Add point",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(addPointToLevelButton);
-        addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
-        AddUI(toolStack, addPointToLevelButton);
+        UIParams.SetDefaultButton(this.addPointToLevelButton);
+        this.addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
+        AddUI(this.toolStack, this.addPointToLevelButton);
     }
 }

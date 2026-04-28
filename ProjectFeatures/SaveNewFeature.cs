@@ -10,32 +10,32 @@ public class SaveNewFeature : SaveFeature
 
     public SaveNewFeature(Project project) : base(project)
     {
-        shouldOverwriteFilePath = ShouldOverwriteFilePath;
+        this.shouldOverwriteFilePath = ShouldOverwriteFilePath;
     }
     
     public override void LoadUI(object? parent)
     {
         if (!ShouldLoadUI(parent))
             return;
-        
-        saveProjectAsButton = new Button
+
+        this.saveProjectAsButton = new Button
         {
             Text = "New Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(saveProjectAsButton);
-        
-        saveProjectAsButton.Click += (_, _) => Save();
-        project.filePathChanged += (newPath) =>
+        UIParams.SetDefaultButton(this.saveProjectAsButton);
+
+        this.saveProjectAsButton.Click += (_, _) => Save();
+        this.project.filePathChanged += (newPath) =>
         {
-            saveProjectAsButton.Text = newPath == string.Empty ? "New Project" : "Save Project as...";
+            this.saveProjectAsButton.Text = newPath == string.Empty ? "New Project" : "Save Project as...";
         };
-        AddUI(parent, saveProjectAsButton);
+        AddUI(parent, this.saveProjectAsButton);
     }
 
     private bool ShouldOverwriteFilePath(ref string tempPath)
     {
-        if (project.FilePath == string.Empty)
+        if (this.project.FilePath == string.Empty)
         {
             tempPath = FileExplorerHelper.SaveWithFileExplorer();
             Debug.Log(tempPath);

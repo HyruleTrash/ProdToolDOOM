@@ -10,11 +10,11 @@ public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted
     {
         if (tempPoint == null)
             return;
-        point ??= tempPoint;
-        Debug.Log($"Removing point from level {point.LevelId}!");
+        this.point ??= tempPoint;
+        Debug.Log($"Removing point from level {this.point.LevelId}!");
         
-        project.levels[point.LevelId].Remove(point);
-        if (point.icon != null) point.Hide();
+        project.levels[this.point.LevelId].Remove(this.point);
+        if (this.point.icon != null) this.point.Hide();
         onExecuted?.Invoke();
     }
 
@@ -23,8 +23,8 @@ public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted
         if (project.levels.Count == 0 || project.CurrentLevel > project.levels.Count - 1)
             return;
         
-        Debug.Log($"Adding point to level {point.LevelId} {point.Position}!");
-        project.levels[point.LevelId].Add(point);
-        if (point.icon != null) point.icon.Visible = true;
+        Debug.Log($"Adding point to level {this.point.LevelId} {this.point.Position}!");
+        project.levels[this.point.LevelId].Add(this.point);
+        if (this.point.icon != null) this.point.icon.Visible = true;
     }
 }

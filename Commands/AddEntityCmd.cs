@@ -10,22 +10,22 @@ public class AddEntityCmd(Project project, Vector2 initialPosition) : ICommand
         if (project.entityDatas.Count == 0 || project.levels.Count == 0 ||
             project.CurrentLevel > project.levels.Count - 1)
             return;
-        entity ??= new Entity(0, initialPosition);
-        levelId ??= project.CurrentLevel;
+        this.entity ??= new Entity(0, initialPosition);
+        this.levelId ??= project.CurrentLevel;
         
-        Debug.Log($"Adding entity to level {levelId}!");
+        Debug.Log($"Adding entity to level {this.levelId}!");
         
-        project.entityDatas[0].AddEntityRegistration(entity);
-        project.levels[levelId.Value].Add(entity);
+        project.entityDatas[0].AddEntityRegistration(this.entity);
+        project.levels[this.levelId.Value].Add(this.entity);
     }
 
     public void Undo()
     {
-        if (entity == null || levelId == null)
+        if (this.entity == null || this.levelId == null)
             return;
-        Debug.Log($"Removing entity from level {levelId}!");
+        Debug.Log($"Removing entity from level {this.levelId}!");
         
-        project.entityDatas[entity.DataId].RemoveEntityRegistration(entity);
-        project.levels[levelId.Value].Remove(entity);
+        project.entityDatas[this.entity.DataId].RemoveEntityRegistration(this.entity);
+        project.levels[this.levelId.Value].Remove(this.entity);
     }
 }

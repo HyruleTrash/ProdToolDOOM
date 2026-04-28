@@ -7,16 +7,16 @@ public class AddLevelCmd(Project project) : ICommand
     public void Execute()
     {
         Debug.Log("Adding level!");
-        level ??= new Level();
-        project.levels.Add(level);
+        this.level ??= new Level();
+        project.levels.Add(this.level);
         project.CurrentLevel = project.levels.Count - 1;
     }
 
     public void Undo()
     {
-        if (level is null)
+        if (this.level is null)
             return;
         Debug.Log("removing level!");
-        project.levels.Remove(level);
+        project.levels.Remove(this.level);
     }
 }

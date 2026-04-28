@@ -13,16 +13,16 @@ public class LoadFeature(Project project) : ProjectFeature
     {
         if (!ShouldLoadUI(parent))
             return;
-        
-        loadProjectButton = new Button
+
+        this.loadProjectButton = new Button
         {
             Text = "Load Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(loadProjectButton);
-        
-        loadProjectButton.Click += (sender, args) => Load();
-        AddUI(parent, loadProjectButton);
+        UIParams.SetDefaultButton(this.loadProjectButton);
+
+        this.loadProjectButton.Click += (sender, args) => Load();
+        AddUI(parent, this.loadProjectButton);
     }
 
     private void Load()
@@ -31,7 +31,7 @@ public class LoadFeature(Project project) : ProjectFeature
             return;
         Debug.Log("Loading project file...");
 
-        var tempPath = project.FilePath;
+        string tempPath = project.FilePath;
         if (tempPath == string.Empty)
         {
             tempPath = FileExplorerHelper.OpenFileExplorer();

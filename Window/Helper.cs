@@ -23,7 +23,7 @@ public static class Helper
     
     public static bool HasFocus(IntPtr windowHandle)
     {
-        var flags = SDL_GetWindowFlags(windowHandle);
+        uint flags = SDL_GetWindowFlags(windowHandle);
         return (flags & 0x00000200) != 0;
     }
     

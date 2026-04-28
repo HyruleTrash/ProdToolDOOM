@@ -40,25 +40,25 @@ public class rightClickManager : IBaseUpdatable
 
     public rightClickManager()
     {
-        rightClickPopUp = new ContainerRuntime
+        this.rightClickPopUp = new ContainerRuntime
         {
             IgnoredByParentSize = true,
             Visible = false
         };
-        rightClickPopUp.AddToRoot();
+        this.rightClickPopUp.AddToRoot();
     }
     
     public bool AddOptions<T>(RightClickOption[] options)
     {
-        if (registry.ContainsKey(typeof(T)))
+        if (this.registry.ContainsKey(typeof(T)))
             return false;
 
-        var entry = new RightClickStack(options)
+        RightClickStack entry = new RightClickStack(options)
         {
             rightClickOptionStack = new StackPanel()
         };
 
-        foreach (var option in options)
+        foreach (RightClickOption option in options)
         {
             option.button = new Button
             {
@@ -68,49 +68,49 @@ public class rightClickManager : IBaseUpdatable
             UIParams.SetDefaultButton(option.button);
             entry.rightClickOptionStack.AddChild(option.button);
         }
-        
-        registry.Add(typeof(T), entry);
+
+        this.registry.Add(typeof(T), entry);
         return true;
     }
 
     public void ShowOptions<T>(Vector2 position, object selection, int priority)
     {
-        visualSetCalls.Add(new RightClickVisualSetCall(typeof(T), position, selection, priority));
+        this.visualSetCalls.Add(new RightClickVisualSetCall(typeof(T), position, selection, priority));
     }
     
     public void Update(float dt, WindowInstance windowRef)
     {
-        var mouseState = windowRef.Mouse.currentMouseState;
+        MouseState mouseState = windowRef.Mouse.currentMouseState;
         ShowHighestPriority();
-        if (!rightClickPopUp.Visible || !selectionBox.IsInsideBounds(new Vector2(mouseState.X, mouseState.Y)))
+        if (!this.rightClickPopUp.Visible || !this.selectionBox.IsInsideBounds(new Vector2(mouseState.X, mouseState.Y)))
             Reset();
     }
 
     private void ShowHighestPriority()
     {
-        if (currentVisual != null) return;
-        currentVisual = GetHighestPriority();
-        if (currentVisual == null) return;
+        if (this.currentVisual != null) return;
+        this.currentVisual = GetHighestPriority();
+        if (this.currentVisual == null) return;
         
-        if (currentStack != null) currentStack.rightClickOptionStack.Visual.Parent = null;
-        if (!registry.TryGetValue(currentVisual.Value.type, out var stack))
+        if (this.currentStack != null) this.currentStack.rightClickOptionStack.Visual.Parent = null;
+        if (!this.registry.TryGetValue(this.currentVisual.Value.type, out RightClickStack? stack))
             return;
-            
-        rightClickPopUp.X = currentVisual.Value.position.x;
-        rightClickPopUp.Y = currentVisual.Value.position.y;
-        rightClickPopUp.Visible = true;
-        rightClickPopUp.AddChild(stack.rightClickOptionStack);
-        currentStack = stack;
 
-        var size = new Vector2(rightClickPopUp.GetAbsoluteWidth(), rightClickPopUp.GetAbsoluteHeight());
-        var offset = new Vector2(UIParams.minNearSelection, UIParams.minNearSelection);
-        selectionBox = new SelectionBox(currentVisual.Value.position + (size / 2), size + offset);
+        this.rightClickPopUp.X = this.currentVisual.Value.position.x;
+        this.rightClickPopUp.Y = this.currentVisual.Value.position.y;
+        this.rightClickPopUp.Visible = true;
+        this.rightClickPopUp.AddChild(stack.rightClickOptionStack);
+        this.currentStack = stack;
+
+        Vector2 size = new Vector2(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
+        Vector2 offset = new Vector2(UIParams.minNearSelection, UIParams.minNearSelection);
+        this.selectionBox = new SelectionBox(this.currentVisual.Value.position + (size / 2), size + offset);
     }
 
     private RightClickVisualSetCall? GetHighestPriority()
     {
         RightClickVisualSetCall? highestPriority = null;
-        foreach (var setCall in visualSetCalls)
+        foreach (RightClickVisualSetCall setCall in this.visualSetCalls)
         {
             if (highestPriority == null)
             {
@@ -127,9 +127,9 @@ public class rightClickManager : IBaseUpdatable
 
     public void Reset()
     {
-        rightClickPopUp.Visible = false;
-        currentStack = null;
-        currentVisual = null;
-        visualSetCalls.Clear();
+        this.rightClickPopUp.Visible = false;
+        this.currentStack = null;
+        this.currentVisual = null;
+        this.visualSetCalls.Clear();
     }
 }

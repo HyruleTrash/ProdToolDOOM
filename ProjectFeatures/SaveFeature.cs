@@ -16,38 +16,38 @@ public class SaveFeature : ProjectFeature
     public SaveFeature(Project project)
     {
         this.project = project;
-        shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
+        this.shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
     }
 
     public override void LoadUI(object? parent)
     {
         if (!ShouldLoadUI(parent))
             return;
-        
-        saveProjectButton = new Button
+
+        this.saveProjectButton = new Button
         {
             Text = "Save Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(saveProjectButton);
-        
-        saveProjectButton.Click += (_, _) => Save();
-        AddUI(parent, saveProjectButton);
+        UIParams.SetDefaultButton(this.saveProjectButton);
+
+        this.saveProjectButton.Click += (_, _) => Save();
+        AddUI(parent, this.saveProjectButton);
     }
 
     protected void Save()
     {
-        if (project.CheckSaveStrategy())
+        if (this.project.CheckSaveStrategy())
             return;
         Debug.Log("Saving project file...");
 
-        var tempPath = project.FilePath;
-        if (!shouldOverwriteFilePath.Invoke(ref tempPath))
+        string tempPath = this.project.FilePath;
+        if (!this.shouldOverwriteFilePath.Invoke(ref tempPath))
             return;
 
-        if (project.saveStrat.Save(tempPath))
+        if (this.project.saveStrat.Save(tempPath))
         {
-            project.FilePath = tempPath;
+            this.project.FilePath = tempPath;
         }
     }
 }

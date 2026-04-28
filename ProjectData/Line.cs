@@ -5,9 +5,9 @@ namespace ProdToolDOOM;
 
 public class Line : Level.Object
 {
-    public int Id { get => point1Id; set => point1Id = value; }
-    public int IdOther { get => point2Id; set => point2Id = value; }
-    public int LevelId { get => levelId; set => levelId = value; }
+    public int Id { get => this.point1Id; set => this.point1Id = value; }
+    public int IdOther { get => this.point2Id; set => this.point2Id = value; }
+    public int LevelId { get => this.levelId; set => this.levelId = value; }
     public int levelId;
     private int point1Id = -1;
     private int point2Id = -1;
@@ -30,34 +30,34 @@ public class Line : Level.Object
     }
     public Line(Project projectRef, Line line) : this(projectRef)
     {
-        levelId = line.levelId;
-        point1Id = line.Id;
-        point2Id = line.IdOther;
+        this.levelId = line.levelId;
+        this.point1Id = line.Id;
+        this.point2Id = line.IdOther;
         Init();
     }
     public Line(Project projectRef) => this.projectRef = projectRef;
 
     public void Init()
     {
-        Point? point1 = projectRef.levels[levelId].GetPointById(point1Id);
-        Point? point2 = projectRef.levels[levelId].GetPointById(point2Id);
+        Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
+        Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
         if (point1 == null || point2 == null)
             return;
         point1.lines.Add(this);
         point2.lines.Add(this);
         
-        var screenSize = Program.instance.GetWindowSize();
-        var point1Pos = point1.position;
-        var point2Pos = point2.position;
+        Vector2 screenSize = Program.instance.GetWindowSize();
+        Vector2 point1Pos = point1.position;
+        Vector2 point2Pos = point2.position;
 
-        var distance = Vector2.GetDistance(point1Pos, point2Pos);
-        var direction = Vector2.GetDirection(point1Pos, point2Pos);
-        midPoint = point1Pos + direction * (distance / 2f);
-        
-        iconContainer = new ContainerRuntime
+        float distance = Vector2.GetDistance(point1Pos, point2Pos);
+        Vector2 direction = Vector2.GetDirection(point1Pos, point2Pos);
+        this.midPoint = point1Pos + direction * (distance / 2f);
+
+        this.iconContainer = new ContainerRuntime
         {
-            X = midPoint.x,
-            Y = midPoint.y,
+            X = this.midPoint.x,
+            Y = this.midPoint.y,
             Width = 25,
             Height = 25,
             IgnoredByParentSize = true
@@ -66,20 +66,20 @@ public class Line : Level.Object
         #region LineRenderer
         ICollection<System.Numerics.Vector2> polygonPoints = new List<System.Numerics.Vector2>
         {
-            new (point1Pos.x - midPoint.x, point1Pos.y - midPoint.y),
-            new (point2Pos.x - midPoint.x, point2Pos.y - midPoint.y)
+            new (point1Pos.x - this.midPoint.x, point1Pos.y - this.midPoint.y),
+            new (point2Pos.x - this.midPoint.x, point2Pos.y - this.midPoint.y)
         };
-        icon = new PolygonRuntime
+        this.icon = new PolygonRuntime
         {
             IgnoredByParentSize = true,
-            Visible = projectRef.CurrentLevel == levelId,
+            Visible = this.projectRef.CurrentLevel == this.levelId,
             LineWidth = UIParams.defaultOutLineWidth,
             IsDotted = true,
         };
-        icon.SetPoints(polygonPoints);
-        iconContainer.AddChild(icon);
-        
-        selectedIcon = new PolygonRuntime
+        this.icon.SetPoints(polygonPoints);
+        this.iconContainer.AddChild(this.icon);
+
+        this.selectedIcon = new PolygonRuntime
         {
             IgnoredByParentSize = true,
             Visible = false,
@@ -87,12 +87,11 @@ public class Line : Level.Object
             IsDotted = true,
             Color = Color.Blue
         };
-        selectedIcon.SetPoints(polygonPoints);
-        iconContainer.AddChild(selectedIcon);
+        this.selectedIcon.SetPoints(polygonPoints);
+        this.iconContainer.AddChild(this.selectedIcon);
         #endregion
         
-        if (icon.Visible)
-            projectRef.canvasContainer.AddChild(iconContainer);
+        if (this.icon.Visible) this.projectRef.canvasContainer.AddChild(this.iconContainer);
         
         UpdateVisualPosition(screenSize);
         Program.instance.onScreenSizeChange += UpdateVisualPosition;
@@ -100,24 +99,24 @@ public class Line : Level.Object
     
     public void UpdateVisualPosition(Vector2 screenSize)
     {
-        if (iconContainer == null) return;
-        iconContainer.X = midPoint.x + screenSize.x / 2;
-        iconContainer.Y = midPoint.y + screenSize.y / 2;
+        if (this.iconContainer == null) return;
+        this.iconContainer.X = this.midPoint.x + screenSize.x / 2;
+        this.iconContainer.Y = this.midPoint.y + screenSize.y / 2;
     }
     
     public override void Hide()
     {
-        if (selectedIcon != null) selectedIcon.Visible = false;
-        if (icon != null) icon.Visible = false;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = false;
+        if (this.icon != null) this.icon.Visible = false;
     }
 
     public override void ShowSelectionVisual()
     {
-        if (selectedIcon != null) selectedIcon.Visible = true;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = true;
     }
 
     public override void HideSelectionVisual()
     {
-        if (selectedIcon != null) selectedIcon.Visible = false;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = false;
     }
 }

@@ -11,16 +11,16 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
 
     public ExpectedPointsData(ExpectedLevelData referenceLevelData)
     {
-        name = "Points";
+        this.name = "Points";
         this.referenceLevelData = referenceLevelData;
     }
     
     public void loadEntry(XmlReader reader)
     {
-        if (point == null)
+        if (this.point == null)
         {
-            var pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
-            point = new Point(Vector2.Zero, pointTexture, -1, -1, Program.instance,
+            Texture2D? pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
+            this.point = new Point(Vector2.Zero, pointTexture, -1, -1, Program.instance,
                 Project.instance);
         }
         // Debug.Log($"{reader.Name} {reader.NodeType}");
@@ -28,20 +28,19 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
             return;
 
         if (reader.Name == "LevelId")
-            point.LevelId = reader.ReadElementContentAsInt();
+            this.point.LevelId = reader.ReadElementContentAsInt();
         else if (reader.Name == "LevelObjectId")
-            point.LevelObjectId = reader.ReadElementContentAsInt();
-        else if (reader.Name == "Position")
-            point.Position = Vector2.FromString(reader.ReadElementContentAsString());
+            this.point.LevelObjectId = reader.ReadElementContentAsInt();
+        else if (reader.Name == "Position") this.point.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }
 
     public void saveEntry()
     {
-        if (point == null) return;
-        Debug.Log($"Saving point: {point}");
-        referenceLevelData.level.Add(point);
-        point.UpdateVisualPosition(Program.instance.GetWindowSize());
-        point = null;
+        if (this.point == null) return;
+        Debug.Log($"Saving point: {this.point}");
+        this.referenceLevelData.level.Add(this.point);
+        this.point.UpdateVisualPosition(Program.instance.GetWindowSize());
+        this.point = null;
     }
 }
 #endif

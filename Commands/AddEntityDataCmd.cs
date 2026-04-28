@@ -8,20 +8,20 @@ public class AddEntityDataCmd(Project project) : ICommand
     public void Execute()
     {
         Debug.Log("Adding entity data!");
+
+        this.entityData ??= new EntityData();
+        this.id ??= project.entityDataIdCounter++;
         
-        entityData ??= new EntityData();
-        id ??= project.entityDataIdCounter++;
-        
-        project.entityDatas.Add(id.Value, entityData);
-        entityData.SetEntityRegistration(id.Value);
+        project.entityDatas.Add(this.id.Value, this.entityData);
+        this.entityData.SetEntityRegistration(this.id.Value);
     }
 
     public void Undo()
     {
-        if (entityData == null || id == null)
+        if (this.entityData == null || this.id == null)
             return;
         
-        project.entityDatas.Remove(id.Value);
-        entityData.SetEntityRegistration(-1);
+        project.entityDatas.Remove(this.id.Value);
+        this.entityData.SetEntityRegistration(-1);
     }
 }

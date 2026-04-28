@@ -4,7 +4,7 @@ public class EntityPlacerTool : BasePlacerTool
 {
     public EntityPlacerTool(WindowInstance windowRef) : base(windowRef)
     {
-        toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.instance, lastMousePosition));
+        this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.instance, this.lastMousePosition));
     }
 
     public override void SetVisuals()

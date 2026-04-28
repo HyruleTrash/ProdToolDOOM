@@ -12,13 +12,13 @@ public class Vector2
     public Vector2(Vector2 vector) : this(vector.x, vector.y) { }
     public Vector2(Microsoft.Xna.Framework.Point vector) : this(vector.X, vector.Y) { }
     
-    public float Magnitude => (float)Math.Sqrt(x * x + y * y);
+    public float Magnitude => (float)Math.Sqrt(this.x * this.x + this.y * this.y);
 
     public Vector2 Normalized
     {
         get
         {
-            float mag = Magnitude;
+            float mag = this.Magnitude;
             if (mag > 0f)
                 return new Vector2(this) / mag;
             return new Vector2(0f, 0f);
@@ -30,10 +30,10 @@ public class Vector2
     /// </summary>
     public void Normalize()
     {
-        var mag = Magnitude;
+        float mag = this.Magnitude;
         if (!(mag > 0f)) return;
-        x /= mag;
-        y /= mag;
+        this.x /= mag;
+        this.y /= mag;
     }
 
     public static Vector2 operator +(Vector2 a, Vector2 b) => new(a.x + b.x, a.y + b.y);
@@ -47,7 +47,7 @@ public class Vector2
     public static bool operator ==(Vector2 lhs, Vector2 rhs) => lhs.x == rhs.x && lhs.y == rhs.y;
     public static bool operator !=(Vector2 lhs, Vector2 rhs) => !(lhs == rhs);
 
-    public override string ToString() => $"[{x},{y}]";
+    public override string ToString() => $"[{this.x},{this.y}]";
 
     public static Vector2 FromString(string vector)
     {
@@ -75,7 +75,7 @@ public class Vector2
     
     protected bool Equals(Vector2 other)
     {
-        return x.Equals(other.x) && y.Equals(other.y);
+        return this.x.Equals(other.x) && this.y.Equals(other.y);
     }
 
     public override bool Equals(object? obj)
@@ -88,13 +88,13 @@ public class Vector2
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(x, y);
+        return HashCode.Combine(this.x, this.y);
     }
 
     public static float GetDistance(Vector2 a, Vector2 b)
     {
-        var dx = b.x - a.x;
-        var dy = b.y - a.y;
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
         return MathF.Sqrt(dx * dx + dy * dy);
     }
 

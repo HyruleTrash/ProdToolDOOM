@@ -30,78 +30,78 @@ public class DragComponent : IHoverable
     
     public void UpdateSize(Vector2 windowSize)
     {
-        selectionBox = new SelectionBox(new Vector2(windowSize.x / 2, (float)height / 2), windowSize.x, height);
-        if (rectangleVisual == null || lineRectangleVisual == null)
+        this.selectionBox = new SelectionBox(new Vector2(windowSize.x / 2, (float)height / 2), windowSize.x, height);
+        if (this.rectangleVisual == null || this.lineRectangleVisual == null)
             return;
-        rectangleVisual.Width = selectionBox.size.x;
-        lineRectangleVisual.Width = selectionBox.size.x;
+        this.rectangleVisual.Width = this.selectionBox.size.x;
+        this.lineRectangleVisual.Width = this.selectionBox.size.x;
     }
 
     public bool CheckHover(MouseState mouseState, float dt)
     {
-        var mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
-        var mousePos = new Vector2(mouseState.Position);
-        if ((mouseHeld && dragging) || (mouseHeld && selectionBox.IsInsideBounds(mousePos)))
+        bool mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
+        Vector2 mousePos = new Vector2(mouseState.Position);
+        if ((mouseHeld && this.dragging) || (mouseHeld && this.selectionBox.IsInsideBounds(mousePos)))
         {
-            Vector2 mouseScreen = mousePos + new Vector2(window.Position.X, window.Position.Y) - new Vector2((float)window.ClientBounds.Width / 2, (float)window.ClientBounds.Height / 2);
+            Vector2 mouseScreen = mousePos + new Vector2(this.window.Position.X, this.window.Position.Y) - new Vector2((float)this.window.ClientBounds.Width / 2, (float)this.window.ClientBounds.Height / 2);
             Drag(mouseScreen, dt);
             return true;
         }
-        
-        dragging = false;
+
+        this.dragging = false;
         return false;
     }
 
     private void Drag(Vector2 mousePos, float dt)
     {
-        if (!dragging)
+        if (!this.dragging)
         {
-            dragging = true;
-            firstMousePos = mousePos;
-            lastMousePos = mousePos;
-            firstWindowPos = new Vector2(window.Position.X, window.Position.Y);
+            this.dragging = true;
+            this.firstMousePos = mousePos;
+            this.lastMousePos = mousePos;
+            this.firstWindowPos = new Vector2(this.window.Position.X, this.window.Position.Y);
             return;
         }
         Program.instance.Mouse.SetVisual(MouseCursor.Hand, 10);
-        if (mousePos == lastMousePos)
+        if (mousePos == this.lastMousePos)
             return;
         
-        var delta = mousePos - firstMousePos;
+        Vector2 delta = mousePos - this.firstMousePos;
 
         if (delta.Magnitude >= 1)
         {
-            var newPos = firstWindowPos + delta;
-            window.Position = new Microsoft.Xna.Framework.Point((int)Math.Round(newPos.x), (int)Math.Round(newPos.y));
+            Vector2 newPos = this.firstWindowPos + delta;
+            this.window.Position = new Microsoft.Xna.Framework.Point((int)Math.Round(newPos.x), (int)Math.Round(newPos.y));
         }
-        
-        lastMousePos = mousePos;
+
+        this.lastMousePos = mousePos;
     }
 
     public void LoadUI()
     {
-        rectangleVisual = new ColoredRectangleRuntime
+        this.rectangleVisual = new ColoredRectangleRuntime
         {
-            Width = selectionBox.size.x,
+            Width = this.selectionBox.size.x,
             Height = height,
             Color = UIParams.defaultFillColor,
-            X = selectionBox.center.x
+            X = this.selectionBox.center.x
         };
-        rectangleVisual.Anchor(Anchor.Top);
-        
-        lineRectangleVisual = new RectangleRuntime
+        this.rectangleVisual.Anchor(Anchor.Top);
+
+        this.lineRectangleVisual = new RectangleRuntime
         {
-            Width = selectionBox.size.x,
+            Width = this.selectionBox.size.x,
             Height = height,
             Color = UIParams.defaultOutlineColor,
-            X = selectionBox.center.x,
+            X = this.selectionBox.center.x,
             LineWidth = UIParams.defaultOutLineWidth
         };
-        lineRectangleVisual.Anchor(Anchor.Top);
-        rectangleVisual.AddChild(lineRectangleVisual);
+        this.lineRectangleVisual.Anchor(Anchor.Top);
+        this.rectangleVisual.AddChild(this.lineRectangleVisual);
     }
     
     public void FinalizeUI()
     {
-        rectangleVisual.AddToRoot();
+        this.rectangleVisual.AddToRoot();
     }
 }

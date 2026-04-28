@@ -1,6 +1,7 @@
 ﻿using Accessibility;
 using Gum.Managers;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
 using ProdToolDOOM.ProjectFeatures;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
@@ -16,7 +17,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
     private ContainerRuntime? iconContainer;
     public int LevelId { get; set; }
     public int LevelObjectId { get; set; }
-    public Vector2 Position { get => position; set => position = value; }
+    public Vector2 Position { get => this.position; set => this.position = value; }
     
     private Texture2D pointTextureRef;
     private bool beingMoved = false;
@@ -28,44 +29,44 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
     {
         this.windowRef = windowRef;
         this.projectRef = projectRef;
-        position = point;
-        pointTextureRef  = pointTexture;
-        LevelObjectId = levelObjectId;
-        LevelId = levelId;
+        this.position = point;
+        this.pointTextureRef  = pointTexture;
+        this.LevelObjectId = levelObjectId;
+        this.LevelId = levelId;
 
-        iconContainer = new ContainerRuntime
+        this.iconContainer = new ContainerRuntime
         {
-            Width = pointTextureRef.Width,
-            Height = pointTextureRef.Height,
+            Width = this.pointTextureRef.Width,
+            Height = this.pointTextureRef.Height,
             IgnoredByParentSize = true
         };
-        icon = new SpriteRuntime
+        this.icon = new SpriteRuntime
         {
-            Texture = pointTextureRef,
+            Texture = this.pointTextureRef,
             TextureAddress = TextureAddress.Custom,
-            TextureWidth = pointTextureRef.Width,
-            TextureHeight = pointTextureRef.Height,
+            TextureWidth = this.pointTextureRef.Width,
+            TextureHeight = this.pointTextureRef.Height,
             IgnoredByParentSize = true,
             Visible = projectRef.CurrentLevel == levelId
         };
-        iconContainer.AddChild(icon);
-        selectedIcon = new SpriteRuntime
+        this.iconContainer.AddChild(this.icon);
+        this.selectedIcon = new SpriteRuntime
         {
-            Texture = pointTextureRef,
+            Texture = this.pointTextureRef,
             TextureAddress = TextureAddress.Custom,
-            TextureWidth = pointTextureRef.Width,
-            TextureHeight = pointTextureRef.Height,
+            TextureWidth = this.pointTextureRef.Width,
+            TextureHeight = this.pointTextureRef.Height,
             IgnoredByParentSize = true,
             Visible = false
         };
-        selectedIcon.Color = Color.Blue;
-        iconContainer.AddChild(selectedIcon);
+        this.selectedIcon.Color = Color.Blue;
+        this.iconContainer.AddChild(this.selectedIcon);
         
-        if (icon.Visible)
-            projectRef.canvasContainer.AddChild(iconContainer);
+        if (this.icon.Visible)
+            projectRef.canvasContainer.AddChild(this.iconContainer);
 
-        iconContainer.RightClick += HandleRightClick;
-        iconContainer.Dragging += HandleLeftClickHold;
+        this.iconContainer.RightClick += HandleRightClick;
+        this.iconContainer.Dragging += HandleLeftClickHold;
 
         UpdateVisualPosition(windowRef.GetWindowSize());
         windowRef.onScreenSizeChange += UpdateVisualPosition;
@@ -75,75 +76,73 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
 
     private void OnLevelChanged(int newLevelId)
     {
-        if (newLevelId != LevelId)
+        if (newLevelId != this.LevelId)
         {
-            if (icon != null) icon.Visible = false;
+            if (this.icon != null) this.icon.Visible = false;
             return;
         }
 
-        if (iconContainer is { Parent: null })
-            projectRef.canvasContainer.AddChild(iconContainer);
-        if (icon != null) icon.Visible = true;
+        if (this.iconContainer is { Parent: null }) this.projectRef.canvasContainer.AddChild(this.iconContainer);
+        if (this.icon != null) this.icon.Visible = true;
     }
 
     private void HandleLeftClickHold(object? _, EventArgs __)
     {
-        if (beingMoved) return;
-        beingMoved = true;
-        windowRef.Mouse.IsDragging = true;
+        if (this.beingMoved) return;
+        this.beingMoved = true;
+        this.windowRef.Mouse.IsDragging = true;
         Program.instance.UpdateRegister.Add(this);
     }
     
     private void HandleRightClick(object? _, EventArgs __)
     {
-        rightClickManager.instance.ShowOptions<Point>(new Vector2(windowRef.Mouse.currentMouseState.Position), this, 1);
+        rightClickManager.instance.ShowOptions<Point>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this, 1);
     }
 
     public void UpdateVisualPosition(Vector2 screenSize)
     {
-        if (icon == null) return;
-        iconContainer.X = Position.x - (float)pointTextureRef.Width / 2 + screenSize.x / 2;
-        iconContainer.Y = Position.y - (float)pointTextureRef.Height / 2 + screenSize.y / 2;
+        if (this.icon == null) return;
+        this.iconContainer.X = this.Position.x - (float)this.pointTextureRef.Width / 2 + screenSize.x / 2;
+        this.iconContainer.Y = this.Position.y - (float)this.pointTextureRef.Height / 2 + screenSize.y / 2;
     }
     
     public void Update(float dt, WindowInstance _)
     {
-        if (!beingMoved)
+        if (!this.beingMoved)
         {
             Program.instance.UpdateRegister.Remove(this);
-            windowRef.Mouse.IsDragging = false;
+            this.windowRef.Mouse.IsDragging = false;
             return;
         }
-        var mouse = windowRef.Mouse.currentMouseState;
-        if (mouse.LeftButton == ButtonState.Released)
-            beingMoved = false;
-        Position = windowRef.Mouse.GetMousePosition();
-        UpdateVisualPosition(windowRef.GetWindowSize());
+        MouseState mouse = this.windowRef.Mouse.currentMouseState;
+        if (mouse.LeftButton == ButtonState.Released) this.beingMoved = false;
+        this.Position = this.windowRef.Mouse.GetMousePosition();
+        UpdateVisualPosition(this.windowRef.GetWindowSize());
     }
 
     public void Dispose()
     {
-        if (icon != null) iconContainer.Parent = null;
+        if (this.icon != null) this.iconContainer.Parent = null;
     }
 
     public override void Hide()
     {
-        if (selectedIcon != null) selectedIcon.Visible = false;
-        if (icon != null) icon.Visible = false;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = false;
+        if (this.icon != null) this.icon.Visible = false;
     }
 
     public override void ShowSelectionVisual()
     {
-        if (selectedIcon != null) selectedIcon.Visible = true;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = true;
     }
 
     public override void HideSelectionVisual()
     {
-        if (selectedIcon != null) selectedIcon.Visible = false;
+        if (this.selectedIcon != null) this.selectedIcon.Visible = false;
     }
 
     public override string ToString()
     {
-        return $"Point [position: {Position}, id: {LevelObjectId}, levelId: {LevelId}]";
+        return $"Point [position: {this.Position}, id: {this.LevelObjectId}, levelId: {this.LevelId}]";
     }
 }

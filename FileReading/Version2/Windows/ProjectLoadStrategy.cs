@@ -17,8 +17,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
 
     private void SetExpectedData()
     {
-        expectedData.Clear();
-        expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
+        this.expectedData.Clear();
+        this.expectedData.Add(new ExpectedData() { name = "Project_Version", load = (XmlReader reader) =>
         {
             string version = reader.ReadElementContentAsString();
             switch (version)
@@ -27,19 +27,19 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     Debug.Log($"File project version: {version}");
                     break;
                 case "0.0.1":
-                    shouldQuit = true;
-                    foundVersion = version;
+                    this.shouldQuit = true;
+                    this.foundVersion = version;
                     return;
             }
         } });
-        expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
             Project.instance.entityDataIdCounter = counter;
         }});
-        expectedData.Add(new ExpectedEntityData(this)); 
-        expectedData.Add(new ExpectedLevelData(this));
-        expectedData.Add(new ExpectedData() { name = "Current_Level", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedEntityData(this));
+        this.expectedData.Add(new ExpectedLevelData(this));
+        this.expectedData.Add(new ExpectedData() { name = "Current_Level", load = (XmlReader reader) =>
         {
             int levelId = reader.ReadElementContentAsInt();
             Project.instance.CurrentLevel = levelId;
@@ -48,53 +48,53 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     
     public bool Load(string path)
     {
-        shouldQuit = false;
-        foundVersion = null;
+        this.shouldQuit = false;
+        this.foundVersion = null;
         SetExpectedData();
         
         if (path == string.Empty || path == null)
             return false;
         try
         {
-            using var archive = ZipFile.OpenRead(path);
-            foreach (var entry in archive.Entries)
+            using ZipArchive archive = ZipFile.OpenRead(path);
+            foreach (ZipArchiveEntry entry in archive.Entries)
             {
                 if (entry.Name != "projectData.xml") continue;
-                using var reader = XmlReader.Create(entry.Open());
+                using XmlReader reader = XmlReader.Create(entry.Open());
                 Project.instance.ResetData();
-                ReadData(reader, new(expectedData));
+                ReadData(reader, new(this.expectedData));
 
-                if (shouldQuit)
+                if (this.shouldQuit)
                 {
-                    Debug.Log($"old version encountered {foundVersion}");
-                    return VersionManager.LoadUsingOldStrategy(foundVersion, path);
+                    Debug.Log($"old version encountered {this.foundVersion}");
+                    return VersionManager.LoadUsingOldStrategy(this.foundVersion, path);
                 }
                 
                 // TODO remove this
                 Debug.Log($"Levels: {Project.instance.levels.Count}");
-                foreach (var level in Project.instance.levels)
+                foreach (Level level in Project.instance.levels)
                 {
                     Debug.Log(" Level:");
                     Debug.Log("  Entities:");
-                    foreach (var entity in level.Entities)
+                    foreach (Entity entity in level.Entities)
                     {
                         Debug.Log("   Entity:");
                         Debug.Log($"    id: {entity.DataId}");
                         Debug.Log($"    position: {entity.Position}");
                     }
                     Debug.Log("  Points:");
-                    foreach (var point in level.Points)
+                    foreach (Point point in level.Points)
                     {
                         Debug.Log($"   Point: {point}");
                     }
                     Debug.Log("  Lines:");
-                    foreach (var line in level.Lines)
+                    foreach (Line line in level.Lines)
                     {
                         Debug.Log($"   Line: {line.Id} to {line.IdOther}");
                     }
                 }
                 Debug.Log($"EntityData: {Project.instance.entityDatas.Count}");
-                foreach (var data in Project.instance.entityDatas)
+                foreach (KeyValuePair<int, EntityData> data in Project.instance.entityDatas)
                 {
                     Debug.Log(" EntityData:");
                     Debug.Log($"  Id: {data.Key}");
@@ -127,9 +127,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         
         while (reader.Read())
         {
-            foreach (var dataInstance in searchData)
+            foreach (ExpectedData dataInstance in searchData)
             {
-                if (shouldQuit)
+                if (this.shouldQuit)
                     return;
                 
                 if (dataInstance.stopAt != null && reader.NodeType == XmlNodeType.EndElement &&
@@ -171,7 +171,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     
         while (reader.Read())
         {
-            if (shouldQuit)
+            if (this.shouldQuit)
                 return;
             if (reader.NodeType == XmlNodeType.EndElement && !reader.Name.Contains("Entry") &&
                 reader.Name.Contains(collectionData.collectionName))
@@ -180,7 +180,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 break;
             }
                         
-            var foundEntry = ReadCollectionEntry(reader, collectionData, dataInstance);
+            bool foundEntry = ReadCollectionEntry(reader, collectionData, dataInstance);
             if (foundEntry && collectionData.collectionIndex == collectionData.collectionCount)
             {
                 Debug.Log($"Collection read finished (count) {collectionData.collectionName}");

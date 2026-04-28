@@ -12,8 +12,8 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         if (path == string.Empty)
             return false;
 
-        var usedPath = path;
-        var exists = File.Exists(path);
+        string usedPath = path;
+        bool exists = File.Exists(path);
         if (exists)
         {
             usedPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\" + $"tempSave{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}.wapd";
@@ -21,9 +21,9 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         
         try
         {
-            using (var archive = ZipFile.Open(usedPath, ZipArchiveMode.Create))
+            using (ZipArchive archive = ZipFile.Open(usedPath, ZipArchiveMode.Create))
             {
-                var entry = archive.CreateEntry("projectData.xml");
+                ZipArchiveEntry entry = archive.CreateEntry("projectData.xml");
                 WriteProjectData(entry.Open());
             }
 
@@ -43,7 +43,7 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
 
     private void WriteProjectData(Stream output)
     {
-        using var writer = XmlWriter.Create(output);
+        using XmlWriter writer = XmlWriter.Create(output);
         writer.WriteStartDocument();
         writer.WriteStartElement("root");
             

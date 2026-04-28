@@ -10,7 +10,7 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
 
     public ExpectedLinesData(ExpectedLevelData referenceLevelData)
     {
-        name = "Lines";
+        this.name = "Lines";
         this.referenceLevelData = referenceLevelData;
     }
     
@@ -19,23 +19,22 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        line ??= new(Project.instance);
+        this.line ??= new(Project.instance);
         
         if (reader.Name == "Id")
-            line.Id = reader.ReadElementContentAsInt();
+            this.line.Id = reader.ReadElementContentAsInt();
         else if (reader.Name == "IdOther")
-            line.IdOther = reader.ReadElementContentAsInt();
-        else if (reader.Name == "LevelId")
-            line.LevelId = reader.ReadElementContentAsInt();
+            this.line.IdOther = reader.ReadElementContentAsInt();
+        else if (reader.Name == "LevelId") this.line.LevelId = reader.ReadElementContentAsInt();
     }
 
     public void saveEntry()
     {
-        if (line == null)
+        if (this.line == null)
             return;
-        Debug.Log($"Saving line: {line}");
-        var projectRef = Project.instance;
-        referenceLevelData.level.Add(new Line(projectRef, line));
+        Debug.Log($"Saving line: {this.line}");
+        Project projectRef = Project.instance;
+        this.referenceLevelData.level.Add(new Line(projectRef, this.line));
     }
 }
 #endif

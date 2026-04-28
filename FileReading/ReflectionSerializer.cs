@@ -12,7 +12,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
     public void Serialize(T obj, TU writer)
     {
         #if WINDOWS
-        var type = typeof(T);
+        Type type = typeof(T);
 
         if (type == typeof(Vector2))
         {
@@ -49,9 +49,9 @@ public class ReflectionSerializer<T, TU> where T : notnull
         }
 
         writer.WriteStartElement(type.Name);
-        foreach (var prop in type.GetProperties())
+        foreach (PropertyInfo prop in type.GetProperties())
         {
-            var value = prop.GetValue(obj);
+            object? value = prop.GetValue(obj);
 
             if (value == null) continue;
 
@@ -96,7 +96,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
         Type elementType = type.GetGenericArguments()[0];
                 
         // new ReflectionSerializer, with T being elementType, and U remaining the same
-        var serializerType = typeof(ReflectionSerializer<,>)
+        Type serializerType = typeof(ReflectionSerializer<,>)
             .MakeGenericType(elementType, typeof(TU));
                 
         object? serializerInstance = Activator.CreateInstance(serializerType);
@@ -116,12 +116,12 @@ public class ReflectionSerializer<T, TU> where T : notnull
 
     private bool CheckIfDictionary(object value, string propName, TU writer, Type type)
     {
-        var arguments = type.GetGenericArguments();
+        Type[] arguments = type.GetGenericArguments();
         if (type.GetGenericTypeDefinition() != typeof(Dictionary<,>) || arguments.Length != 2) return false;
         if (value is not IDictionary dict || dict.Count <= 0) return false;
                 
         // new ReflectionSerializer, with T being redundant, and U remaining the same
-        var serializerType = typeof(ReflectionSerializer<,>).MakeGenericType(typeof(object), typeof(TU));
+        Type serializerType = typeof(ReflectionSerializer<,>).MakeGenericType(typeof(object), typeof(TU));
         object? serializerInstance = Activator.CreateInstance(serializerType);
                 
         // Then Trigger SerializeDictionary inside that, passing along dict, with prop.Name and writer
@@ -146,7 +146,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
         writer.WriteStartAttribute("count");
         writer.WriteValue(list.Count);
         writer.WriteEndAttribute();
-        foreach (var instance in list)
+        foreach (T instance in list)
         {
             writer.WriteStartElement($"{name}_Entry");
             new ReflectionSerializer<T, TU>().Serialize(instance, writer);
@@ -166,12 +166,12 @@ public class ReflectionSerializer<T, TU> where T : notnull
         writer.WriteValue(dict.Count);
         writer.WriteEndAttribute();
         
-        var dictTypes = dict.GetType().GetGenericArguments();
+        Type[] dictTypes = dict.GetType().GetGenericArguments();
         Type dictKeyType = dictTypes[0];
         Type dictValueType = dictTypes[1];
             
         // new ReflectionSerializer, with T being KeyType, and U remaining the same
-        var serializerType = typeof(ReflectionSerializer<,>).MakeGenericType(dictKeyType, typeof(TU));
+        Type serializerType = typeof(ReflectionSerializer<,>).MakeGenericType(dictKeyType, typeof(TU));
         object? serializerInstance = Activator.CreateInstance(serializerType);
         MethodInfo? serializeMethod = serializerType.GetMethod(
             nameof(Serialize),
@@ -182,7 +182,7 @@ public class ReflectionSerializer<T, TU> where T : notnull
         );
             
         // new ReflectionSerializer, with T being dictValueType, and U remaining the same
-        var serializerTypeValue = typeof(ReflectionSerializer<,>).MakeGenericType(dictValueType, typeof(TU));
+        Type serializerTypeValue = typeof(ReflectionSerializer<,>).MakeGenericType(dictValueType, typeof(TU));
         object? serializerInstanceValue = Activator.CreateInstance(serializerTypeValue);
         MethodInfo? serializeMethodValue = serializerTypeValue.GetMethod(
             nameof(Serialize),

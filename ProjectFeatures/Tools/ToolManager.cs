@@ -20,42 +20,42 @@ public class ToolManager : IBaseUpdatable
 
     public void SetTool(ITool tool)
     {
-        CurrentTool?.UnEquip();
-        if (CurrentTool is not null && CurrentTool == tool)
+        this.CurrentTool?.UnEquip();
+        if (this.CurrentTool is not null && this.CurrentTool == tool)
         {
-            CurrentTool = null;
+            this.CurrentTool = null;
             return;
-        }  
-        CurrentTool = tool;
+        }
+
+        this.CurrentTool = tool;
         tool.SetVisuals();
     }
     
     public void SetTool(Type tool)
     {
-        if (!tools.TryGetValue(tool, out var foundTool)) return;
+        if (!tools.TryGetValue(tool, out ITool? foundTool)) return;
         SetTool(foundTool);
     }
 
     public void Update(float dt, WindowInstance windowRef)
     {
-        var mouse = windowRef.Mouse.currentMouseState;
+        MouseState mouse = windowRef.Mouse.currentMouseState;
         
-        var released = mouse.LeftButton == ButtonState.Released;
-        var pressed = mouse.LeftButton == ButtonState.Pressed;
+        bool released = mouse.LeftButton == ButtonState.Released;
+        bool pressed = mouse.LeftButton == ButtonState.Pressed;
         
-        if (!wasPressed && pressed)
-            wasPressed = true;
+        if (!this.wasPressed && pressed) this.wasPressed = true;
 
-        if (wasPressed && !windowRef.Mouse.isDragSelecting)
+        if (this.wasPressed && !windowRef.Mouse.isDragSelecting)
         {
-            if (CurrentTool is not null && released)
+            if (this.CurrentTool is not null && released)
             {
-                CurrentTool?.Call(mouse);
-                wasPressed = false;
+                this.CurrentTool?.Call(mouse);
+                this.wasPressed = false;
                 windowRef.Mouse.dragSelect?.Reset();
             }
         }
 
-        CurrentTool?.Update(dt, windowRef);
+        this.CurrentTool?.Update(dt, windowRef);
     }
 }

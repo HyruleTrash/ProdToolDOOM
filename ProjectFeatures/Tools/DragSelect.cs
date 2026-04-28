@@ -16,13 +16,13 @@ public class DragSelect : IBaseUpdatable
 
     public DragSelect()
     {
-        visual.LineWidth = UIParams.defaultOutLineWidth;
-        visual.IsDotted = true;
-        visual.Color = UIParams.selectionColor;
-        visual.Width = 0;
-        visual.Height = 0;
-        visual.Anchor(Anchor.Center);
-        visual.AddToRoot();
+        this.visual.LineWidth = UIParams.defaultOutLineWidth;
+        this.visual.IsDotted = true;
+        this.visual.Color = UIParams.selectionColor;
+        this.visual.Width = 0;
+        this.visual.Height = 0;
+        this.visual.Anchor(Anchor.Center);
+        this.visual.AddToRoot();
         
         rightClickManager.instance.AddOptions<DragSelect>([
             new rightClickManager.RightClickOption(
@@ -42,15 +42,15 @@ public class DragSelect : IBaseUpdatable
     /// <returns>list of objects in current drag selection</returns>
     public T[] GetSelectedObjects<T>(bool shouldRemove = false) where T : Level.Object
     {
-        T[] result = selectedObjects.OfType<T>().ToArray();
+        T[] result = this.selectedObjects.OfType<T>().ToArray();
         
         if (!shouldRemove)
             return result;
-        var newSelection = selectedObjects.ToList();
-        foreach (var obj in selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
-        selectedObjects = newSelection;
+        List<Level.Object> newSelection = this.selectedObjects.ToList();
+        foreach (Level.Object obj in this.selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
+        this.selectedObjects = newSelection;
         
-        if (selectedObjects.Count == 0) 
+        if (this.selectedObjects.Count == 0) 
             UnSelect();
         
         return result;
@@ -65,72 +65,73 @@ public class DragSelect : IBaseUpdatable
     {
         if (Project.instance.levels.Count == 0 || windowRef.Mouse.IsDragging)
             return false;
-        var lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
-        
-        levelRef ??= Project.instance.levels[Project.instance.CurrentLevel];
-        firstMousePos ??= new Vector2(lastMousePos);
-        
-        float width = Math.Abs(firstMousePos.x - lastMousePos.x);
-        float height = Math.Abs(firstMousePos.y - lastMousePos.y);
-        
-        var direction = (lastMousePos - firstMousePos).Normalized;
-        selectionBox.center = firstMousePos + new Vector2(direction.x * width / 2, direction.y * height / 2);
-        selectionBox.size = new Vector2(width, height);
+        Vector2 lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
 
-        visual.Width = width;
-        visual.Height = height;
-        visual.X = selectionBox.center.x;
-        visual.Y = selectionBox.center.y;
+        this.levelRef ??= Project.instance.levels[Project.instance.CurrentLevel];
+        this.firstMousePos ??= new Vector2(lastMousePos);
+        
+        float width = Math.Abs(this.firstMousePos.x - lastMousePos.x);
+        float height = Math.Abs(this.firstMousePos.y - lastMousePos.y);
+        
+        Vector2 direction = (lastMousePos - this.firstMousePos).Normalized;
+        this.selectionBox.center = this.firstMousePos + new Vector2(direction.x * width / 2, direction.y * height / 2);
+        this.selectionBox.size = new Vector2(width, height);
 
-        visual.Visible = selectionBox.size.Magnitude > 10;
+        this.visual.Width = width;
+        this.visual.Height = height;
+        this.visual.X = this.selectionBox.center.x;
+        this.visual.Y = this.selectionBox.center.y;
 
-        foreach (var obj in levelRef.levelObjects)
+        this.visual.Visible = this.selectionBox.size.Magnitude > 10;
+
+        foreach (var obj in this.levelRef.levelObjects)
         {
             if (obj is null || obj.position is null)
                 continue;
-            var isSelected = selectionBox.IsInsideBounds(obj.position);
-            if (selectedObjects.Contains(obj))
+            bool isSelected = this.selectionBox.IsInsideBounds(obj.position);
+            if (this.selectedObjects.Contains(obj))
             {
                 if (isSelected) continue;
-                selectedObjects.Remove(obj);
+                this.selectedObjects.Remove(obj);
                 obj.HideSelectionVisual();
             }
             else if (isSelected)
             {
-                selectedObjects.Add(obj);
+                this.selectedObjects.Add(obj);
                 obj.ShowSelectionVisual();
             }
         }
         
-        return visual.Visible;
+        return this.visual.Visible;
     }
 
     public void Reset()
     {
-        levelRef = null;
-        firstMousePos = null;
+        this.levelRef = null;
+        this.firstMousePos = null;
     }
 
     public void UnSelect()
     {
         Reset();
-        foreach (var obj in selectedObjects)
+        foreach (var obj in this.selectedObjects)
         {
             if (obj is not null)
                 obj.HideSelectionVisual();
         }
-        selectedObjects.Clear();
 
-        visual.Visible = false;
+        this.selectedObjects.Clear();
+
+        this.visual.Visible = false;
     }
     
     public void Update(float dt, WindowInstance windowRef)
     {
-        var mouse = windowRef.Mouse.currentMouseState;
-        if (selectedObjects.Count == 0) return;
-        var mousePos = new Vector2(mouse.Position) -
-                       new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
-        if (mouse.RightButton == ButtonState.Pressed && selectionBox.IsInsideBounds(mousePos))
+        MouseState mouse = windowRef.Mouse.currentMouseState;
+        if (this.selectedObjects.Count == 0) return;
+        Vector2 mousePos = new Vector2(mouse.Position) -
+                           new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
+        if (mouse.RightButton == ButtonState.Pressed && this.selectionBox.IsInsideBounds(mousePos))
         {
             mousePos = new Vector2(mouse.Position);
             rightClickManager.instance.ShowOptions<DragSelect>(mousePos, this, 2);

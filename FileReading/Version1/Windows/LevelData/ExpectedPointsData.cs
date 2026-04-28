@@ -12,7 +12,7 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
 
     public ExpectedPointsData(ExpectedLevelData referenceLevelData)
     {
-        name = "Points";
+        this.name = "Points";
         this.referenceLevelData = referenceLevelData;
     }
     
@@ -23,19 +23,19 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
 
         if (reader.Name == "Vector2")
         {
-            vector2 = Vector2.FromString(reader.ReadElementContentAsString());
-            Debug.Log($"Registering point: {vector2}");
+            this.vector2 = Vector2.FromString(reader.ReadElementContentAsString());
+            Debug.Log($"Registering point: {this.vector2}");
         }
     }
 
     public void saveEntry()
     {
-        Debug.Log($"Saving point: {vector2}");
-        pointTexture ??= Program.instance.Content.Load<Texture2D>("Icons/Point");
-        var projectRef = Project.instance;
-        var levelId = projectRef.levels.Count;
-        referenceLevelData.level.Add(new Point(vector2, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, Program.instance, projectRef));
-        vector2 = new Vector2();
+        Debug.Log($"Saving point: {this.vector2}");
+        this.pointTexture ??= Program.instance.Content.Load<Texture2D>("Icons/Point");
+        Project projectRef = Project.instance;
+        int levelId = projectRef.levels.Count;
+        this.referenceLevelData.level.Add(new Point(this.vector2, this.pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, Program.instance, projectRef));
+        this.vector2 = new Vector2();
     }
 }
 #endif

@@ -13,12 +13,12 @@ public class Level
         public abstract void HideSelectionVisual();
     }
     
-    public int IdCounter { get => levelObjectIdCounter; }
-    public List<Entity> Entities { get => entities; set => entities = value; }
+    public int IdCounter { get => this.levelObjectIdCounter; }
+    public List<Entity> Entities { get => this.entities; set => this.entities = value; }
     private List<Entity> entities = [];
     
-    public List<Point> Points { get => points; }
-    public List<Line> Lines { get => lines; }
+    public List<Point> Points { get => this.points; }
+    public List<Line> Lines { get => this.lines; }
     
     private List<Point> points = [];
     private List<Line> lines = [];
@@ -30,26 +30,26 @@ public class Level
     {
         if (other == null)
             return;
-        entities = other.Entities;
-        points = other.Points;
-        lines = other.Lines;
+        this.entities = other.Entities;
+        this.points = other.Points;
+        this.lines = other.Lines;
     }
 
     public void Add(Object? levelObject)
     {
         if (levelObject == null)
             return;
-        levelObjects.Add(levelObject);
+        this.levelObjects.Add(levelObject);
         switch (levelObject)
         {
             case Entity entity:
-                entities.Add(entity);
+                this.entities.Add(entity);
                 break;
             case Point point:
-                points.Add(point);
+                this.points.Add(point);
                 break;
             case Line line:
-                lines.Add(line);
+                this.lines.Add(line);
                 break;
         }
     }
@@ -58,23 +58,23 @@ public class Level
     {
         if (levelObject == null)
             return;
-        levelObjects.Remove(levelObject);
+        this.levelObjects.Remove(levelObject);
         switch (levelObject)
         {
             case Entity entity:
-                entities.Remove(entity);
+                this.entities.Remove(entity);
                 break;
             case Point point:
-                points.Remove(point);
+                this.points.Remove(point);
                 break;
             case Line line:
-                lines.Remove(line);
+                this.lines.Remove(line);
                 break;
         }
     }
 
     public Point? GetPointById(int id)
     {
-        return points.FirstOrDefault(point => point.LevelObjectId == id);
+        return this.points.FirstOrDefault(point => point.LevelObjectId == id);
     }
 }

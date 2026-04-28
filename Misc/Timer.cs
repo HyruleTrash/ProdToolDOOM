@@ -12,50 +12,50 @@ public class Timer
     {
         this.maxTime = maxTime;
         this.onEnd = onEnd;
-        running = true;
+        this.running = true;
     }
         
     public Timer(float maxTime)
     {
         this.maxTime = maxTime;
-        running = true;
+        this.running = true;
     }
         
     public void Reset()
     {
-        currentTime = 0;
-        running = true;
+        this.currentTime = 0;
+        this.running = true;
     }
 
     public void Update(double dt)
     {
-        if (!running)
+        if (!this.running)
             return;
-        currentTime += dt;
-        onPlaying?.Invoke(currentTime);
+        this.currentTime += dt;
+        this.onPlaying?.Invoke(this.currentTime);
         CheckIfEndIsReached();
     }
 
     private void CheckIfEndIsReached()
     {
-        if (!(currentTime >= maxTime)) return;
-        onEnd?.Invoke();
-        running = false;
+        if (!(this.currentTime >= this.maxTime)) return;
+        this.onEnd?.Invoke();
+        this.running = false;
     }
 
     public double GetCurrentTime()
     {
-        return currentTime;
+        return this.currentTime;
     }
         
     private static string GetFormattedTime(double time)
     {
-        var timeSpan = TimeSpan.FromSeconds(time);
+        TimeSpan timeSpan = TimeSpan.FromSeconds(time);
         return $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
     }
         
     public string GetFormattedTime(bool countDown = false)
     {
-        return countDown ? GetFormattedTime(maxTime - currentTime) : GetFormattedTime(currentTime);
+        return countDown ? GetFormattedTime(this.maxTime - this.currentTime) : GetFormattedTime(this.currentTime);
     }
 }

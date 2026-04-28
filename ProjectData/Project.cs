@@ -18,12 +18,11 @@ public class Project
     public IProjectLoadStrategy? loadStrat;
     public string FilePath
     {
-        get => filePath;
+        get => this.filePath;
         set
         {
-            if (filePath != value)
-                filePathChanged.Invoke(value);
-            filePath = value;
+            if (this.filePath != value) this.filePathChanged.Invoke(value);
+            this.filePath = value;
         }
     }
     private string filePath = string.Empty;
@@ -35,12 +34,11 @@ public class Project
 
     public int CurrentLevel
     {
-        get => currentLevel;
+        get => this.currentLevel;
         set
         {
-            if (currentLevel != value)
-                onCurrentLevelChanged?.Invoke(value);
-            currentLevel = value;
+            if (this.currentLevel != value) this.onCurrentLevelChanged?.Invoke(value);
+            this.currentLevel = value;
         }
     }
     private int currentLevel = -1;
@@ -58,17 +56,17 @@ public class Project
     public Project(GumService gum)
     {
         this.gum = gum;
-        filePathChanged = newPath => { Debug.Log($"FilePathChanged: {newPath}"); };
-        projectFeatures =
+        this.filePathChanged = newPath => { Debug.Log($"FilePathChanged: {newPath}"); };
+        this.projectFeatures =
         [
             new LoadFeature(this), 
             new SaveNewFeature(this)
         ];
-        inProjectFeatures =
+        this.inProjectFeatures =
         [
             new SaveFeature(this)
         ];
-        toolBar = new ToolBarFeature(gum, this);
+        this.toolBar = new ToolBarFeature(gum, this);
     }
 
     /// <summary>
@@ -77,10 +75,9 @@ public class Project
     /// <returns>true if strategy is unset, false if it is set</returns>
     public bool CheckLoadStrategy()
     {
-        if (loadStrat == null)
-            loadStrat = new ProjectLoadStrategy();
+        if (this.loadStrat == null) this.loadStrat = new ProjectLoadStrategy();
 
-        return loadStrat == null;
+        return this.loadStrat == null;
     }
 
     /// <summary>
@@ -89,69 +86,68 @@ public class Project
     /// <returns>true if strategy is unset, false if it is set</returns>
     public bool CheckSaveStrategy()
     {
-        if (saveStrat == null)
-            saveStrat = new ProjectSaveStrategy();
+        if (this.saveStrat == null) this.saveStrat = new ProjectSaveStrategy();
 
-        return saveStrat == null;
+        return this.saveStrat == null;
     }
 
     public void LoadUI(StackPanel mainPanel)
     {
-        foreach (var projectFeature in projectFeatures)
+        foreach (ProjectFeature projectFeature in this.projectFeatures)
         {
             projectFeature.LoadUI(mainPanel);
         }
-        
-        inProjectStack = new StackPanel
+
+        this.inProjectStack = new StackPanel
         {
             IsVisible = false
         };
-        filePathChanged += (newPath) => { inProjectStack.IsVisible = newPath != string.Empty; };
-        mainPanel.AddChild(inProjectStack);
+        this.filePathChanged += (newPath) => { this.inProjectStack.IsVisible = newPath != string.Empty; };
+        mainPanel.AddChild(this.inProjectStack);
         
-        foreach (var projectFeature in inProjectFeatures)
+        foreach (ProjectFeature projectFeature in this.inProjectFeatures)
         {
-            projectFeature.LoadUI(inProjectStack);
+            projectFeature.LoadUI(this.inProjectStack);
         }
 
-        canvasContainer = new ContainerRuntime
+        this.canvasContainer = new ContainerRuntime
         {
-            Width = gum.CanvasWidth,
-            Height = gum.CanvasHeight,
+            Width = this.gum.CanvasWidth,
+            Height = this.gum.CanvasHeight,
             X = 0,
             Y = 0,
         };
-        canvasContainer.AddToRoot();
+        this.canvasContainer.AddToRoot();
 
         // Tools
-        toolContainer = new ContainerRuntime
+        this.toolContainer = new ContainerRuntime
         {
-            Width = gum.CanvasWidth,
-            Height = gum.CanvasHeight,
+            Width = this.gum.CanvasWidth,
+            Height = this.gum.CanvasHeight,
             X = 0,
             Y = 0,
             Visible = false
         };
-        filePathChanged += (newPath) => { toolContainer.Visible = newPath != string.Empty; };
-        toolContainer.AddToRoot();
+        this.filePathChanged += (newPath) => { this.toolContainer.Visible = newPath != string.Empty; };
+        this.toolContainer.AddToRoot();
         
         Program.instance.onScreenSizeChange += size =>
         {
-            canvasContainer.Width = size.x;
-            canvasContainer.Height = size.y;
-            toolContainer.Width = size.x;
-            toolContainer.Height = size.y;
+            this.canvasContainer.Width = size.x;
+            this.canvasContainer.Height = size.y;
+            this.toolContainer.Width = size.x;
+            this.toolContainer.Height = size.y;
         };
 
-        toolBar.LoadUI(toolContainer);
+        this.toolBar.LoadUI(this.toolContainer);
     }
 
     public void ResetData()
     {
-        levels = new();
-        entityDatas = new();
-        CurrentLevel = -1;
+        this.levels = new();
+        this.entityDatas = new();
+        this.CurrentLevel = -1;
         Program.instance.cmdHistory.Reset();
-        canvasContainer.Children?.Clear();
+        this.canvasContainer.Children?.Clear();
     }
 }

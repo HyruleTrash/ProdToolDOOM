@@ -44,39 +44,39 @@ public class WindowInstance : Game
 
     protected WindowInstance()
     {
-        graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        
-        IsMouseVisible = true;
-        Window.IsBorderless = true;
-        Window.AllowUserResizing = true;
+        this.graphics = new GraphicsDeviceManager(this);
+        this.Content.RootDirectory = "Content";
 
-        onScreenSizeChange += windowSize =>
+        this.IsMouseVisible = true;
+        this.Window.IsBorderless = true;
+        this.Window.AllowUserResizing = true;
+
+        this.onScreenSizeChange += windowSize =>
         {
-            gum.CanvasWidth = windowSize.x;
-            gum.CanvasHeight = windowSize.y;
-            resizeComponent?.ResizeSelectionBoxData(windowSize);
-            dragComponent?.UpdateSize(windowSize);
+            this.gum.CanvasWidth = windowSize.x;
+            this.gum.CanvasHeight = windowSize.y;
+            this.resizeComponent?.ResizeSelectionBoxData(windowSize);
+            this.dragComponent?.UpdateSize(windowSize);
         };
 
-        UpdateRegister = [];
-        Mouse = new Mouse(this);
-        UpdateRegister.Add(Mouse);
+        this.UpdateRegister = [];
+        this.Mouse = new Mouse(this);
+        this.UpdateRegister.Add(this.Mouse);
     }
 
-    protected void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => shortcutManager.AddShortCuts(shortcuts);
+    protected void SetShortcuts(ShortcutManager.ShortCut[] shortcuts) => this.shortcutManager.AddShortCuts(shortcuts);
     
     protected override void Initialize()
     {
-        gum.Initialize(this);
+        this.gum.Initialize(this);
         base.Initialize();
         
-        var windowSize = new Vector2(gum.CanvasWidth, gum.CanvasHeight);
-        resizeComponent = new Window.ResizeComponent(windowSize, graphics, Window);
-        dragComponent = new Window.DragComponent(windowSize, Window);
+        Vector2 windowSize = new Vector2(this.gum.CanvasWidth, this.gum.CanvasHeight);
+        this.resizeComponent = new Window.ResizeComponent(windowSize, this.graphics, this.Window);
+        this.dragComponent = new Window.DragComponent(windowSize, this.Window);
 
-        shortcutManager = new ShortcutManager();
-        UpdateRegister.Add(shortcutManager);
+        this.shortcutManager = new ShortcutManager();
+        this.UpdateRegister.Add(this.shortcutManager);
 
         LoadUIContainers();
         LoadUI();
@@ -85,177 +85,176 @@ public class WindowInstance : Game
     
     protected override void LoadContent()
     {
-        closeIcon = Content.Load<Texture2D>("Icons/Cross");
-        minimizeIcon = Content.Load<Texture2D>("Icons/Minimize");
-        maximizeIcon = Content.Load<Texture2D>("Icons/Expand");
+        this.closeIcon = this.Content.Load<Texture2D>("Icons/Cross");
+        this.minimizeIcon = this.Content.Load<Texture2D>("Icons/Minimize");
+        this.maximizeIcon = this.Content.Load<Texture2D>("Icons/Expand");
     }
 
     private void LoadUIContainers()
     {
-        dragComponent.LoadUI();
-        
-        topBarRight = new StackPanel
+        this.dragComponent.LoadUI();
+
+        this.topBarRight = new StackPanel
         {
             Visual =
             {
                 ChildrenLayout = Gum.Managers.ChildrenLayout.LeftToRightStack
             },
-            X = gum.CanvasWidth - UIParams.borderPadding,
+            X = this.gum.CanvasWidth - UIParams.borderPadding,
             Y = UIParams.borderPadding
         };
-        topBarRight.Anchor(Anchor.TopRight);
-        
-        topBarLeft = new StackPanel
+        this.topBarRight.Anchor(Anchor.TopRight);
+
+        this.topBarLeft = new StackPanel
         {
             X = UIParams.borderPadding,
             Y = UIParams.borderPadding
         };
-        topBarLeft.Anchor(Anchor.TopLeft);
+        this.topBarLeft.Anchor(Anchor.TopLeft);
     }
     
     protected virtual void LoadUI()
     {
-        var exitButton = new Button
+        Button exitButton = new Button
         {
             Text = "X",
             Width = UIParams.minBoxSize,
             Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(exitButton);
-        UIParams.AddIconToButton(exitButton, closeIcon);
+        UIParams.AddIconToButton(exitButton, this.closeIcon);
         exitButton.Click += (_, _) => Exit();
         
-        var minimizeButton = new Button
+        Button minimizeButton = new Button
         {
             Text = "",
             Width = UIParams.minBoxSize,
             Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(minimizeButton);
-        UIParams.AddIconToButton(minimizeButton, minimizeIcon);
+        UIParams.AddIconToButton(minimizeButton, this.minimizeIcon);
         minimizeButton.Click += (_, _) =>
         {
-            var handle = Window.Handle;
+            IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
             ProdToolDOOM.Window.Helper.Minimize(handle);
         };
         
-        var maximizeButton = new Button
+        Button maximizeButton = new Button
         {
             Text = "",
             Width = UIParams.minBoxSize,
             Height = UIParams.minBoxSize,
         };
         UIParams.SetDefaultButton(maximizeButton);
-        UIParams.AddIconToButton(maximizeButton, maximizeIcon);
+        UIParams.AddIconToButton(maximizeButton, this.maximizeIcon);
         maximizeButton.Click += (_, _) =>
         {
-            var handle = Window.Handle;
+            IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
 
-            if (Fullscreen)
+            if (this.Fullscreen)
             {
                 ProdToolDOOM.Window.Helper.UnMaximize(handle);
-                Fullscreen = false;
+                this.Fullscreen = false;
             }
             else
             {
                 ProdToolDOOM.Window.Helper.Maximize(handle);
-                Fullscreen = true;
+                this.Fullscreen = true;
             }
 
-            shouldCallOnScreenSizeChanged = true;
+            this.shouldCallOnScreenSizeChanged = true;
         };
-        topBarRight.AddChild(maximizeButton);
-        topBarRight.AddChild(minimizeButton);
-        topBarRight.AddChild(exitButton);
+        this.topBarRight.AddChild(maximizeButton);
+        this.topBarRight.AddChild(minimizeButton);
+        this.topBarRight.AddChild(exitButton);
     }
 
     private void FinalizeUI()
     {
-        dragComponent?.FinalizeUI();
-        topBarRight.AddToRoot();
-        topBarLeft.AddToRoot();
-        
-        rightClickManager = new();
-        UpdateRegister.Add(rightClickManager);
+        this.dragComponent?.FinalizeUI();
+        this.topBarRight.AddToRoot();
+        this.topBarLeft.AddToRoot();
+
+        this.rightClickManager = new();
+        this.UpdateRegister.Add(this.rightClickManager);
     }
     
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(UIParams.canvasColor);
-        gum.Draw();
+        this.GraphicsDevice.Clear(UIParams.canvasColor);
+        this.gum.Draw();
         base.Draw(gameTime);
     }
     
     protected override void Update(GameTime gameTime)
     {
-        KeyboardState = Keyboard.GetState();
-        dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Mouse.currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        this.KeyboardState = Keyboard.GetState();
+        this.dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        this.Mouse.currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            KeyboardState.IsKeyDown(Keys.Escape))
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || this.KeyboardState.IsKeyDown(Keys.Escape))
             Exit();
 
-        gum.Update(gameTime);
+        this.gum.Update(gameTime);
         base.Update(gameTime);
 
-        updateRegister = UpdateRegister.ToList();
-        foreach (var baseUpdatable in updateRegister)
+        this.updateRegister = this.UpdateRegister.ToList();
+        foreach (var baseUpdatable in this.updateRegister)
         {
             if (baseUpdatable is null)
                 continue;
-            baseUpdatable.Update(dt, this);
+            baseUpdatable.Update(this.dt, this);
         }
         
         if (IsFocused())
-            CheckOnHover(dt);
+            CheckOnHover(this.dt);
 
         CheckScreenSizeChange();
-        Mouse.UpdateVisual();
+        this.Mouse.UpdateVisual();
     }
 
     private void CheckScreenSizeChange()
     {
-        if (!shouldCallOnScreenSizeChanged) return;
+        if (!this.shouldCallOnScreenSizeChanged) return;
         const float tolerance = 0.1f;
-        if (Math.Abs(Window.ClientBounds.Width - gum.CanvasWidth) < tolerance && Math.Abs(Window.ClientBounds.Height - gum.CanvasHeight) < tolerance) return;
-        onScreenSizeChange?.Invoke(new Vector2(Window.ClientBounds.Width, Window.ClientBounds.Height));
-        shouldCallOnScreenSizeChanged = false;
+        if (Math.Abs(this.Window.ClientBounds.Width - this.gum.CanvasWidth) < tolerance && Math.Abs(this.Window.ClientBounds.Height - this.gum.CanvasHeight) < tolerance) return;
+        this.onScreenSizeChange?.Invoke(new Vector2(this.Window.ClientBounds.Width, this.Window.ClientBounds.Height));
+        this.shouldCallOnScreenSizeChanged = false;
     }
 
     private void CheckOnHover(float dt)
     {
-        var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        MouseState mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         
         // TODO Check any other hover elements
         
-        if (Fullscreen)
+        if (this.Fullscreen)
             return;
-        var dragging = dragComponent?.CheckHover(mouseState, dt);
+        bool? dragging = this.dragComponent?.CheckHover(mouseState, dt);
         if (dragging is null or false)
         {
-            resizeComponent?.CheckHover(mouseState, dt);
-            resizeComponent?.ResizeWindow();
+            this.resizeComponent?.CheckHover(mouseState, dt);
+            this.resizeComponent?.ResizeWindow();
         }
     }
     
-    public GameWindow GetWindow() => Window;
+    public GameWindow GetWindow() => this.Window;
     public bool IsInsideWindowBounds(Vector2 point)
     {
-        var width = Window.ClientBounds.Width - UIParams.minNearSelection;
-        var height = Window.ClientBounds.Height - UIParams.minNearSelection;
+        float width = this.Window.ClientBounds.Width - UIParams.minNearSelection;
+        float height = this.Window.ClientBounds.Height - UIParams.minNearSelection;
         
         // Convert the mouse position into Gum's centered coordinate system
-        var canvasCenter = new Vector2(gum.CanvasWidth, gum.CanvasHeight) * 0.5f;
-        var centeredPoint = new Vector2(point.x - canvasCenter.x, canvasCenter.y - point.y);
+        Vector2 canvasCenter = new Vector2(this.gum.CanvasWidth, this.gum.CanvasHeight) * 0.5f;
+        Vector2 centeredPoint = new Vector2(point.x - canvasCenter.x, canvasCenter.y - point.y);
 
         // Window bounds in Gum's centered coordinate system
-        var windowLeft = width * 0.5f;
-        var windowRight = -width * 0.5f;
-        var windowTop = -height * 0.5f;
-        var windowBottom = height * 0.5f;
+        float windowLeft = width * 0.5f;
+        float windowRight = -width * 0.5f;
+        float windowTop = -height * 0.5f;
+        float windowBottom = height * 0.5f;
 
         bool insideWidth = centeredPoint.x >= windowRight && centeredPoint.x <= windowLeft;
         bool insideHeight = centeredPoint.y >= windowTop && centeredPoint.y <= windowBottom;
@@ -263,15 +262,15 @@ public class WindowInstance : Game
         return insideWidth && insideHeight;
     }
 
-    public bool WasMouseClickConsumedByGum() => gum.Cursor.WindowOver != null;
+    public bool WasMouseClickConsumedByGum() => this.gum.Cursor.WindowOver != null;
 
-    public bool IsFocused() => ProdToolDOOM.Window.Helper.HasFocus(Window.Handle);
+    public bool IsFocused() => ProdToolDOOM.Window.Helper.HasFocus(this.Window.Handle);
 
     public Vector2 GetWindowSize()
     {
         return new Vector2(GetWindowWidth(), GetWindowHeight());
     }
     
-    public float GetWindowWidth() => Window.ClientBounds.Width;
-    public float GetWindowHeight() => Window.ClientBounds.Height;
+    public float GetWindowWidth() => this.Window.ClientBounds.Width;
+    public float GetWindowHeight() => this.Window.ClientBounds.Height;
 }

@@ -14,7 +14,7 @@ public class ResizableBox : IHoverable
         protected float mouseOffset;
         protected IMouseOffsetCalculator mouseOffsetCalculator = null!;
 
-        public void UpdateCurrentlyHoveredOver(Vector2 mousePos) => currentlyHoveredOver = sideSelectionBox.IsInsideBounds(mousePos);
+        public void UpdateCurrentlyHoveredOver(Vector2 mousePos) => this.currentlyHoveredOver = this.sideSelectionBox.IsInsideBounds(mousePos);
 
         public abstract void SetMouseVisual();
         protected abstract float GetEdgePosition();
@@ -23,7 +23,7 @@ public class ResizableBox : IHoverable
         
         public virtual void ResizeSide(Vector2 mousePos)
         {
-            mouseOffset = mouseOffsetCalculator.CalculateMouseOffset(GetEdgePosition(), mousePos);
+            this.mouseOffset = this.mouseOffsetCalculator.CalculateMouseOffset(GetEdgePosition(), mousePos);
         }
     }
 
@@ -41,7 +41,7 @@ public class ResizableBox : IHoverable
 
         protected override float GetEdgePosition()
         {
-            return sideSelectionBox.center.x;
+            return this.sideSelectionBox.center.x;
         }
     }
 
@@ -70,7 +70,7 @@ public class ResizableBox : IHoverable
 
         protected override float GetEdgePosition()
         {
-            return sideSelectionBox.center.y;
+            return this.sideSelectionBox.center.y;
         }
     }
 
@@ -97,8 +97,8 @@ public class ResizableBox : IHoverable
         public Side topSide = topSide;
         public Side bottomSide = bottomSide;
         
-        public bool GetHoveredOverX() => rightSide.currentlyHoveredOver || leftSide.currentlyHoveredOver;
-        public bool GetHoveredOverY() => topSide.currentlyHoveredOver || bottomSide.currentlyHoveredOver;
+        public bool GetHoveredOverX() => this.rightSide.currentlyHoveredOver || this.leftSide.currentlyHoveredOver;
+        public bool GetHoveredOverY() => this.topSide.currentlyHoveredOver || this.bottomSide.currentlyHoveredOver;
         public void CheckHover(ResizableBox manager)
         {
             void Check(Side side)
@@ -108,15 +108,15 @@ public class ResizableBox : IHoverable
                 side.isBeingResized = true;
             }
             
-            Check(rightSide);
-            Check(leftSide);
-            Check(topSide);
-            Check(bottomSide);
+            Check(this.rightSide);
+            Check(this.leftSide);
+            Check(this.topSide);
+            Check(this.bottomSide);
         }
         public void StopAnyResizing()
         {
-            Side[] sides = [rightSide, leftSide, topSide, bottomSide];
-            foreach (var s in sides)
+            Side[] sides = [this.rightSide, this.leftSide, this.topSide, this.bottomSide];
+            foreach (Side s in sides)
             {
                 s.isBeingResized = false;
             }
@@ -130,48 +130,48 @@ public class ResizableBox : IHoverable
     public bool CheckHover(MouseState mouseState, float dt)
     {
         CheckResizePositions(new Vector2(mouseState.X, mouseState.Y), mouseState);
-        return resizeBoxes.GetHoveredOverX() || resizeBoxes.GetHoveredOverY();
+        return this.resizeBoxes.GetHoveredOverX() || this.resizeBoxes.GetHoveredOverY();
     }
     
     public void CheckResizePositions(Vector2 mousePosition, MouseState mouseState)
     {
-        var mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
+        bool mouseHeld = mouseState.LeftButton == ButtonState.Pressed;
 
-        resizeBoxes.rightSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.leftSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.topSide.UpdateCurrentlyHoveredOver(mousePosition);
-        resizeBoxes.bottomSide.UpdateCurrentlyHoveredOver(mousePosition);
+        this.resizeBoxes.rightSide.UpdateCurrentlyHoveredOver(mousePosition);
+        this.resizeBoxes.leftSide.UpdateCurrentlyHoveredOver(mousePosition);
+        this.resizeBoxes.topSide.UpdateCurrentlyHoveredOver(mousePosition);
+        this.resizeBoxes.bottomSide.UpdateCurrentlyHoveredOver(mousePosition);
 
-        if (resizeBoxes.GetHoveredOverX())
+        if (this.resizeBoxes.GetHoveredOverX())
             Program.instance.Mouse.SetVisual(MouseCursor.SizeWE, 1);
-        else if (resizeBoxes.GetHoveredOverY())
+        else if (this.resizeBoxes.GetHoveredOverY())
             Program.instance.Mouse.SetVisual(MouseCursor.SizeNS, 1);
 
         if (mouseHeld)
-            resizeBoxes.CheckHover(this);
+            this.resizeBoxes.CheckHover(this);
         else{
-            resizeBoxes.StopAnyResizing();
-            isResizing = false;
+            this.resizeBoxes.StopAnyResizing();
+            this.isResizing = false;
         }
     }
     
     protected void TriggerResize(Side side)
     {
-        isResizing = true;
-        currentSideToResize = side;
+        this.isResizing = true;
+        this.currentSideToResize = side;
     }
 
-    public virtual bool ShouldResize() => !isResizing || currentSideToResize == null;
+    public virtual bool ShouldResize() => !this.isResizing || this.currentSideToResize == null;
 
     public virtual bool ResizeWindow()
     {
         if (ShouldResize())
             return false;
 
-        currentSideToResize.SetMouseVisual();
+        this.currentSideToResize.SetMouseVisual();
 
-        var mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        currentSideToResize.ResizeSide(new Vector2(mouse.X, mouse.Y));
+        MouseState mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        this.currentSideToResize.ResizeSide(new Vector2(mouse.X, mouse.Y));
         
         return true;
     }

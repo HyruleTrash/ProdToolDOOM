@@ -13,26 +13,25 @@ public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D 
     {
         if (projectRef.levels.Count == 0 || projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
-        var levelId = projectRef.CurrentLevel;
-        point ??= new Point(initialPosition, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, windowRef, projectRef);
+        int levelId = projectRef.CurrentLevel;
+        this.point ??= new Point(initialPosition, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, windowRef, projectRef);
         
-        Debug.Log($"Adding point to level {levelId} {point.position}!");
-        projectRef.levels[levelId].Add(point);
+        Debug.Log($"Adding point to level {levelId} {this.point.position}!");
+        projectRef.levels[levelId].Add(this.point);
     }
 
     public void Undo()
     {
-        if (point == null)
+        if (this.point == null)
             return;
-        Debug.Log($"Removing point from level {point.LevelId}!");
+        Debug.Log($"Removing point from level {this.point.LevelId}!");
         
-        projectRef.levels[point.LevelId].Remove(point);
-        if (point.icon != null) point.icon.Visible = false;
+        projectRef.levels[this.point.LevelId].Remove(this.point);
+        if (this.point.icon != null) this.point.icon.Visible = false;
     }
 
     public void Dispose()
     {
-        if (point?.icon?.Visible == false)
-            point?.Dispose();
+        if (this.point?.icon?.Visible == false) this.point?.Dispose();
     }
 }

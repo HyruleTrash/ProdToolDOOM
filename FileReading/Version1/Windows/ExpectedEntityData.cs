@@ -12,24 +12,21 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
     public ExpectedEntityData(ProjectLoadStrategy referenceLoadStrategy)
     {
         this.referenceLoadStrategy = referenceLoadStrategy;
-        name = "EntityData";
+        this.name = "EntityData";
     }
         
     public void loadEntry(XmlReader reader)
     {
         if (reader.NodeType != XmlNodeType.Element) return;
         
-        if (reader.Name == nameof(Int32))
-            lastReadId = reader.ReadElementContentAsInt();
-        if (reader.Name == "ImagePath")
-            entityData.ImagePath = reader.ReadElementContentAsString();
-        if (reader.Name == "Name")
-            entityData.Name = reader.ReadElementContentAsString();
+        if (reader.Name == nameof(Int32)) this.lastReadId = reader.ReadElementContentAsInt();
+        if (reader.Name == "ImagePath") this.entityData.ImagePath = reader.ReadElementContentAsString();
+        if (reader.Name == "Name") this.entityData.Name = reader.ReadElementContentAsString();
     }
 
     public void saveEntry()
     {
-        Project.instance.entityDatas.Add(lastReadId, new(entityData));
+        Project.instance.entityDatas.Add(this.lastReadId, new(this.entityData));
     }
 }
 #endif

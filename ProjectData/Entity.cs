@@ -2,9 +2,9 @@
 
 public class Entity : Level.Object
 {
-    public int DataId { get => dataDataId; set => dataDataId = value; }
+    public int DataId { get => this.dataDataId; set => this.dataDataId = value; }
     private int dataDataId;
-    public Vector2 Position { get => position; set => position = value; }
+    public Vector2 Position { get => this.position; set => this.position = value; }
 
     public Entity(int dataDataId = -1, Vector2? position = null)
     {
@@ -14,8 +14,8 @@ public class Entity : Level.Object
     }
     public Entity(Entity other)
     {
-        dataDataId = other.DataId;
-        position = other.position;
+        this.dataDataId = other.DataId;
+        this.position = other.position;
     }
 
     public override void Hide()

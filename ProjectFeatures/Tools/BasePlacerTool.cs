@@ -11,30 +11,29 @@ public abstract class BasePlacerTool(WindowInstance windowRef) : ITool
     
     public void Call(MouseState mouse)
     {
-        if (!ableToPlace || toCall is null) return;
-        
-        lastMousePosition = new Vector2(mouse.X, mouse.Y);
-        var program = Program.instance;
-        if (program.IsFocused() && program.IsInsideWindowBounds(lastMousePosition) &&
+        if (!this.ableToPlace || this.toCall is null) return;
+
+        this.lastMousePosition = new Vector2(mouse.X, mouse.Y);
+        Program program = Program.instance;
+        if (program.IsFocused() && program.IsInsideWindowBounds(this.lastMousePosition) &&
             !program.WasMouseClickConsumedByGum())
         {
-            lastMousePosition -= new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
-            toCall.Invoke();
+            this.lastMousePosition -= new Vector2(windowRef.GetWindowWidth(), windowRef.GetWindowHeight()) / 2;
+            this.toCall.Invoke();
         }
-        
-        ableToPlace = false;
+
+        this.ableToPlace = false;
     }
 
     public void UnEquip()
     {
-        ableToPlace = true;
+        this.ableToPlace = true;
     }
 
     public void Update(float dt, WindowInstance windowRef)
     {
-        var mouse = windowRef.Mouse.currentMouseState;
-        if (!ableToPlace && mouse.LeftButton == ButtonState.Released)
-            ableToPlace = true;
+        MouseState mouse = windowRef.Mouse.currentMouseState;
+        if (!this.ableToPlace && mouse.LeftButton == ButtonState.Released) this.ableToPlace = true;
     }
 
     public abstract void SetVisuals();
