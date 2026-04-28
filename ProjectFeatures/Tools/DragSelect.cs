@@ -28,10 +28,10 @@ public class DragSelect : IBaseUpdatable
             new rightClickManager.RightClickOption(
                 "Remove", 
                 () => Program.instance.cmdHistory.ApplyCmd(new RemovePointsCmd(Project.instance, GetSelectedObjects<Point>))),
-            // new rightClickManager.RightClickOption(
-            //     "Connect points", 
-            //     () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.instance))
-            // )
+            new rightClickManager.RightClickOption(
+                "Connect points", 
+                () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.instance, GetSelectedObjects<Point>))
+            )
         ]);
     }
 
@@ -40,10 +40,12 @@ public class DragSelect : IBaseUpdatable
     /// </summary>
     /// <typeparam name="T">Level.Object</typeparam>
     /// <returns>list of objects in current drag selection</returns>
-    public T[] GetSelectedObjects<T>() where T : Level.Object
+    public T[] GetSelectedObjects<T>(bool shouldRemove = false) where T : Level.Object
     {
         T[] result = selectedObjects.OfType<T>().ToArray();
         
+        if (!shouldRemove)
+            return result;
         var newSelection = selectedObjects.ToList();
         foreach (var obj in selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
         selectedObjects = newSelection;
@@ -65,7 +67,7 @@ public class DragSelect : IBaseUpdatable
             return false;
         var lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
         
-        levelRef ??= Project.instance.levels[Project.instance.currentLevel];
+        levelRef ??= Project.instance.levels[Project.instance.CurrentLevel];
         firstMousePos ??= new Vector2(lastMousePos);
         
         float width = Math.Abs(firstMousePos.x - lastMousePos.x);
@@ -84,7 +86,9 @@ public class DragSelect : IBaseUpdatable
 
         foreach (var obj in levelRef.levelObjects)
         {
-            var isSelected = selectionBox.IsInsideBounds(obj.Position);
+            if (obj is null || obj.position is null)
+                continue;
+            var isSelected = selectionBox.IsInsideBounds(obj.position);
             if (selectedObjects.Contains(obj))
             {
                 if (isSelected) continue;

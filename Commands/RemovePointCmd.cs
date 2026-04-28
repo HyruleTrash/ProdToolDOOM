@@ -20,7 +20,7 @@ public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted
 
     public void Undo()
     {
-        if (project.levels.Count == 0 || project.currentLevel > project.levels.Count - 1)
+        if (project.levels.Count == 0 || project.CurrentLevel > project.levels.Count - 1)
             return;
         
         Debug.Log($"Adding point to level {point.LevelId} {point.Position}!");

@@ -30,9 +30,22 @@ public class Project
     public Action<string> filePathChanged;
     // data
     public Dictionary<int, EntityData> entityDatas = [];
-    public int idCounter = 0;
+    public int entityDataIdCounter = 0;
     public List<Level> levels = [];
-    public int currentLevel = 0;
+
+    public int CurrentLevel
+    {
+        get => currentLevel;
+        set
+        {
+            if (currentLevel != value)
+                onCurrentLevelChanged?.Invoke(value);
+            currentLevel = value;
+        }
+    }
+    private int currentLevel = -1;
+    public Action<int>? onCurrentLevelChanged;
+    
     // UI
     private readonly ProjectFeature[] projectFeatures;
     private StackPanel inProjectStack = null!;
@@ -137,7 +150,7 @@ public class Project
     {
         levels = new();
         entityDatas = new();
-        currentLevel = 0;
+        CurrentLevel = -1;
         Program.instance.cmdHistory.Reset();
         canvasContainer.Children?.Clear();
     }

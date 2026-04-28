@@ -8,10 +8,10 @@ public class AddEntityCmd(Project project, Vector2 initialPosition) : ICommand
     public void Execute()
     {
         if (project.entityDatas.Count == 0 || project.levels.Count == 0 ||
-            project.currentLevel > project.levels.Count - 1)
+            project.CurrentLevel > project.levels.Count - 1)
             return;
         entity ??= new Entity(0, initialPosition);
-        levelId ??= project.currentLevel;
+        levelId ??= project.CurrentLevel;
         
         Debug.Log($"Adding entity to level {levelId}!");
         
@@ -25,7 +25,7 @@ public class AddEntityCmd(Project project, Vector2 initialPosition) : ICommand
             return;
         Debug.Log($"Removing entity from level {levelId}!");
         
-        project.entityDatas[entity.Id].RemoveEntityRegistration(entity);
+        project.entityDatas[entity.DataId].RemoveEntityRegistration(entity);
         project.levels[levelId.Value].Remove(entity);
     }
 }

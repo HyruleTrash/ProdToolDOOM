@@ -32,7 +32,9 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
     {
         Debug.Log($"Saving point: {vector2}");
         pointTexture ??= Program.instance.Content.Load<Texture2D>("Icons/Point");
-        referenceLevelData.level.Add(new Point(vector2, pointTexture, Project.instance.levels.Count, Program.instance, Project.instance));
+        var projectRef = Project.instance;
+        var levelId = projectRef.levels.Count;
+        referenceLevelData.level.Add(new Point(vector2, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, Program.instance, projectRef));
         vector2 = new Vector2();
     }
 }

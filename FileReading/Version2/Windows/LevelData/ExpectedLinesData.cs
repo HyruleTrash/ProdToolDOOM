@@ -5,7 +5,7 @@ namespace ProdToolDOOM.Version2;
 
 public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
 {
-    private Line line = new();
+    private Line? line;
     private readonly ExpectedLevelData referenceLevelData;
 
     public ExpectedLinesData(ExpectedLevelData referenceLevelData)
@@ -19,15 +19,23 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
+        line ??= new(Project.instance);
+        
         if (reader.Name == "Id")
             line.Id = reader.ReadElementContentAsInt();
         else if (reader.Name == "IdOther")
             line.IdOther = reader.ReadElementContentAsInt();
+        else if (reader.Name == "LevelId")
+            line.LevelId = reader.ReadElementContentAsInt();
     }
 
     public void saveEntry()
     {
-        referenceLevelData.lines.Add(new Line(line));
+        if (line == null)
+            return;
+        Debug.Log($"Saving line: {line}");
+        var projectRef = Project.instance;
+        referenceLevelData.level.Add(new Line(projectRef, line));
     }
 }
 #endif

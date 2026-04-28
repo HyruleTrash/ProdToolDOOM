@@ -9,7 +9,7 @@ public class AddLevelCmd(Project project) : ICommand
         Debug.Log("Adding level!");
         level ??= new Level();
         project.levels.Add(level);
-        project.currentLevel = project.levels.Count - 1;
+        project.CurrentLevel = project.levels.Count - 1;
     }
 
     public void Undo()

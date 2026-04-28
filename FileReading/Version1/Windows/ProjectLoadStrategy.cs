@@ -24,7 +24,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
-            Project.instance.idCounter = counter;
+            Project.instance.entityDataIdCounter = counter;
         }});
         expectedData.Add(new ExpectedEntityData(this)); 
     }
@@ -54,7 +54,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     foreach (var entity in level.Entities)
                     {
                         Debug.Log("   Entity:");
-                        Debug.Log($"    id: {entity.Id}");
+                        Debug.Log($"    id: {entity.DataId}");
                         Debug.Log($"    position: {entity.Position}");
                     }
                     Debug.Log("  Points:");

@@ -18,8 +18,8 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        if (reader.Name == "Id")
-            entity.Id = reader.ReadElementContentAsInt();
+        if (reader.Name == "DataId")
+            entity.DataId = reader.ReadElementContentAsInt();
         else if (reader.Name == "Position")
             entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }

@@ -19,7 +19,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
             return;
 
         if (reader.Name == "Id")
-            entity.Id = reader.ReadElementContentAsInt();
+            entity.DataId = reader.ReadElementContentAsInt();
         else if (reader.Name == "Position")
             entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }
@@ -30,7 +30,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         referenceLevelData.level.Add(setEntity);
         try
         {
-            Project.instance.entityDatas[setEntity.Id].AddEntityRegistration(setEntity);
+            Project.instance.entityDatas[setEntity.DataId].AddEntityRegistration(setEntity);
         }
         catch (Exception e)
         {

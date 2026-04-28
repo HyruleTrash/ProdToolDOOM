@@ -21,6 +21,6 @@ public class EntityData
     public void SetEntityRegistration(int i)
     {
         foreach (var entity in registeredEntities)
-            entity.Id = i;
+            entity.DataId = i;
     }
 }

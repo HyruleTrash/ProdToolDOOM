@@ -5,19 +5,19 @@ using MonoGameGum.GueDeriving;
 
 namespace ProdToolDOOM;
 
-public class AddPointCmd(Project project, Vector2 initialPosition, Texture2D pointTexture, WindowInstance windowRef) : ICommand, IDisposable
+public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D pointTexture, WindowInstance windowRef) : ICommand, IDisposable
 {
     private Point? point;
     
     public void Execute()
     {
-        if (project.levels.Count == 0 || project.currentLevel > project.levels.Count - 1)
+        if (projectRef.levels.Count == 0 || projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
-        int levelId = project.currentLevel;
-        point ??= new Point(initialPosition, pointTexture, levelId, windowRef, project);
+        var levelId = projectRef.CurrentLevel;
+        point ??= new Point(initialPosition, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, windowRef, projectRef);
         
-        Debug.Log($"Adding point to level {levelId} {point.Position}!");
-        project.levels[levelId].Add(point);
+        Debug.Log($"Adding point to level {levelId} {point.position}!");
+        projectRef.levels[levelId].Add(point);
     }
 
     public void Undo()
@@ -26,7 +26,7 @@ public class AddPointCmd(Project project, Vector2 initialPosition, Texture2D poi
             return;
         Debug.Log($"Removing point from level {point.LevelId}!");
         
-        project.levels[point.LevelId].Remove(point);
+        projectRef.levels[point.LevelId].Remove(point);
         if (point.icon != null) point.icon.Visible = false;
     }
 

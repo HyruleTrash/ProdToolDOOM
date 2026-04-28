@@ -6,23 +6,25 @@ public class Level
 {
     public abstract class Object
     {
-        public Vector2 Position { get => position; set => position = value; }
-        protected Vector2 position;
+        public Vector2 position;
 
+        public abstract void Hide();
         public abstract void ShowSelectionVisual();
         public abstract void HideSelectionVisual();
     }
     
+    public int IdCounter { get => levelObjectIdCounter; }
     public List<Entity> Entities { get => entities; set => entities = value; }
     private List<Entity> entities = [];
     
-    public List<Vector2> Points { get => points; }
+    public List<Point> Points { get => points; }
     public List<Line> Lines { get => lines; }
     
-    private List<Vector2> points = [];
+    private List<Point> points = [];
     private List<Line> lines = [];
 
     public List<Object> levelObjects = [];
+    public int levelObjectIdCounter = 0;
 
     public Level(Level? other = null)
     {
@@ -44,7 +46,10 @@ public class Level
                 entities.Add(entity);
                 break;
             case Point point:
-                points.Add(point.Position);
+                points.Add(point);
+                break;
+            case Line line:
+                lines.Add(line);
                 break;
         }
     }
@@ -60,21 +65,16 @@ public class Level
                 entities.Remove(entity);
                 break;
             case Point point:
-                points.Remove(point.Position);
+                points.Remove(point);
+                break;
+            case Line line:
+                lines.Remove(line);
                 break;
         }
     }
 
-    public void UpdatePointPosition(Point point, Vector2 newPosition)
+    public Point? GetPointById(int id)
     {
-        points.Remove(point.Position);
-        points.Add(newPosition);
-        point.Position = newPosition;
-    }
-
-    // TODO: improve this function call
-    public void SetLines(List<Line> list)
-    {
-        lines = list;
+        return points.FirstOrDefault(point => point.LevelObjectId == id);
     }
 }

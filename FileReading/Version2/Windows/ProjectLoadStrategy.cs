@@ -35,10 +35,15 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         expectedData.Add(new ExpectedData() { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
-            Project.instance.idCounter = counter;
+            Project.instance.entityDataIdCounter = counter;
         }});
         expectedData.Add(new ExpectedEntityData(this)); 
         expectedData.Add(new ExpectedLevelData(this));
+        expectedData.Add(new ExpectedData() { name = "Current_Level", load = (XmlReader reader) =>
+        {
+            int levelId = reader.ReadElementContentAsInt();
+            Project.instance.CurrentLevel = levelId;
+        }});
     }
     
     public bool Load(string path)
@@ -74,7 +79,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     foreach (var entity in level.Entities)
                     {
                         Debug.Log("   Entity:");
-                        Debug.Log($"    id: {entity.Id}");
+                        Debug.Log($"    id: {entity.DataId}");
                         Debug.Log($"    position: {entity.Position}");
                     }
                     Debug.Log("  Points:");

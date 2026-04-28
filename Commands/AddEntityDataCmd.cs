@@ -10,7 +10,7 @@ public class AddEntityDataCmd(Project project) : ICommand
         Debug.Log("Adding entity data!");
         
         entityData ??= new EntityData();
-        id ??= project.idCounter++;
+        id ??= project.entityDataIdCounter++;
         
         project.entityDatas.Add(id.Value, entityData);
         entityData.SetEntityRegistration(id.Value);

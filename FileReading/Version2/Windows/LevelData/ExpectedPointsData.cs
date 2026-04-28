@@ -6,9 +6,8 @@ namespace ProdToolDOOM.Version2;
 
 public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
 {
-    private Vector2 vector2 = new();
+    private Point? point;
     private readonly ExpectedLevelData referenceLevelData;
-    private Texture2D? pointTexture;
 
     public ExpectedPointsData(ExpectedLevelData referenceLevelData)
     {
@@ -18,22 +17,31 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
     
     public void loadEntry(XmlReader reader)
     {
+        if (point == null)
+        {
+            var pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
+            point = new Point(Vector2.Zero, pointTexture, -1, -1, Program.instance,
+                Project.instance);
+        }
+        // Debug.Log($"{reader.Name} {reader.NodeType}");
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        if (reader.Name == "Vector2")
+        if (reader.Name == "LevelId")
         {
-            vector2 = Vector2.FromString(reader.ReadElementContentAsString());
-            Debug.Log($"Registering point: {vector2}");
+            point.LevelId = reader.ReadElementContentAsInt();
+            point.LevelObjectId = reader.ReadElementContentAsInt();
+            point.Position = Vector2.FromString(reader.ReadElementContentAsString());
         }
     }
 
     public void saveEntry()
     {
-        Debug.Log($"Saving point: {vector2}");
-        pointTexture ??= Program.instance.Content.Load<Texture2D>("Icons/Point");
-        referenceLevelData.level.Add(new Point(vector2, pointTexture, Project.instance.levels.Count, Program.instance, Project.instance));
-        vector2 = new Vector2();
+        if (point == null) return;
+        Debug.Log($"Saving point: {point}");
+        referenceLevelData.level.Add(point);
+        point.UpdateVisualPosition(Program.instance.GetWindowSize());
+        point = null;
     }
 }
 #endif
