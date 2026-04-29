@@ -6,13 +6,14 @@ using Button = Gum.Forms.Controls.Button;
 
 namespace ProdToolDOOM.ProjectFeatures;
 
-public class rightClickManager : IBaseUpdatable
+public class RightClickManager : IBaseUpdatable
 {
-    public static rightClickManager instance = Program.instance.rightClickManager;
-    public class RightClickOption(string text, Action toCall)
+    public static RightClickManager instance = Program.instance.rightClickManager;
+    public class RightClickOption(string text, Action toCall, Func<bool> shouldBeVisible = null)
     {
-        public string text = text;
-        public Action toCall = toCall;
+        public readonly Func<bool> shouldBeVisible = shouldBeVisible;
+        public readonly string text = text;
+        public readonly Action toCall = toCall;
         public Button button;
     }
 
@@ -38,7 +39,7 @@ public class rightClickManager : IBaseUpdatable
     private ContainerRuntime rightClickPopUp;
     private SelectionBox selectionBox;
 
-    public rightClickManager()
+    public RightClickManager()
     {
         this.rightClickPopUp = new ContainerRuntime
         {
@@ -73,11 +74,15 @@ public class rightClickManager : IBaseUpdatable
         return true;
     }
 
-    public void ShowOptions<T>(Vector2 position, object selection, int priority)
-    {
+    public void ShowOptions<T>(Vector2 position, object selection, int priority) => 
         this.visualSetCalls.Add(new RightClickVisualSetCall(typeof(T), position, selection, priority));
+
+    public void HideOptions<T>()
+    {
+        this.visualSetCalls.RemoveAll(x => x.type == typeof(T));
+        if (this.currentVisual?.type == typeof(T)) Reset();
     }
-    
+
     public void Update(float dt, WindowInstance windowRef)
     {
         MouseState mouseState = windowRef.Mouse.currentMouseState;
@@ -88,23 +93,47 @@ public class rightClickManager : IBaseUpdatable
 
     private void ShowHighestPriority()
     {
-        if (this.currentVisual != null) return;
-        this.currentVisual = GetHighestPriority();
-        if (this.currentVisual == null) return;
+        RightClickVisualSetCall? newVisual = GetHighestPriority();
         
-        if (this.currentStack != null) this.currentStack.rightClickOptionStack.Visual.Parent = null;
-        if (!this.registry.TryGetValue(this.currentVisual.Value.type, out RightClickStack? stack))
+        if (newVisual == null || !this.registry.TryGetValue(newVisual.Value.type, out RightClickStack? stack))
+        {
+            Reset();
             return;
+        }
+        
+        // overkill check because the damned thing didn't wanna listen, 'stupid dog, you make me look bad!'
+        bool isSame =
+            this.currentVisual.HasValue &&
+            this.currentVisual.Value.type == newVisual.Value.type &&
+            this.currentVisual.Value.position == newVisual.Value.position &&
+            this.currentVisual.Value.priority == newVisual.Value.priority &&
+            Equals(this.currentVisual.Value.currentSelection, newVisual.Value.currentSelection);
 
-        this.rightClickPopUp.X = this.currentVisual.Value.position.x;
-        this.rightClickPopUp.Y = this.currentVisual.Value.position.y;
-        this.rightClickPopUp.Visible = true;
-        this.rightClickPopUp.AddChild(stack.rightClickOptionStack);
-        this.currentStack = stack;
+        if (!isSame)
+        {
+            if (this.currentStack != null) 
+                this.currentStack.rightClickOptionStack.Visual.Parent = null;
+            
+            this.currentVisual = newVisual;
+            this.currentStack = stack;
 
-        Vector2 size = new(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
-        Vector2 offset = new(UIParams.minNearSelection, UIParams.minNearSelection);
-        this.selectionBox = new SelectionBox(this.currentVisual.Value.position + (size / 2), size + offset);
+            this.rightClickPopUp.X = newVisual.Value.position.x;
+            this.rightClickPopUp.Y = newVisual.Value.position.y;
+            this.rightClickPopUp.Visible = true;
+            this.rightClickPopUp.AddChild(stack.rightClickOptionStack);
+            this.currentStack = stack;
+
+            Vector2 size = new(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
+            Vector2 offset = new(UIParams.minNearSelection, UIParams.minNearSelection);
+            this.selectionBox = new SelectionBox(newVisual.Value.position + (size / 2), size + offset);
+        }
+        
+        UpdateOptionVisibility(stack);
+    }
+
+    private void UpdateOptionVisibility(RightClickStack stack)
+    {
+        foreach (RightClickOption option in stack.options) option.button.Visual.Visible = option.shouldBeVisible?.Invoke() ?? true;
     }
 
     private RightClickVisualSetCall? GetHighestPriority()
@@ -127,6 +156,9 @@ public class rightClickManager : IBaseUpdatable
 
     public void Reset()
     {
+        if (this.currentStack != null)
+            this.currentStack.rightClickOptionStack.Visual.Parent = null;
+        this.rightClickPopUp.Children?.Clear();
         this.rightClickPopUp.Visible = false;
         this.currentStack = null;
         this.currentVisual = null;

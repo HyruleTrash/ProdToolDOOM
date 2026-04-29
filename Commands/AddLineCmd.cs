@@ -1,6 +1,6 @@
 ﻿namespace ProdToolDOOM;
 
-public class AddLineCmd(Project projectRef, Point point1, Point point2) : ICommand, IDisposable
+public class AddLineCmd(Project projectRef, WindowInstance windowRef, Point point1, Point point2) : ICommand, IDisposable
 {
     private Point[]? points;
     private Line? line;
@@ -11,7 +11,7 @@ public class AddLineCmd(Project projectRef, Point point1, Point point2) : IComma
         this.points ??= [point1, point2];
         if (this.points == null || this.points.Length < 2)
             return;
-        this.line ??= new Line(projectRef, this.points[0].LevelObjectId, this.points[1].LevelObjectId, levelId);
+        this.line ??= new Line(projectRef, windowRef, this.points[0].LevelObjectId, this.points[1].LevelObjectId, levelId);
         this.line.Init();
         
         Debug.Log($"Adding line to level {levelId}: {this.points[0].LevelObjectId}, {this.points[1].LevelObjectId}!");

@@ -40,7 +40,7 @@ public class WindowInstance : Game
     public Mouse Mouse { get; private set; }
     
     public ShortcutManager shortcutManager;
-    public rightClickManager rightClickManager;
+    public RightClickManager rightClickManager;
 
     protected WindowInstance()
     {

@@ -1,4 +1,5 @@
 ﻿using MonoGameGum.GueDeriving;
+using ProdToolDOOM.ProjectFeatures;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace ProdToolDOOM;
@@ -18,15 +19,17 @@ public class Line : Level.Object, IDisposable
     private PolygonRuntime? selectedIcon;
     private ContainerRuntime? iconContainer;
     
+    private readonly WindowInstance windowRef;
     private Project projectRef;
     private RemoveLineCmd removeCommand;
     public const float wallHeight = 5f;
 
-    public Line(Project projectRef, int point1Id, int point2Id, int levelId) : this(projectRef)
+    public Line(Project projectRef, WindowInstance windowRef, int point1Id, int point2Id, int levelId) : this(projectRef)
     {
         this.levelId = levelId;
         this.point1Id = point1Id;
         this.point2Id = point2Id;
+        this.windowRef = windowRef;
         this.projectRef = projectRef;
     }
     public Line(Project projectRef, Line line) : this(projectRef)
@@ -106,6 +109,8 @@ public class Line : Level.Object, IDisposable
         point2.onShowEvent += EvaluateVisibility;
         point2.onHideEvent += EvaluateVisibility;
         point2.onVisualMoved += EvaluatePolygonVisual;
+        
+        this.iconContainer.RightClick += HandleRightClick;
     }
     
     public void UpdateVisualPosition(Vector2 screenSize)
@@ -144,6 +149,13 @@ public class Line : Level.Object, IDisposable
         {
             // ignored
         }
+    }
+    
+    private void HandleRightClick(object? _, EventArgs __)
+    {
+        if (this.windowRef == null || RightClickManager.instance == null) return;
+        RightClickManager.instance.ShowOptions<Line>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this,
+            1);
     }
 
     protected override void OnShow()

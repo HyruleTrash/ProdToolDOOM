@@ -113,7 +113,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     }
     
     private void HandleRightClick(object? _, EventArgs __) => 
-        rightClickManager.instance.ShowOptions<Point>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this, 1);
+        RightClickManager.instance.ShowOptions<Entity>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this, 1);
 
     public void UpdateVisualPosition(Vector2 screenSize)
     {

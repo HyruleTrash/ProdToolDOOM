@@ -1,6 +1,6 @@
 ﻿namespace ProdToolDOOM;
 
-public class RemoveLineCmd(Project project, Line tempLine) : ICommand
+public class RemoveLineCmd(Project project, Line tempLine, Action? onExecuted = null) : ICommand
 {
     private Line? line;
     
@@ -13,6 +13,7 @@ public class RemoveLineCmd(Project project, Line tempLine) : ICommand
         
         project.levels[this.line.LevelId].Remove(this.line);
         if (this.line.icon != null) this.line.Hide();
+        onExecuted?.Invoke();
     }
 
     public void Undo()

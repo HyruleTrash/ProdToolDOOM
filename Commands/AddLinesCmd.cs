@@ -1,6 +1,6 @@
 ﻿namespace ProdToolDOOM;
 
-public class AddLinesCmd(Project project, Func<bool, Point[]> getPoints) : ICommand
+public class AddLinesCmd(Project project, WindowInstance windowRef, Func<bool, Point[]> getPoints) : ICommand
 {
     private Point[]? points;
     private List<AddLineCmd> actions = [];
@@ -14,7 +14,7 @@ public class AddLinesCmd(Project project, Func<bool, Point[]> getPoints) : IComm
 
         if (this.points.Length == 2)
         {
-            AddLineCmd cmd = new(project, this.points[0], this.points[1]);
+            AddLineCmd cmd = new(project, windowRef, this.points[0], this.points[1]);
             cmd.Execute();
             this.actions.Add(cmd);
             return;
@@ -28,7 +28,7 @@ public class AddLinesCmd(Project project, Func<bool, Point[]> getPoints) : IComm
             Point p1 = this.points[i];
             Point p2 = this.points[(i + 1) % this.points.Length];
 
-            AddLineCmd cmd = new(project, p1, p2);
+            AddLineCmd cmd = new(project, windowRef, p1, p2);
             cmd.Execute();
             this.actions.Add(cmd);
         }

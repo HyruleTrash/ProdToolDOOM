@@ -24,14 +24,30 @@ public class DragSelect : IBaseUpdatable
         this.visual.Anchor(Anchor.Center);
         this.visual.AddToRoot();
         
-        rightClickManager.instance.AddOptions<DragSelect>([
-            new rightClickManager.RightClickOption(
-                "Remove", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemovePointsCmd(Project.instance, GetSelectedObjects<Point>))),
-            new rightClickManager.RightClickOption(
+        RightClickManager.instance.AddOptions<DragSelect>([
+            new RightClickManager.RightClickOption(
+                "Remove points", 
+                () => Program.instance.cmdHistory.ApplyCmd(new RemovePointsCmd(Project.instance, GetSelectedObjects<Point>)),
+                () => this.selectedObjects.OfType<Point>().Any()),
+            new RightClickManager.RightClickOption(
+                "Remove lines", 
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLinesCmd(Project.instance, GetSelectedObjects<Line>)),
+                () => this.selectedObjects.OfType<Line>().Any()),
+            new RightClickManager.RightClickOption(
                 "Connect points", 
-                () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.instance, GetSelectedObjects<Point>))
-            )
+                () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.instance, Program.instance, GetSelectedObjects<Point>)),
+                () =>
+                {
+                    bool hadOne = false;
+                    foreach (Point? point in this.selectedObjects.Select(selectedObject => selectedObject as Point)) // Checks if there's atleast more then 1 point
+                    {
+                        if (point != null && hadOne)
+                            return true;
+                        if (point != null && !hadOne) 
+                            hadOne = true;
+                    }
+                    return false;
+                })
         ]);
     }
 
@@ -121,8 +137,8 @@ public class DragSelect : IBaseUpdatable
         }
 
         this.selectedObjects.Clear();
-
         this.visual.Visible = false;
+        RightClickManager.instance.HideOptions<DragSelect>();
     }
     
     public void Update(float dt, WindowInstance windowRef)
@@ -134,7 +150,7 @@ public class DragSelect : IBaseUpdatable
         if (mouse.RightButton == ButtonState.Pressed && this.selectionBox.IsInsideBounds(mousePos))
         {
             mousePos = new Vector2(mouse.Position);
-            rightClickManager.instance.ShowOptions<DragSelect>(mousePos, this, 2);
+            RightClickManager.instance.ShowOptions<DragSelect>(mousePos, this, 2);
         }
     }
 }
