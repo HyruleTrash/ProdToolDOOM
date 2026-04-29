@@ -20,11 +20,11 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
             return;
 
         this.level ??= new Level();
-        if (reader.Name == "Level") reader.Read();
-        
-        if (reader.Name == "IdCounter") this.level.levelObjectIdCounter = reader.ReadElementContentAsInt();
 
         this.referenceLoadStrategy.ReadData(reader, [
+            new ExpectedData { name = "IdCounter", stopAt = "IdCounter", 
+                load = rdr => this.level.levelObjectIdCounter = rdr.ReadElementContentAsInt()
+            },
             new ExpectedEntitiesData(this) { stopAt = "Entities" },
             new ExpectedPointsData(this) { stopAt = "Points" },
             new ExpectedLinesData(this)  { stopAt = "Lines" }

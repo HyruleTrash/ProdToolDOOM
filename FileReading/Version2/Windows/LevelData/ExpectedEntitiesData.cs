@@ -35,7 +35,8 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (this.entity == null) return;
         Debug.Log($"Saving entity: {this.entity}");
         this.referenceLevelData.level.Add(this.entity);
-        Project.instance.entityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
+        if (this.entity.DataId >= 0)
+            Project.instance.entityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
         this.entity.UpdateVisualPosition(Program.instance.GetWindowSize());
         this.entity = null;
     }

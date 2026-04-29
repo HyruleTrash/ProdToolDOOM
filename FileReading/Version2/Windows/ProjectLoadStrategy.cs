@@ -160,7 +160,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             
             if (searchData.All(data => data.found))
                 break;
-            foreach (ExpectedData dataInstance in searchData) Debug.Log($"Status: {dataInstance.name}, {dataInstance.stopAt}, {dataInstance.found}");
+            // foreach (ExpectedData dataInstance in searchData) Debug.Log($"Status: {dataInstance.name}, {dataInstance.stopAt}, {dataInstance.found}");
 
             reader.Read();
         }
