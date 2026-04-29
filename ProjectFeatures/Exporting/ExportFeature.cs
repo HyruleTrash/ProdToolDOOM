@@ -55,13 +55,15 @@ public class ExportFeature : ProjectFeature
         if (!result.HasValue)
             return;
 
+        Level level = this.projectRef.levels[this.projectRef.CurrentLevel];
+        
         try
         {
             bool exportResult = false;
             foreach (ExportOption exportOption in this.exportOptions)
             {
                 if (!exportOption.CheckExtension(result.Value.fileExtension)) continue;
-                exportResult = exportOption.Export(result.Value.filePath);
+                exportResult = exportOption.Export(result.Value.filePath, level);
                 break;
             }
 

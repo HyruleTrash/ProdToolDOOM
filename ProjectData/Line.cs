@@ -20,6 +20,7 @@ public class Line : Level.Object, IDisposable
     
     private Project projectRef;
     private RemoveLineCmd removeCommand;
+    public const float wallHeight = 5f;
 
     public Line(Project projectRef, int point1Id, int point2Id, int levelId) : this(projectRef)
     {
@@ -187,4 +188,17 @@ public class Line : Level.Object, IDisposable
     
     public override string ToString() =>
         $"Line [position: {this.position}, firstPnt: {this.Id}, SecondPnt: {this.IdOther}, levelId: {this.levelId}]";
+
+    public Point[] GetPoints()
+    {
+        Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
+        Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
+        if (point1 != null && point2 != null)
+            return
+            [
+                point1,
+                point2
+            ];
+        return [];
+    }
 }
