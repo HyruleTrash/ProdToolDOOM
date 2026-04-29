@@ -170,16 +170,17 @@ public static class AssimpExport
             {
                 Vector3D scaled = v * ScaleFactor;
                 mesh.Vertices.Add(scaled);
-                mesh.Normals.Add(plane.normal);
+                mesh.Normals.Add(-plane.normal);
             }
 
+            List<int> indices = TriangulatePolygon(verts, plane.normal);
+            if (plane.normal.Y < 0)
+                for (int i = 0; i < indices.Count; i += 3) 
+                    (indices[i + 1], indices[i + 2]) = (indices[i + 2], indices[i + 1]);
+            
             // Add faces
-            List<int> indices = TriangulatePolygon(verts, plane.normal); // Cannot resolve symbol 'TriangulatePolygon'
-            foreach (List<int> tri in Chunk(indices, 3))
-            {
-                if (plane.normal.Y < 0) tri.Reverse(); // Reverse winding for floor vs roof
+            foreach (List<int> tri in Chunk(indices, 3)) 
                 mesh.Faces.Add(new Face([baseIndex + tri[0], baseIndex + tri[1], baseIndex + tri[2]]));
-            }
         }
     }
     

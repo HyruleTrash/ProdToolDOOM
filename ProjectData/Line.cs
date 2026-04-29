@@ -132,7 +132,6 @@ public class Line : Level.Object, IDisposable
                 point1.onShowEvent -= EvaluateVisibility;
                 point1.onHideEvent -= EvaluateVisibility;
                 point1.onVisualMoved -= EvaluatePolygonVisual;
-                return;
             }
 
             if (point2 == null) return;
@@ -227,11 +226,7 @@ public class Line : Level.Object, IDisposable
         Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
         Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
         if (point1 != null && point2 != null)
-            return
-            [
-                point1,
-                point2
-            ];
+            return [point1, point2];
         return [];
     }
 }
