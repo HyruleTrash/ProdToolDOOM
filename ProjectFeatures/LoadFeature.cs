@@ -9,7 +9,7 @@ public class LoadFeature(Project project) : ProjectFeature
 {
     private Button loadProjectButton = null!;
 
-    public override void LoadUI(object? parent)
+    public override void LoadUI(object parent)
     {
         if (!ShouldLoadUI(parent))
             return;

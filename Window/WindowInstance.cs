@@ -98,7 +98,7 @@ public class WindowInstance : Game
         {
             Visual =
             {
-                ChildrenLayout = Gum.Managers.ChildrenLayout.LeftToRightStack
+                ChildrenLayout = ChildrenLayout.LeftToRightStack
             },
             X = this.gum.CanvasWidth - UIParams.borderPadding,
             Y = UIParams.borderPadding

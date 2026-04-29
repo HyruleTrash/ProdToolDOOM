@@ -19,7 +19,7 @@ public class SaveFeature : ProjectFeature
         this.shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
     }
 
-    public override void LoadUI(object? parent)
+    public override void LoadUI(object parent)
     {
         if (!ShouldLoadUI(parent))
             return;
@@ -45,9 +45,7 @@ public class SaveFeature : ProjectFeature
         if (!this.shouldOverwriteFilePath.Invoke(ref tempPath))
             return;
 
-        if (this.project.saveStrat.Save(tempPath))
-        {
+        if (this.project.saveStrat.Save(tempPath)) 
             this.project.FilePath = tempPath;
-        }
     }
 }

@@ -37,6 +37,8 @@ public class Project
         get => this.currentLevel;
         set
         {
+            if (value < -1 || value >= this.levels.Count)
+                return;
             if (this.currentLevel != value) this.onCurrentLevelChanged?.Invoke(value);
             this.currentLevel = value;
         }
@@ -64,7 +66,8 @@ public class Project
         ];
         this.inProjectFeatures =
         [
-            new SaveFeature(this)
+            new SaveFeature(this),
+            new SwitchLevelFeature(this),
         ];
         this.toolBar = new ToolBarFeature(gum, this);
     }
@@ -94,9 +97,7 @@ public class Project
     public void LoadUI(StackPanel mainPanel)
     {
         foreach (ProjectFeature projectFeature in this.projectFeatures)
-        {
             projectFeature.LoadUI(mainPanel);
-        }
 
         this.inProjectStack = new StackPanel
         {
@@ -105,10 +106,8 @@ public class Project
         this.filePathChanged += (newPath) => { this.inProjectStack.IsVisible = newPath != string.Empty; };
         mainPanel.AddChild(this.inProjectStack);
         
-        foreach (ProjectFeature projectFeature in this.inProjectFeatures)
-        {
+        foreach (ProjectFeature projectFeature in this.inProjectFeatures) 
             projectFeature.LoadUI(this.inProjectStack);
-        }
 
         this.canvasContainer = new ContainerRuntime
         {

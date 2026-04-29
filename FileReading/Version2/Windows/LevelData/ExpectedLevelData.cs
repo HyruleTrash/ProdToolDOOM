@@ -5,7 +5,7 @@ namespace ProdToolDOOM.Version2;
 
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 {
-    public Level level = new ();
+    public Level level = new();
     private readonly ProjectLoadStrategy referenceLoadStrategy;
 
     public ExpectedLevelData(ProjectLoadStrategy referenceLoadStrategy)
@@ -19,11 +19,8 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        if (reader.Name == "Level")
-        {
-            this.level ??= new Level();
-            reader.Read();
-        }
+        this.level ??= new Level();
+        if (reader.Name == "Level") reader.Read();
         
         if (reader.Name == "IdCounter") this.level.levelObjectIdCounter = reader.ReadElementContentAsInt();
 

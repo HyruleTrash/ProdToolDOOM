@@ -22,7 +22,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
     
     private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     
-    public override void LoadUI(object? parent)
+    public override void LoadUI(object parent)
     {
         if (!ShouldLoadUI(parent))
             return;

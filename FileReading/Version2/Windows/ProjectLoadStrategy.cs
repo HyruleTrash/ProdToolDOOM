@@ -70,6 +70,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                     return VersionManager.LoadUsingOldStrategy(this.foundVersion, path);
                 }
                 
+                if (Project.instance.CurrentLevel < 0 || Project.instance.CurrentLevel >= Project.instance.levels.Count)
+                    return true;
+                
                 foreach (Line line in Project.instance.levels[Project.instance.CurrentLevel].Lines) line.Init();
                 foreach (Point point in Project.instance.levels[Project.instance.CurrentLevel].Points) point.Init();
                 

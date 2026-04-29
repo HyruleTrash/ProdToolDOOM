@@ -10,7 +10,7 @@ public abstract class ProjectFeature
     /// Function that gets overwritten by feature to load ui
     /// </summary>
     /// <param name="parent">GraphicalUiElement or FrameworkElement that all loaded ui will get parented to</param>
-    public abstract void LoadUI(object? parent);
+    public abstract void LoadUI(object parent);
     
     protected bool ShouldLoadUI(object? parent)
     {
@@ -18,17 +18,30 @@ public abstract class ProjectFeature
     }
     
     /// <summary>
-    /// Adds created UI in the form of a frameworkElement, to a given parent
+    /// Adds created UI, to a given parent
     /// </summary>
     /// <param name="parent">GraphicalUiElement or FrameworkElement that will hold your addition</param>
     /// <param name="child">represents the element you want to add</param>
-    protected static void AddUI(object? parent, FrameworkElement child)
+    protected static void AddUI(object parent, object child)
     {
-        if (parent == null)
-            child.AddToRoot();
-        else if (parent is GraphicalUiElement p)
-            p.AddChild(child);
-        else if (parent is FrameworkElement f)
-            f.AddChild(child);
+        GraphicalUiElement? childVisual = child switch
+        {
+            FrameworkElement fe => fe.Visual,
+            GraphicalUiElement gue => gue,
+            _ => null
+        };
+        GraphicalUiElement? parentVisual = parent switch
+        {
+            FrameworkElement fe => fe.Visual,
+            GraphicalUiElement gue => gue,
+            _ => null
+        };
+        
+        if (childVisual == null) return;
+        
+        if (parentVisual == null)
+            childVisual.AddToRoot();
+        else
+            parentVisual.AddChild(childVisual);
     }
 }
