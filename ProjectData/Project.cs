@@ -5,6 +5,7 @@ using Gum.Wireframe;
 using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using ProdToolDOOM.ProjectFeatures;
+using ProdToolDOOM.ProjectFeatures.Exporting;
 using ProdToolDOOM.Version2;
 using Button = Gum.Forms.Controls.Button;
 
@@ -67,6 +68,7 @@ public class Project
         this.inProjectFeatures =
         [
             new SaveFeature(this),
+            new ExportFeature(this),
             new SwitchLevelFeature(this),
         ];
         this.toolBar = new ToolBarFeature(gum, this);

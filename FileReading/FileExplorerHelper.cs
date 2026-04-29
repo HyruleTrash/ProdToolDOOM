@@ -1,4 +1,6 @@
 ﻿
+
+using System.Runtime.CompilerServices;
 #if WINDOWS
 using System.Windows.Forms;
 #endif
@@ -7,26 +9,38 @@ namespace ProdToolDOOM;
 
 public static class FileExplorerHelper
 {
+    public struct FileDialogResult
+    {
+        public string filePath;
+        public string fileExtension;
+    }
+
     public interface IFileDialogService
     {
-        string OpenFile(string initialDirectory = "c:\\");
-        string SaveFile(string initialDirectory = "c:\\");
+        string CheckForDefaultDir(string? initialDirectory);
+        FileDialogResult? OpenFile(string? initialDirectory);
+        FileDialogResult? SaveFile(string filter, string? initialDirectory);
     }
 
     public class DesktopFileDialogService : IFileDialogService
     {
-        public string OpenFile(string initialDirectory = "c:\\")
+        public string CheckForDefaultDir(string? initialDirectory) => 
+            initialDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        public FileDialogResult? OpenFile(string? initialDirectory)
         {
+            string usedDir = CheckForDefaultDir(initialDirectory);
             #if WINDOWS
             using OpenFileDialog openFileDialog = new();
             
-            openFileDialog.InitialDirectory = initialDirectory;
+            openFileDialog.InitialDirectory = usedDir;
             openFileDialog.Filter = "wapd files (*.wapd)|*.wapd";
             openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK) 
-                return openFileDialog.FileName;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                return new FileDialogResult 
+                    { filePath = openFileDialog.FileName, fileExtension = Path.GetExtension(openFileDialog.FileName) };
             
             #elif MACOS || LINUX
             // Use platform-specific implementation
@@ -35,18 +49,20 @@ public static class FileExplorerHelper
             return null;
         }
 
-        public string SaveFile(string initialDirectory = "c:\\")
+        public FileDialogResult? SaveFile(string filter, string? initialDirectory)
         {
+            string usedDir = CheckForDefaultDir(initialDirectory);
             #if WINDOWS
             using SaveFileDialog saveFileDialog = new();
             
-            saveFileDialog.InitialDirectory = initialDirectory;
-            saveFileDialog.Filter = "wapd files (*.wapd)|*.wapd";
+            saveFileDialog.InitialDirectory = usedDir;
+            saveFileDialog.Filter = filter;
             saveFileDialog.FilterIndex = 1;
             saveFileDialog.RestoreDirectory = true;
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK) 
-                return saveFileDialog.FileName;
+                return new FileDialogResult 
+                    { filePath = saveFileDialog.FileName, fileExtension = Path.GetExtension(saveFileDialog.FileName) };
             #endif
             return null;
         }
@@ -55,12 +71,12 @@ public static class FileExplorerHelper
     private static IFileDialogService fileDialogService;
 
     [STAThread]
-    public static string OpenFileExplorer(string path = "c:\\")
+    public static FileDialogResult? OpenFileExplorer(string? path = null)
     {
         if (HasFileExplorer())
             return fileDialogService.OpenFile(path);
         else
-            return String.Empty;
+            return null;
     }
 
     private static bool HasFileExplorer()
@@ -76,11 +92,6 @@ public static class FileExplorerHelper
     }
     
     [STAThread]
-    public static string SaveWithFileExplorer(string path = "c:\\")
-    {
-        if (HasFileExplorer())
-            return fileDialogService.SaveFile(path);
-        else
-            return String.Empty;
-    }
+    public static FileDialogResult? SaveWithFileExplorer(string filter, string? path = null) => 
+        HasFileExplorer() ? fileDialogService.SaveFile(filter, path) : null;
 }

@@ -32,13 +32,12 @@ public class LoadFeature(Project project) : ProjectFeature
         Debug.Log("Loading project file...");
 
         string tempPath = project.FilePath;
-        if (tempPath == string.Empty)
-        {
-            tempPath = FileExplorerHelper.OpenFileExplorer();
-            Debug.Log(tempPath);
-        }
-        else
-            tempPath = FileExplorerHelper.OpenFileExplorer(tempPath);
+        FileExplorerHelper.FileDialogResult? result = tempPath == string.Empty
+            ? FileExplorerHelper.OpenFileExplorer()
+            : FileExplorerHelper.OpenFileExplorer(tempPath);
+        if (!result.HasValue)
+            return;
+        tempPath = result.Value.filePath;
 
         if (project.loadStrat.Load(tempPath))
             project.FilePath = tempPath;

@@ -6,6 +6,7 @@ namespace ProdToolDOOM.ProjectFeatures;
 
 public class SaveNewFeature : SaveFeature
 {
+    private const string projectFileFilter = "wapd files (*.wapd)|*.wapd";
     private Button saveProjectAsButton = null!;
 
     public SaveNewFeature(Project project) : base(project)
@@ -35,12 +36,13 @@ public class SaveNewFeature : SaveFeature
 
     private bool ShouldOverwriteFilePath(ref string tempPath)
     {
-        if (this.project.FilePath == string.Empty)
-        {
-            tempPath = FileExplorerHelper.SaveWithFileExplorer();
-            Debug.Log(tempPath);
-        }else
-            tempPath = FileExplorerHelper.SaveWithFileExplorer(tempPath);
+        FileExplorerHelper.FileDialogResult? result = this.project.FilePath == string.Empty
+            ? FileExplorerHelper.SaveWithFileExplorer(projectFileFilter)
+            : FileExplorerHelper.SaveWithFileExplorer(projectFileFilter, tempPath);
+
+        if (!result.HasValue)
+            return false;
+        tempPath = result.Value.filePath;
 
         return true;
     }
