@@ -88,9 +88,8 @@ public class DragSelect : IBaseUpdatable
         
         float width = Math.Abs(this.firstMousePos.x - lastMousePos.x);
         float height = Math.Abs(this.firstMousePos.y - lastMousePos.y);
-        
-        Vector2 direction = (lastMousePos - this.firstMousePos).Normalized;
-        this.selectionBox.center = this.firstMousePos + new Vector2(direction.x * width / 2, direction.y * height / 2);
+
+        this.selectionBox.center = (this.firstMousePos + lastMousePos) / 2f;
         this.selectionBox.size = new Vector2(width, height);
 
         this.visual.Width = width;
