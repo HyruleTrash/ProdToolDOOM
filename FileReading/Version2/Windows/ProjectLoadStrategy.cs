@@ -75,6 +75,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 
                 foreach (Line line in Project.instance.levels[Project.instance.CurrentLevel].Lines) line.Init();
                 foreach (Point point in Project.instance.levels[Project.instance.CurrentLevel].Points) point.Init();
+                foreach (Entity entity in Project.instance.levels[Project.instance.CurrentLevel].Entities) entity.Init();
                 
                 // TODO remove this
                 Debug.Log($"Levels: {Project.instance.levels.Count}");

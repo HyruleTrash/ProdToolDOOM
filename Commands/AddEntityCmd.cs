@@ -1,31 +1,36 @@
-﻿namespace ProdToolDOOM;
+﻿using Microsoft.Xna.Framework.Graphics;
 
-public class AddEntityCmd(Project project, Vector2 initialPosition) : ICommand
+namespace ProdToolDOOM;
+
+public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D entityTexture, WindowInstance windowRef) : ICommand
 {
     private Entity? entity;
-    private int? levelId;
+    private int levelId;
     
     public void Execute()
     {
-        if (project.entityDatas.Count == 0 || project.levels.Count == 0 ||
-            project.CurrentLevel > project.levels.Count - 1)
+        if (projectRef.entityDatas.Count == 0 || projectRef.levels.Count == 0 ||
+            projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
-        this.entity ??= new Entity(0, initialPosition);
-        this.levelId ??= project.CurrentLevel;
+        this.levelId = projectRef.CurrentLevel;
+        this.entity ??= new Entity(this.levelId, entityTexture, windowRef, projectRef, projectRef.levels[this.levelId].levelObjectIdCounter++, initialPosition);
+        this.entity.Init();
         
         Debug.Log($"Adding entity to level {this.levelId}!");
         
-        project.entityDatas[0].AddEntityRegistration(this.entity);
-        project.levels[this.levelId.Value].Add(this.entity);
+        projectRef.entityDatas[0].AddEntityRegistration(this.entity);
+        projectRef.levels[this.levelId].Add(this.entity);
     }
 
     public void Undo()
     {
-        if (this.entity == null || this.levelId == null)
+        if (this.entity == null)
             return;
         Debug.Log($"Removing entity from level {this.levelId}!");
         
-        project.entityDatas[this.entity.DataId].RemoveEntityRegistration(this.entity);
-        project.levels[this.levelId.Value].Remove(this.entity);
+        projectRef.entityDatas[this.entity.LevelObjectId].RemoveEntityRegistration(this.entity);
+        projectRef.levels[this.levelId].Remove(this.entity);
+        
+        if (this.entity.icon != null) this.entity.Hide();
     }
 }

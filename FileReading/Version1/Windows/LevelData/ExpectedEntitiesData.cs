@@ -1,10 +1,12 @@
 ﻿#if WINDOWS
 using System.Xml;
+using Microsoft.Xna.Framework.Graphics;
+
 namespace ProdToolDOOM.Version1;
 
 public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
 {
-    private Entity entity = new();
+    private Entity? entity;
     private readonly ExpectedLevelData referenceLevelData;
 
     public ExpectedEntitiesData(ExpectedLevelData referenceLevelData)
@@ -15,17 +17,26 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         
     public void loadEntry(XmlReader reader)
     {
+        if (this.entity == null)
+        {
+            Texture2D? entityTexture = Program.instance.Content.Load<Texture2D>("Icons/Entity");
+            this.entity = new Entity(-1, entityTexture, Program.instance, Project.instance, -1, Vector2.Zero);
+        }
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        if (reader.Name == "DataId")
-            this.entity.DataId = reader.ReadElementContentAsInt();
-        else if (reader.Name == "Position") this.entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
+        if (reader.Name == "DataId") this.entity.DataId = reader.ReadElementContentAsInt();
+        if (reader.Name == "Position") this.entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
     }
 
     public void saveEntry()
     {
-        this.referenceLevelData.level.Add(new Entity(this.entity));
+        if (this.entity == null) return;
+        Debug.Log($"Saving entity: {this.entity}");
+        this.referenceLevelData.level.Add(this.entity);
+        Project.instance.entityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
+        this.entity.UpdateVisualPosition(Program.instance.GetWindowSize());
+        this.entity = null;
     }
 }
 #endif
