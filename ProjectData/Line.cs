@@ -100,9 +100,12 @@ public class Line : Level.Object, IDisposable
         point1.onDispose += EvaluateVisibility;
         point1.onShowEvent += EvaluateVisibility;
         point1.onHideEvent += EvaluateVisibility;
+        point1.onVisualMoved += EvaluatePolygonVisual;
+        
         point2.onDispose += EvaluateVisibility;
         point2.onShowEvent += EvaluateVisibility;
         point2.onHideEvent += EvaluateVisibility;
+        point2.onVisualMoved += EvaluatePolygonVisual;
     }
     
     public void UpdateVisualPosition(Vector2 screenSize)
@@ -128,6 +131,7 @@ public class Line : Level.Object, IDisposable
                 point1.onDispose -= EvaluateVisibility;
                 point1.onShowEvent -= EvaluateVisibility;
                 point1.onHideEvent -= EvaluateVisibility;
+                point1.onVisualMoved -= EvaluatePolygonVisual;
                 return;
             }
 
@@ -135,6 +139,7 @@ public class Line : Level.Object, IDisposable
             point2.onDispose -= EvaluateVisibility;
             point2.onShowEvent -= EvaluateVisibility;
             point2.onHideEvent -= EvaluateVisibility;
+            point2.onVisualMoved -= EvaluatePolygonVisual;
         }
         catch (Exception _)
         {
@@ -182,6 +187,34 @@ public class Line : Level.Object, IDisposable
 
         CreateRemoveCommand();
         this.removeCommand.Execute();
+    }
+
+    public void EvaluatePolygonVisual()
+    {
+        Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
+        Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
+        if (point1 == null || point2 == null)
+            return;
+        
+        Vector2 point1Pos = point1.position;
+        Vector2 point2Pos = point2.position;
+
+        float distance = Vector2.GetDistance(point1Pos, point2Pos);
+        Vector2 direction = Vector2.GetDirection(point1Pos, point2Pos);
+        this.midPoint = point1Pos + direction * (distance / 2f);
+        this.position = this.midPoint;
+        
+        ICollection<System.Numerics.Vector2> polygonPoints = new List<System.Numerics.Vector2>
+        {
+            new (point1Pos.x - this.midPoint.x, point1Pos.y - this.midPoint.y),
+            new (point2Pos.x - this.midPoint.x, point2Pos.y - this.midPoint.y)
+        };
+        
+        this.icon?.SetPoints(polygonPoints);
+        this.selectedIcon?.SetPoints(polygonPoints);
+        
+        Vector2 screenSize = Program.instance.GetWindowSize();
+        UpdateVisualPosition(screenSize);
     }
 
     private void CreateRemoveCommand() => this.removeCommand ??= new RemoveLineCmd(Project.instance, this);

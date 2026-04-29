@@ -26,6 +26,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
     private readonly Project projectRef;
 
     public Action onDispose;
+    public Action onVisualMoved;
 
     public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef)
     {
@@ -121,6 +122,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         MouseState mouse = this.windowRef.Mouse.currentMouseState;
         if (mouse.LeftButton == ButtonState.Released) this.beingMoved = false;
         this.Position = this.windowRef.Mouse.GetMousePosition();
+        this.onVisualMoved?.Invoke();
         UpdateVisualPosition(this.windowRef.GetWindowSize());
     }
 
