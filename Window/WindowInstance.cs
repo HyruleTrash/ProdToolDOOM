@@ -26,7 +26,7 @@ public class WindowInstance : Game
     private Window.ResizeComponent? resizeComponent;
     private Window.DragComponent? dragComponent;
 
-    protected StackPanel topBarRight;
+    public StackPanel TopBarRight { get; private set; }
     protected StackPanel topBarLeft;
     
     private Texture2D closeIcon;
@@ -92,9 +92,9 @@ public class WindowInstance : Game
 
     private void LoadUIContainers()
     {
-        this.dragComponent.LoadUI();
+        this.dragComponent?.LoadUI();
 
-        this.topBarRight = new StackPanel
+        this.TopBarRight = new StackPanel
         {
             Visual =
             {
@@ -103,7 +103,7 @@ public class WindowInstance : Game
             X = this.gum.CanvasWidth - UIParams.borderPadding,
             Y = UIParams.borderPadding
         };
-        this.topBarRight.Anchor(Anchor.TopRight);
+        this.TopBarRight.Anchor(Anchor.TopRight);
 
         this.topBarLeft = new StackPanel
         {
@@ -166,15 +166,15 @@ public class WindowInstance : Game
 
             this.shouldCallOnScreenSizeChanged = true;
         };
-        this.topBarRight.AddChild(maximizeButton);
-        this.topBarRight.AddChild(minimizeButton);
-        this.topBarRight.AddChild(exitButton);
+        this.TopBarRight.AddChild(maximizeButton);
+        this.TopBarRight.AddChild(minimizeButton);
+        this.TopBarRight.AddChild(exitButton);
     }
 
     private void FinalizeUI()
     {
         this.dragComponent?.FinalizeUI();
-        this.topBarRight.AddToRoot();
+        this.TopBarRight.AddToRoot();
         this.topBarLeft.AddToRoot();
 
         this.rightClickManager = new();

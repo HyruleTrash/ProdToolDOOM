@@ -42,6 +42,9 @@ public static class UIParams
     // button specific
     private static Dictionary<Button, CustomButtonVisual> custombuttons = [];
     
+    // popups
+    public const float popupPadding = 50f;
+    
     public static void SetDefaultButton(Button button)
     {
         CustomButtonVisual customVisual = new(button);

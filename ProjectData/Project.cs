@@ -49,13 +49,20 @@ public class Project
     
     // UI
     private readonly ProjectFeature[] projectFeatures;
-    private StackPanel inProjectStack = null!;
-    private readonly ProjectFeature[] inProjectFeatures;
-    private ContainerRuntime toolContainer = null!;
+    private StackPanel inProjectStackLeft = null!;
+    private StackPanel inProjectStackRight = null!;
+    private readonly ProjectFeatureInstance[] inProjectFeatures;
+    public ContainerRuntime ToolContainer { get; private set; }
     private readonly ToolBarFeature toolBar;
     public ContainerRuntime canvasContainer = null!;
     public ContainerRuntime popUpContainer = null!;
     private readonly GumService gum;
+
+    private class ProjectFeatureInstance(ProjectFeature instance, bool isLeft)
+    {
+        public ProjectFeature instance { get; } = instance;
+        public bool isLeft { get; } = isLeft;
+    }
 
     public Project(GumService gum)
     {
@@ -68,9 +75,10 @@ public class Project
         ];
         this.inProjectFeatures =
         [
-            new SaveFeature(this),
-            new ExportFeature(this),
-            new SwitchLevelFeature(this),
+            new ProjectFeatureInstance(new SaveFeature(this),  true),
+            new ProjectFeatureInstance(new ExportFeature(this),  true),
+            new ProjectFeatureInstance(new SwitchLevelFeature(this),  false),
+            new ProjectFeatureInstance(new EntityDataManageFeature(this), false)
         ];
         this.toolBar = new ToolBarFeature(gum, this);
     }
@@ -81,8 +89,7 @@ public class Project
     /// <returns>true if strategy is unset, false if it is set</returns>
     public bool CheckLoadStrategy()
     {
-        if (this.loadStrat == null) this.loadStrat = new ProjectLoadStrategy();
-
+        this.loadStrat ??= new ProjectLoadStrategy();
         return this.loadStrat == null;
     }
 
@@ -92,8 +99,7 @@ public class Project
     /// <returns>true if strategy is unset, false if it is set</returns>
     public bool CheckSaveStrategy()
     {
-        if (this.saveStrat == null) this.saveStrat = new ProjectSaveStrategy();
-
+        this.saveStrat ??= new ProjectSaveStrategy();
         return this.saveStrat == null;
     }
 
@@ -102,15 +108,17 @@ public class Project
         foreach (ProjectFeature projectFeature in this.projectFeatures)
             projectFeature.LoadUI(mainPanel);
 
-        this.inProjectStack = new StackPanel
-        {
-            IsVisible = false
-        };
-        this.filePathChanged += (newPath) => { this.inProjectStack.IsVisible = newPath != string.Empty; };
-        mainPanel.AddChild(this.inProjectStack);
+        this.inProjectStackLeft = new StackPanel { IsVisible = false };
+        this.inProjectStackRight = new StackPanel { IsVisible = false };
+        mainPanel.AddChild(this.inProjectStackLeft);
+        Program.instance.TopBarRight.AddChild(this.inProjectStackRight);
         
-        foreach (ProjectFeature projectFeature in this.inProjectFeatures) 
-            projectFeature.LoadUI(this.inProjectStack);
+        this.filePathChanged += (newPath) =>
+        {
+            bool state = newPath != string.Empty;
+            this.inProjectStackLeft.IsVisible = state;
+            this.inProjectStackRight.IsVisible = state;
+        };
 
         // all level objects will go here
         this.canvasContainer = new ContainerRuntime
@@ -133,7 +141,7 @@ public class Project
         this.popUpContainer.AddToRoot();
 
         // Tools
-        this.toolContainer = new ContainerRuntime
+        this.ToolContainer = new ContainerRuntime
         {
             Width = this.gum.CanvasWidth,
             Height = this.gum.CanvasHeight,
@@ -141,8 +149,8 @@ public class Project
             Y = 0,
             Visible = false
         };
-        this.filePathChanged += (newPath) => { this.toolContainer.Visible = newPath != string.Empty; };
-        this.toolContainer.AddToRoot();
+        this.filePathChanged += (newPath) => { this.ToolContainer.Visible = newPath != string.Empty; };
+        this.ToolContainer.AddToRoot();
         
         Program.instance.onScreenSizeChange += size =>
         {
@@ -150,11 +158,16 @@ public class Project
             this.canvasContainer.Height = size.y;
             this.popUpContainer.Width = size.x;
             this.popUpContainer.Height = size.y;
-            this.toolContainer.Width = size.x;
-            this.toolContainer.Height = size.y;
+            this.ToolContainer.Width = size.x;
+            this.ToolContainer.Height = size.y;
         };
+        
+        foreach (ProjectFeatureInstance projectFeature in this.inProjectFeatures.Where(i => i.isLeft)) 
+            projectFeature.instance.LoadUI(this.inProjectStackLeft);
+        foreach (ProjectFeatureInstance projectFeature in this.inProjectFeatures.Where(i => !i.isLeft)) 
+            projectFeature.instance.LoadUI(this.inProjectStackRight);
 
-        this.toolBar.LoadUI(this.toolContainer);
+        this.toolBar.LoadUI(this.ToolContainer);
     }
 
     public void ResetData()
