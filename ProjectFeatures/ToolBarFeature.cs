@@ -2,6 +2,7 @@
 using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
 using MonoGameGum;
+using ProdToolDOOM.ProjectFeatures.Popups;
 using ProdToolDOOM.ProjectFeatures.Tools;
 using Button = Gum.Forms.Controls.Button;
 using static Microsoft.Xna.Framework.Color;
@@ -17,7 +18,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
     private Button addPointToLevelButton = null!;
 
     private void AddLevel() => Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(project));
-    private void AddEntityData() => Program.instance.cmdHistory.ApplyCmd(new AddEntityDataCmd(project));
+    private void AddEntityData() => EntityCreationPopup.ToggleVisibility();
     private void AddEntity() => Program.instance.toolManager?.SetTool(typeof(EntityPlacerTool));
     
     private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));

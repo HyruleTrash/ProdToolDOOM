@@ -52,8 +52,9 @@ public class Project
     private StackPanel inProjectStack = null!;
     private readonly ProjectFeature[] inProjectFeatures;
     private ContainerRuntime toolContainer = null!;
-    private ToolBarFeature toolBar;
+    private readonly ToolBarFeature toolBar;
     public ContainerRuntime canvasContainer = null!;
+    public ContainerRuntime popUpContainer = null!;
     private readonly GumService gum;
 
     public Project(GumService gum)
@@ -111,6 +112,7 @@ public class Project
         foreach (ProjectFeature projectFeature in this.inProjectFeatures) 
             projectFeature.LoadUI(this.inProjectStack);
 
+        // all level objects will go here
         this.canvasContainer = new ContainerRuntime
         {
             Width = this.gum.CanvasWidth,
@@ -119,6 +121,16 @@ public class Project
             Y = 0,
         };
         this.canvasContainer.AddToRoot();
+        
+        // used by extra screens
+        this.popUpContainer = new ContainerRuntime
+        {
+            Width = this.gum.CanvasWidth,
+            Height = this.gum.CanvasHeight,
+            X = 0,
+            Y = 0,
+        };
+        this.popUpContainer.AddToRoot();
 
         // Tools
         this.toolContainer = new ContainerRuntime
@@ -136,6 +148,8 @@ public class Project
         {
             this.canvasContainer.Width = size.x;
             this.canvasContainer.Height = size.y;
+            this.popUpContainer.Width = size.x;
+            this.popUpContainer.Height = size.y;
             this.toolContainer.Width = size.x;
             this.toolContainer.Height = size.y;
         };

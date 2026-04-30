@@ -2,17 +2,20 @@
 
 public class EntityData
 {
-    public string ImagePath { get => this.imagePath; set => this.imagePath = value; }
-    public string Name { get => this.name; set => this.name = value; }
-    private string imagePath = "No image path";
-    private string name = "Please fill in a name";
-    private List<Entity> registeredEntities = [];
+    public string ImagePath { get; set; }
+    public string Name { get; set; }
+    private readonly List<Entity> registeredEntities = [];
 
-    public EntityData() { }
+    public EntityData(string name = "Please fill in a name", string imagePath = "No image path")
+    {
+        this.Name = name;
+        this.ImagePath = imagePath;
+    }
+    
     public EntityData(EntityData other)
     {
-        this.name = other.Name;
-        this.imagePath = other.ImagePath;
+        this.Name = other.Name;
+        this.ImagePath = other.ImagePath;
     }
     
     public void AddEntityRegistration(Entity entity) => this.registeredEntities.Add(entity);
