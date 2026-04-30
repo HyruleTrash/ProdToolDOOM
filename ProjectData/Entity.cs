@@ -16,6 +16,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     public int DataId { get; set; }
 
     public SpriteRuntime? icon;
+    private TextRuntime? nameText;
     private SpriteRuntime? selectedIcon;
     private ContainerRuntime? iconContainer;
     
@@ -81,7 +82,14 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
         };
         this.iconContainer.AddChild(this.selectedIcon);
         
-        if (this.icon.Visible) this.projectRef.canvasContainer.AddChild(this.iconContainer);
+        this.nameText = new TextRuntime { Width = 200f };
+        UpdateName();
+        
+        if (this.icon.Visible)
+        {
+            this.projectRef.canvasContainer.AddChild(this.iconContainer);
+            this.projectRef.canvasContainer.AddChild(this.nameText);
+        }
 
         this.iconContainer.RightClick += HandleRightClick;
         this.iconContainer.Dragging += HandleLeftClickHold;
@@ -92,6 +100,11 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
         this.projectRef.onCurrentLevelChanged += OnLevelChanged;
     }
 
+    public void UpdateName()
+    {
+        if (this.nameText != null) this.nameText.Text = this.projectRef.TryGetEntityName(this.DataId) ?? "Unnamed";
+    }
+
     private void OnLevelChanged(int newLevelId)
     {
         if (newLevelId != this.LevelId)
@@ -100,7 +113,10 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
             return;
         }
 
-        if (this.iconContainer is { Parent: null }) this.projectRef.canvasContainer.AddChild(this.iconContainer);
+        if (this.iconContainer is { Parent: null }) 
+            this.projectRef.canvasContainer.AddChild(this.iconContainer);
+        if (this.nameText is { Parent: null }) 
+            this.projectRef.canvasContainer.AddChild(this.nameText);
         if (this.icon != null) this.icon.Visible = true;
     }
 
@@ -118,8 +134,16 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     public void UpdateVisualPosition(Vector2 screenSize)
     {
         if (this.icon == null) return;
-        this.iconContainer.X = this.Position.x - (float)this.entityTextureRef.Width / 2 + screenSize.x / 2;
-        this.iconContainer.Y = this.Position.y - (float)this.entityTextureRef.Height / 2 + screenSize.y / 2;
+        
+        if (this.iconContainer != null)
+        {
+            this.iconContainer.X = this.Position.x - (float)this.entityTextureRef.Width / 2 + screenSize.x / 2;
+            this.iconContainer.Y = this.Position.y - (float)this.entityTextureRef.Height / 2 + screenSize.y / 2;
+        }
+
+        if (this.nameText == null) return;
+        this.nameText.X = this.Position.x - this.nameText.Width / 2 + screenSize.x / 2;
+        this.nameText.Y = this.Position.y - this.nameText.Height / 2 + screenSize.y / 2;
     }
     
     public void Update(float dt, WindowInstance _)
@@ -139,6 +163,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     public void Dispose()
     {
         if (this.iconContainer != null) this.iconContainer.Parent = null;
+        if (this.nameText != null) this.nameText.Parent = null;
     }
 
     protected override void OnShow()

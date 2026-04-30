@@ -26,5 +26,28 @@ public static class RightClickRegister
                         Program.instance.cmdHistory.ApplyCmd(new RemoveLineCmd(Project.instance, ln, manager.Reset));
                 })
         ]);
+        manager.AddOptions<Entity>([
+            new RightClickManager.RightClickOption(
+                "Remove", 
+                () =>
+                {
+                    if (manager.currentVisual is null)
+                        return;
+                    if (manager.currentVisual?.currentSelection is Entity e)
+                        Program.instance.cmdHistory.ApplyCmd(new RemoveEntityCmd(Project.instance, e, manager.Reset));
+                }),
+            new RightClickManager.RightClickOption(
+                "Set name", 
+                () =>
+                {
+                    if (manager.currentVisual is null)
+                        return;
+                    if (manager.currentVisual?.currentSelection is Entity e)
+                    {
+                        EntitySetIdPopup.ToggleVisibility();
+                        EntitySetIdPopup.Instance.SetCurrentSelection(e);
+                    }
+                })
+        ]);
     }
 }

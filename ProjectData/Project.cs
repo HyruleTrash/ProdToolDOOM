@@ -193,4 +193,7 @@ public class Project
         this.entityDatas.Remove(id);
         this.onEntityDataChanged?.Invoke(this.EntityDatas);
     }
+
+    public string? TryGetEntityName(int dataId) => 
+        (from keyValuePair in this.entityDatas where keyValuePair.Key == dataId select keyValuePair.Value.Name).FirstOrDefault();
 }

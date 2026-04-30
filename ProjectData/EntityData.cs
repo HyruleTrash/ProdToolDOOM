@@ -24,6 +24,9 @@ public class EntityData
     public void SetEntityRegistration(int i)
     {
         foreach (Entity entity in this.registeredEntities)
+        {
             entity.DataId = i;
+            entity.UpdateName();
+        }
     }
 }
