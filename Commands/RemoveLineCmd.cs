@@ -1,28 +1,20 @@
 ﻿namespace ProdToolDOOM;
 
-public class RemoveLineCmd(Project project, Line tempLine, Action? onExecuted = null) : ICommand
+public class RemoveLineCmd : RemoveLevelObjectCmd<Line>
 {
-    private Line? line;
-    
-    public void Execute()
+    public RemoveLineCmd(Project project, Line tempLine, Action? onExecuted = null) : base(project, tempLine, onExecuted) { }
+
+    protected override void OnExecute()
     {
-        if (tempLine == null)
-            return;
-        this.line ??= tempLine;
-        Debug.Log($"Removing line from level {this.line.LevelId}!");
-        
-        project.levels[this.line.LevelId].Remove(this.line);
-        if (this.line.icon != null) this.line.Hide();
-        onExecuted?.Invoke();
+        Debug.Log($"Removing line from level {this.levelObj.LevelId}!");
+        this.projectRef.levels[this.levelObj.LevelId].Remove(this.levelObj);
+        if (this.levelObj.icon != null) this.levelObj.Hide();
     }
 
-    public void Undo()
+    protected override void OnUndo()
     {
-        if (project.levels.Count == 0 || project.CurrentLevel > project.levels.Count - 1)
-            return;
-        
-        Debug.Log($"Adding line to level {this.line.LevelId}!");
-        project.levels[this.line.LevelId].Add(this.line);
-        if (this.line.icon != null) this.line.Show();
+        Debug.Log($"Adding line to level {this.levelObj.LevelId}!");
+        this.projectRef.levels[this.levelObj.LevelId].Add(this.levelObj);
+        if (this.levelObj.icon != null) this.levelObj.Show();
     }
 }

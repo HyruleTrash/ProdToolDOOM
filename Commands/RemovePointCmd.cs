@@ -2,29 +2,21 @@
 
 namespace ProdToolDOOM;
 
-public class RemovePointCmd(Project project, Point tempPoint, Action? onExecuted) : ICommand
+public class RemovePointCmd : RemoveLevelObjectCmd<Point>
 {
-    private Point? point;
-    
-    public void Execute()
+    public RemovePointCmd(Project project, Point tempPoint, Action? onExecuted = null) : base(project, tempPoint, onExecuted) { }
+
+    protected override void OnExecute()
     {
-        if (tempPoint == null)
-            return;
-        this.point ??= tempPoint;
-        Debug.Log($"Removing point from level {this.point.LevelId}!");
-        
-        project.levels[this.point.LevelId].Remove(this.point);
-        if (this.point.icon != null) this.point.Hide();
-        onExecuted?.Invoke();
+        Debug.Log($"Removing point from level {this.levelObj.LevelId}!");
+        this.projectRef.levels[this.levelObj.LevelId].Remove(this.levelObj);
+        if (this.levelObj.icon != null) this.levelObj.Hide();
     }
 
-    public void Undo()
+    protected override void OnUndo()
     {
-        if (project.levels.Count == 0 || project.CurrentLevel > project.levels.Count - 1)
-            return;
-        
-        Debug.Log($"Adding point to level {this.point.LevelId} {this.point.Position}!");
-        project.levels[this.point.LevelId].Add(this.point);
-        if (this.point.icon != null) this.point.Show();
+        Debug.Log($"Adding point to level {this.levelObj.LevelId} {this.levelObj.Position}!");
+        this.projectRef.levels[this.levelObj.LevelId].Add(this.levelObj);
+        if (this.levelObj.icon != null) this.levelObj.Show();
     }
 }

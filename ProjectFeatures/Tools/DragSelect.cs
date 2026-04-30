@@ -26,12 +26,23 @@ public class DragSelect : IBaseUpdatable
         
         RightClickManager.instance.AddOptions<DragSelect>([
             new RightClickManager.RightClickOption(
+                "Remove all", 
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectsCmd(Project.instance, GetSelectedObjects<Level.Object>)),
+                () => this.selectedObjects.Count > 1),
+            new RightClickManager.RightClickOption(
                 "Remove points", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemovePointsCmd(Project.instance, GetSelectedObjects<Point>)),
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Point, RemovePointCmd>(
+                    Project.instance, GetSelectedObjects<Point>, (prj, obj) => new RemovePointCmd(prj, obj))),
                 () => this.selectedObjects.OfType<Point>().Any()),
             new RightClickManager.RightClickOption(
                 "Remove lines", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLinesCmd(Project.instance, GetSelectedObjects<Line>)),
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Line, RemoveLineCmd>(
+                    Project.instance, GetSelectedObjects<Line>, (prj, obj) => new RemoveLineCmd(prj, obj))),
+                () => this.selectedObjects.OfType<Line>().Any()),
+            new RightClickManager.RightClickOption(
+                "Remove entities", 
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Entity, RemoveEntityCmd>(
+                    Project.instance, GetSelectedObjects<Entity>, (prj, obj) => new RemoveEntityCmd(prj, obj))),
                 () => this.selectedObjects.OfType<Line>().Any()),
             new RightClickManager.RightClickOption(
                 "Connect points", 
