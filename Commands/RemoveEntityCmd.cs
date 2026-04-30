@@ -8,7 +8,7 @@ public class RemoveEntityCmd : RemoveLevelObjectCmd<Entity>
     {
         Debug.Log($"Removing entity from level {this.levelObj.LevelId}!");
         this.projectRef.levels[this.levelObj.LevelId].Remove(this.levelObj);
-        if (this.projectRef.entityDatas.TryGetValue(this.levelObj.DataId, out EntityData? value))
+        if (this.projectRef.EntityDatas.TryGetValue(this.levelObj.DataId, out EntityData? value))
             value.RemoveEntityRegistration(this.levelObj);
         if (this.levelObj.icon != null) this.levelObj.Hide();
     }
@@ -17,7 +17,7 @@ public class RemoveEntityCmd : RemoveLevelObjectCmd<Entity>
     {
         Debug.Log($"Adding entity to level {this.levelObj.LevelId}!");
         this.projectRef.levels[this.levelObj.LevelId].Add(this.levelObj);
-        if (this.projectRef.entityDatas.TryGetValue(this.levelObj.DataId, out EntityData? value))
+        if (this.projectRef.EntityDatas.TryGetValue(this.levelObj.DataId, out EntityData? value))
             value.AddEntityRegistration(this.levelObj);
         if (this.levelObj.icon != null) this.levelObj.Show();
     }

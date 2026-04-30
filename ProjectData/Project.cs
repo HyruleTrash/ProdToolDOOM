@@ -29,8 +29,10 @@ public class Project
     private string filePath = string.Empty;
     public Action<string> filePathChanged;
     // data
-    public Dictionary<int, EntityData> entityDatas = [];
+    public IReadOnlyDictionary<int, EntityData> EntityDatas => this.entityDatas;
+    private Dictionary<int, EntityData> entityDatas = [];
     public int entityDataIdCounter = 0;
+    public Action<IReadOnlyDictionary<int, EntityData>> onEntityDataChanged;
     public List<Level> levels = [];
 
     public int CurrentLevel
@@ -172,10 +174,23 @@ public class Project
 
     public void ResetData()
     {
-        this.levels = new();
-        this.entityDatas = new();
+        this.levels = new List<Level>();
+        this.entityDatas = new Dictionary<int, EntityData>();
         this.CurrentLevel = -1;
         Program.instance.cmdHistory.Reset();
         this.canvasContainer.Children?.Clear();
+    }
+
+    public void AddEntityData(int id, EntityData entityData, bool silent = false)
+    {
+        this.entityDatas.Add(id, entityData);
+        if (silent) return;
+        this.onEntityDataChanged?.Invoke(this.EntityDatas);
+    }
+    
+    public void RemoveEntityData(int id)
+    {
+        this.entityDatas.Remove(id);
+        this.onEntityDataChanged?.Invoke(this.EntityDatas);
     }
 }

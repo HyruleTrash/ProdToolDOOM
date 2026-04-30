@@ -57,7 +57,7 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         writer.WriteString(Project.instance.entityDataIdCounter.ToString());
         writer.WriteEndElement();
         
-        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(Project.instance.entityDatas, "EntityData", writer);
+        new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(new Dictionary<int, EntityData>(Project.instance.EntityDatas), "EntityData", writer);
             
         writer.WriteEndElement();
         writer.WriteEndDocument();

@@ -177,7 +177,7 @@ public class WindowInstance : Game
         this.TopBarRight.AddToRoot();
         this.topBarLeft.AddToRoot();
 
-        this.rightClickManager = new();
+        this.rightClickManager = new RightClickManager();
         this.UpdateRegister.Add(this.rightClickManager);
     }
     

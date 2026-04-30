@@ -9,7 +9,7 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
     
     public void Execute()
     {
-        if (projectRef.entityDatas.Count == 0 || projectRef.levels.Count == 0 ||
+        if (projectRef.EntityDatas.Count == 0 || projectRef.levels.Count == 0 ||
             projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
         this.levelId = projectRef.CurrentLevel;
@@ -18,7 +18,7 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
         
         Debug.Log($"Adding entity to level {this.levelId}!");
         
-        if (projectRef.entityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
+        if (projectRef.EntityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
             value.AddEntityRegistration(this.entity);
         projectRef.levels[this.levelId].Add(this.entity);
     }
@@ -29,7 +29,7 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
             return;
         Debug.Log($"Removing entity from level {this.levelId}!");
         
-        if (projectRef.entityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
+        if (projectRef.EntityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
             value.RemoveEntityRegistration(this.entity);
         projectRef.levels[this.levelId].Remove(this.entity);
         

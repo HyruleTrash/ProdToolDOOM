@@ -43,7 +43,12 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 if (entry.Name != "projectData.xml") continue;
                 using XmlReader reader = XmlReader.Create(entry.Open());
                 Project.instance.ResetData();
-                ReadData(reader, new(this.expectedData));
+                ReadData(reader, new List<ExpectedData>(this.expectedData));
+                
+                foreach (Line line in Project.instance.levels[Project.instance.CurrentLevel].Lines) line.Init();
+                foreach (Point point in Project.instance.levels[Project.instance.CurrentLevel].Points) point.Init();
+                foreach (Entity entity in Project.instance.levels[Project.instance.CurrentLevel].Entities) entity.Init();
+                Project.instance.onEntityDataChanged?.Invoke(Project.instance.EntityDatas);
                 
                 // TODO remove this
                 Debug.Log($"Levels: {Project.instance.levels.Count}");
@@ -68,8 +73,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                         Debug.Log($"   Line: {line.Id} to {line.IdOther}");
                     }
                 }
-                Debug.Log($"EntityData: {Project.instance.entityDatas.Count}");
-                foreach (KeyValuePair<int, EntityData> data in Project.instance.entityDatas)
+                Debug.Log($"EntityData: {Project.instance.EntityDatas.Count}");
+                foreach (KeyValuePair<int, EntityData> data in Project.instance.EntityDatas)
                 {
                     Debug.Log(" EntityData:");
                     Debug.Log($"  Id: {data.Key}");
