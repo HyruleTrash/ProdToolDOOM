@@ -111,8 +111,22 @@ public class Line : Level.Object, IDisposable
         point2.onVisualMoved += EvaluatePolygonVisual;
         
         this.iconContainer.RightClick += HandleRightClick;
+        this.projectRef.onCurrentLevelChanged += OnLevelChanged;
     }
-    
+
+    private void OnLevelChanged(int newLevelId)
+    {
+        if (newLevelId != this.LevelId && this.icon != null)
+        {
+            this.icon.Visible = false;
+            return;
+        }
+        
+        if (this.iconContainer is { Parent: null }) 
+            this.projectRef.canvasContainer.AddChild(this.iconContainer);
+        if (this.icon != null) this.icon.Visible = true;
+    }
+
     public void UpdateVisualPosition(Vector2 screenSize)
     {
         if (this.iconContainer == null) return;

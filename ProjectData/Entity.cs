@@ -111,6 +111,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
         if (newLevelId != this.LevelId)
         {
             if (this.icon != null) this.icon.Visible = false;
+            if (this.nameText != null) this.nameText.Visible = false;
             return;
         }
 
