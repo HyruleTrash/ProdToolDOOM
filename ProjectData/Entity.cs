@@ -22,6 +22,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     
     private readonly Texture2D entityTextureRef;
     private bool beingMoved = false;
+    private Vector2 oldPosition;
     
     private readonly WindowInstance windowRef;
     private readonly Project projectRef;
@@ -125,6 +126,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
         if (this.beingMoved) return;
         this.beingMoved = true;
         this.windowRef.Mouse.IsDragging = true;
+        this.oldPosition = this.Position;
         Program.instance.UpdateRegister.Add(this);
     }
     
@@ -152,6 +154,7 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
         {
             Program.instance.UpdateRegister.Remove(this);
             this.windowRef.Mouse.IsDragging = false;
+            Program.instance.cmdHistory.ApplyCmd(new MoveEntityCmd(this, new Vector2(this.oldPosition), new Vector2(this.Position)));
             return;
         }
         MouseState mouse = this.windowRef.Mouse.currentMouseState;
@@ -169,12 +172,14 @@ public class Entity : Level.Object, IDisposable, IBaseUpdatable
     protected override void OnShow()
     {
         if (this.icon != null) this.icon.Visible = true;
+        if (this.nameText != null) this.nameText.Visible = true;
     }
 
     protected override void OnHide()
     {
         if (this.selectedIcon != null) this.selectedIcon.Visible = false;
         if (this.icon != null) this.icon.Visible = false;
+        if (this.nameText != null) this.nameText.Visible = false;
     }
 
     public override void ShowSelectionVisual()

@@ -21,6 +21,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
     
     private Texture2D pointTextureRef;
     private bool beingMoved = false;
+    private Vector2 oldPosition;
     
     private readonly WindowInstance windowRef;
     private readonly Project projectRef;
@@ -96,6 +97,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         if (this.beingMoved) return;
         this.beingMoved = true;
         this.windowRef.Mouse.IsDragging = true;
+        this.oldPosition = this.Position;
         Program.instance.UpdateRegister.Add(this);
     }
     
@@ -117,6 +119,7 @@ public class Point : Level.Object, IDisposable, IBaseUpdatable
         {
             Program.instance.UpdateRegister.Remove(this);
             this.windowRef.Mouse.IsDragging = false;
+            Program.instance.cmdHistory.ApplyCmd(new MovePointCmd(this, new Vector2(this.oldPosition), new Vector2(this.Position)));
             return;
         }
         MouseState mouse = this.windowRef.Mouse.currentMouseState;
