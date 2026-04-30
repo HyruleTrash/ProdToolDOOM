@@ -15,7 +15,8 @@ public class ExportFeature : ProjectFeature
         this.exportOptions =
         [
             new FbxExport(),
-            new ObjExport()
+            new ObjExport(),
+            new JsonExport()
         ];
     }
 

@@ -8,7 +8,7 @@ namespace ProdToolDOOM.ProjectFeatures;
 
 public class EntityManagerPopup : Popup<EntityManagerPopup>
 {
-    private readonly StackPanel panel;
+    private readonly ScrollViewer panel;
     private readonly ColoredRectangleRuntime popupBG;
     private readonly RectangleRuntime popupBGBorder;
 
@@ -23,7 +23,7 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         private readonly TextRuntime nameText;
         private readonly Button removeButton;
 
-        public EntityDataVisual(Texture2D closeIcon, StackPanel parent, int? id = null, EntityData? entityData = null)
+        public EntityDataVisual(Texture2D closeIcon, ScrollViewer parent, int? id = null, EntityData? entityData = null)
         {
             this.id = id;
             this.entityData = entityData;
@@ -95,7 +95,7 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
     {
         this.closeIcon = Program.instance.Content.Load<Texture2D>("Icons/Cross");
         
-        this.panel = new StackPanel { Spacing = 5, Orientation = Orientation.Vertical };
+        this.panel = new ScrollViewer { InnerPanel = { StackSpacing = 4 } };
         this.popupBG = new ColoredRectangleRuntime { Color = UIParams.defaultFillColor };
         this.popupBGBorder = new RectangleRuntime { Color = UIParams.defaultOutlineColor };
         
