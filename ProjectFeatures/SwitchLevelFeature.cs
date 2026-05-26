@@ -3,7 +3,7 @@ using Gum.Wireframe;
 using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class SwitchLevelFeature : SaveFeature
 {

@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class AddLinesCmd(Project project, WindowInstance windowRef, Func<bool, Point[]> getPoints) : ICommand
 {

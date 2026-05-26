@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 
-namespace ProdToolDOOM.Window;
+namespace DLLevelBuilder.Window;
 
 public static class Helper
 {

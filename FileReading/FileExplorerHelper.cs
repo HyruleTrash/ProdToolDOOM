@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 #endif
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public static class FileExplorerHelper
 {

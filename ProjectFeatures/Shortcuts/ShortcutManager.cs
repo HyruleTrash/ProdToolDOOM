@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class ShortcutManager : IBaseUpdatable
 {

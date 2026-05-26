@@ -3,13 +3,13 @@ using Gum.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
-using ProdToolDOOM.ProjectFeatures;
+using DLLevelBuilder.ProjectFeatures;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
-public class Point : Level.Object, IDisposable, IBaseUpdatable
+public class Point : LevelObject, IDisposable, IBaseUpdatable
 {
     public List<Line> lines = [];
     public SpriteRuntime? icon;

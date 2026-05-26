@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public interface IBaseUpdatable
 {

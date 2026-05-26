@@ -10,7 +10,7 @@ using RenderingLibrary;
 using Color = Microsoft.Xna.Framework.Color;
 using Button = Gum.Forms.Controls.Button;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public static class UIParams
 {

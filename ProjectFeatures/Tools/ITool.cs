@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace ProdToolDOOM.ProjectFeatures.Tools;
+namespace DLLevelBuilder.ProjectFeatures.Tools;
 
 public interface ITool : IBaseUpdatable
 {

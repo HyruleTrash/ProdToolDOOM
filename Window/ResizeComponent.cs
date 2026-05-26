@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace ProdToolDOOM.Window;
+namespace DLLevelBuilder.Window;
 using Point = Microsoft.Xna.Framework.Point;
 
 public class ResizeComponent : ResizableBox

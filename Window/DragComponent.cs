@@ -7,7 +7,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 
-namespace ProdToolDOOM.Window;
+namespace DLLevelBuilder.Window;
 
 public class DragComponent : IHoverable
 {

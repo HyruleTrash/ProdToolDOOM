@@ -3,7 +3,7 @@ using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 using ComboBox = Gum.Forms.Controls.ComboBox;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class EntitySetIdPopup : Popup<EntitySetIdPopup>
 {

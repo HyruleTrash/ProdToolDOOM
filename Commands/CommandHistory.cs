@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class CommandHistory
 {

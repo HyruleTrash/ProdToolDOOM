@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class ChangeEntityDataRef(Project projectRef, Entity tempEntity, int? newId) : ICommand
 {

@@ -1,6 +1,6 @@
 ﻿using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public static class BaseShortcuts
 {

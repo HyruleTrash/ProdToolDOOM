@@ -1,5 +1,5 @@
 ﻿
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public static class VersionManager
 {

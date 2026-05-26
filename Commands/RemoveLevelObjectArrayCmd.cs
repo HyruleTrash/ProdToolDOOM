@@ -1,11 +1,11 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 /// <summary>
 /// Used for the removal of a list of the same type of level object, this was made abstract to avoid duplicates
 /// </summary>
 /// <typeparam name="T">a level object, so a point, a line, or an entity</typeparam>
 /// <typeparam name="TU">the command used for removing such a level object instance</typeparam>
-public class RemoveLevelObjectArrayCmd<T, TU> : ICommand where T : Level.Object where TU : RemoveLevelObjectCmd<T>
+public class RemoveLevelObjectArrayCmd<T, TU> : ICommand where T : LevelObject where TU : RemoveLevelObjectCmd<T>
 {
     private T[]? levelObjects;
     private List<TU> actions = [];

@@ -1,10 +1,10 @@
 ﻿using MonoGameGum.GueDeriving;
-using ProdToolDOOM.ProjectFeatures;
+using DLLevelBuilder.ProjectFeatures;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
-public class Line : Level.Object, IDisposable
+public class Line : LevelObject, IDisposable
 {
     public int Id { get => this.point1Id; set => this.point1Id = value; }
     public int IdOther { get => this.point2Id; set => this.point2Id = value; }

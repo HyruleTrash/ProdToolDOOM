@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class MovePointCmd(Point pointRef, Vector2 oldPos, Vector2 newPos) : ICommand
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using ProdToolDOOM.ProjectFeatures.Tools;
+using DLLevelBuilder.ProjectFeatures.Tools;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public struct MouseVisualSetCall(MouseCursor givenType, int givenPriority)
 {

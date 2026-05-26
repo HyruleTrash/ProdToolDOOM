@@ -1,6 +1,6 @@
-﻿using ProdToolDOOM.ProjectFeatures;
+﻿using DLLevelBuilder.ProjectFeatures;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class RemovePointCmd : RemoveLevelObjectCmd<Point>
 {

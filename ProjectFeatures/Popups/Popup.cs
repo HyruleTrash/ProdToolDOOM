@@ -1,7 +1,7 @@
 ﻿using MonoGameGum.GueDeriving;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public abstract class Popup<T> where T : Popup<T>, new()
 {

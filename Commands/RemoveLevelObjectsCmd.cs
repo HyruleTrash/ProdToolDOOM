@@ -1,14 +1,14 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
-public class RemoveLevelObjectsCmd(Project project, Func<bool, Level.Object[]> getObjects) : ICommand
+public class RemoveLevelObjectsCmd(Project project, Func<bool, LevelObject[]> getObjects) : ICommand
 {
-    private Level.Object[]? objects;
+    private LevelObject[]? objects;
     private List<ICommand> actions = [];
     
     public void Execute()
     {
         this.objects ??= getObjects.Invoke(true);
-        foreach (Level.Object obj in this.objects)
+        foreach (LevelObject obj in this.objects)
         {
             if (obj == null) continue;
             ICommand? cmd = obj switch

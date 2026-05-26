@@ -4,7 +4,7 @@ using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 using Orientation = Gum.Forms.Controls.Orientation;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class EntityManagerPopup : Popup<EntityManagerPopup>
 {

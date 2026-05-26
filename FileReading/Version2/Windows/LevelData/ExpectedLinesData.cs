@@ -1,7 +1,7 @@
 ﻿
 #if WINDOWS
 using System.Xml;
-namespace ProdToolDOOM.Version2;
+namespace DLLevelBuilder.Version2;
 
 public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
 {

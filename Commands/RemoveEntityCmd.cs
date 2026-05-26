@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class RemoveEntityCmd : RemoveLevelObjectCmd<Entity>
 {

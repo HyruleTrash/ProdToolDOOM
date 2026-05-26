@@ -2,7 +2,7 @@
 
 #if WINDOWS
 using System.Xml;
-namespace ProdToolDOOM.Version1;
+namespace DLLevelBuilder.Version1;
 
 public class ProjectLoadStrategy : IProjectLoadStrategy
 {

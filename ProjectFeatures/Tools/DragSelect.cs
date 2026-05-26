@@ -4,7 +4,7 @@ using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
-namespace ProdToolDOOM.ProjectFeatures.Tools;
+namespace DLLevelBuilder.ProjectFeatures.Tools;
 
 public class DragSelect : IBaseUpdatable
 {
@@ -12,7 +12,7 @@ public class DragSelect : IBaseUpdatable
     private SelectionBox selectionBox = new();
     private RectangleRuntime visual = new();
     private Level? levelRef;
-    private List<Level.Object> selectedObjects = [];
+    private List<LevelObject> selectedObjects = [];
 
     public DragSelect()
     {
@@ -27,7 +27,7 @@ public class DragSelect : IBaseUpdatable
         RightClickManager.instance.AddOptions<DragSelect>([
             new RightClickManager.RightClickOption(
                 "Remove all", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectsCmd(Project.instance, GetSelectedObjects<Level.Object>)),
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectsCmd(Project.instance, GetSelectedObjects<LevelObject>)),
                 () => this.selectedObjects.Count > 1),
             new RightClickManager.RightClickOption(
                 "Remove points", 
@@ -65,16 +65,16 @@ public class DragSelect : IBaseUpdatable
     /// <summary>
     /// Gets an array of your desired type from the drag selection, it removes them from the selection also
     /// </summary>
-    /// <typeparam name="T">Level.Object</typeparam>
+    /// <typeparam name="T">Object</typeparam>
     /// <returns>list of objects in current drag selection</returns>
-    public T[] GetSelectedObjects<T>(bool shouldRemove = false) where T : Level.Object
+    public T[] GetSelectedObjects<T>(bool shouldRemove = false) where T : LevelObject
     {
         T[] result = this.selectedObjects.OfType<T>().ToArray();
         
         if (!shouldRemove)
             return result;
-        List<Level.Object> newSelection = this.selectedObjects.ToList();
-        foreach (Level.Object obj in this.selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
+        List<LevelObject> newSelection = this.selectedObjects.ToList();
+        foreach (LevelObject obj in this.selectedObjects.Where(obj => result.Contains(obj))) newSelection.Remove(obj);
         this.selectedObjects = newSelection;
         
         if (this.selectedObjects.Count == 0) 

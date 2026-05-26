@@ -3,7 +3,7 @@ using Gum.Wireframe;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum.GueDeriving;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D pointTexture, WindowInstance windowRef) : ICommand, IDisposable
 {

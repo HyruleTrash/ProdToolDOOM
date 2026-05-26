@@ -2,13 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
-using ProdToolDOOM.ProjectFeatures;
+using DLLevelBuilder.ProjectFeatures;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
-public class Entity : Level.Object, IDisposable, IBaseUpdatable
+public class Entity : LevelObject, IDisposable, IBaseUpdatable
 {
     public int LevelId { get; set; }
     public int LevelObjectId { get; set; }

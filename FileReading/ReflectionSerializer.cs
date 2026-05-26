@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Xml;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class ReflectionSerializer<T, TU> where T : notnull
 #if WINDOWS

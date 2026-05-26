@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class MoveEntityCmd(Entity entityRef, Vector2 oldPos, Vector2 newPos) : ICommand
 {

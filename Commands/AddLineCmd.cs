@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
 public class AddLineCmd(Project projectRef, WindowInstance windowRef, Point point1, Point point2) : ICommand, IDisposable
 {

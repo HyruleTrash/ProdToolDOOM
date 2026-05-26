@@ -2,7 +2,7 @@
 using Button = Gum.Forms.Controls.Button;
 using static Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class SaveNewFeature : SaveFeature
 {

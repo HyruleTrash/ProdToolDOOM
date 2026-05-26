@@ -1,6 +1,6 @@
-﻿namespace ProdToolDOOM;
+﻿namespace DLLevelBuilder;
 
-public abstract class RemoveLevelObjectCmd<T> : ICommand where T : Level.Object
+public abstract class RemoveLevelObjectCmd<T> : ICommand where T : LevelObject
 {
     protected T? levelObj;
     protected readonly Project projectRef;

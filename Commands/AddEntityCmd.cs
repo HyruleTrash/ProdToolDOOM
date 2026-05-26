@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D entityTexture, WindowInstance windowRef) : ICommand
 {

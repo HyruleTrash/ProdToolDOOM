@@ -1,35 +1,9 @@
 ﻿using MonoGameGum.GueDeriving;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class Level
 {
-    public abstract class Object
-    {
-        public Vector2 position;
-        public bool visible = true;
-        public Action onShowEvent;
-        public Action onHideEvent;
-
-        public void Show()
-        {
-            OnShow();
-            this.visible = true;
-            this.onShowEvent?.Invoke();
-        }
-
-        public void Hide()
-        {
-            OnHide();
-            this.visible = false;
-            this.onHideEvent?.Invoke();
-        }
-        protected abstract void OnShow();
-        protected abstract void OnHide();
-        public abstract void ShowSelectionVisual();
-        public abstract void HideSelectionVisual();
-    }
-    
     public int IdCounter { get => this.levelObjectIdCounter; }
     public List<Entity> Entities { get => this.entities; set => this.entities = value; }
     private List<Entity> entities = [];
@@ -40,7 +14,7 @@ public class Level
     private List<Point> points = [];
     private List<Line> lines = [];
 
-    public List<Object> levelObjects = [];
+    public List<LevelObject> levelObjects = [];
     public int levelObjectIdCounter = 0;
 
     public Level(Level? other = null)
@@ -52,7 +26,7 @@ public class Level
         this.lines = other.Lines;
     }
 
-    public void Add(Object? levelObject)
+    public void Add(LevelObject? levelObject)
     {
         if (levelObject == null)
             return;
@@ -71,7 +45,7 @@ public class Level
         }
     }
 
-    public void Remove(Object? levelObject)
+    public void Remove(LevelObject? levelObject)
     {
         if (levelObject == null)
             return;

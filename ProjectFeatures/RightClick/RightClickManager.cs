@@ -4,7 +4,7 @@ using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class RightClickManager : IBaseUpdatable
 {

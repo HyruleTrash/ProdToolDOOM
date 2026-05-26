@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ProdToolDOOM.ProjectFeatures;
-using ProdToolDOOM.ProjectFeatures.Tools;
+using DLLevelBuilder.ProjectFeatures;
+using DLLevelBuilder.ProjectFeatures.Tools;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class Program : WindowInstance
 {

@@ -1,4 +1,4 @@
-﻿namespace ProdToolDOOM.ProjectFeatures;
+﻿namespace DLLevelBuilder.ProjectFeatures;
 
 public static class RightClickRegister
 {

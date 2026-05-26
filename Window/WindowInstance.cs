@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
-using ProdToolDOOM.ProjectFeatures;
+using DLLevelBuilder.ProjectFeatures;
 using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace ProdToolDOOM;
+namespace DLLevelBuilder;
 
 public class WindowInstance : Game
 {
@@ -137,7 +137,7 @@ public class WindowInstance : Game
         {
             IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
-            ProdToolDOOM.Window.Helper.Minimize(handle);
+            DLLevelBuilder.Window.Helper.Minimize(handle);
         };
         
         Button maximizeButton = new()
@@ -155,12 +155,12 @@ public class WindowInstance : Game
 
             if (this.Fullscreen)
             {
-                ProdToolDOOM.Window.Helper.UnMaximize(handle);
+                DLLevelBuilder.Window.Helper.UnMaximize(handle);
                 this.Fullscreen = false;
             }
             else
             {
-                ProdToolDOOM.Window.Helper.Maximize(handle);
+                DLLevelBuilder.Window.Helper.Maximize(handle);
                 this.Fullscreen = true;
             }
 
@@ -264,7 +264,7 @@ public class WindowInstance : Game
 
     public bool WasMouseClickConsumedByGum() => this.gum.Cursor.WindowOver != null;
 
-    public bool IsFocused() => ProdToolDOOM.Window.Helper.HasFocus(this.Window.Handle);
+    public bool IsFocused() => DLLevelBuilder.Window.Helper.HasFocus(this.Window.Handle);
 
     public Vector2 GetWindowSize()
     {

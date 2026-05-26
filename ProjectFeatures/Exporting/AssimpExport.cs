@@ -1,6 +1,6 @@
 ﻿using Assimp;
 
-namespace ProdToolDOOM.ProjectFeatures.Exporting;
+namespace DLLevelBuilder.ProjectFeatures.Exporting;
 
 public static class AssimpExport
 {

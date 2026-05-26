@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace ProdToolDOOM.ProjectFeatures.Tools;
+namespace DLLevelBuilder.ProjectFeatures.Tools;
 
 public class EntityPlacerTool : BasePlacerTool
 {

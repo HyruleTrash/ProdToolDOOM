@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ProdToolDOOM.ProjectFeatures.Exporting;
+namespace DLLevelBuilder.ProjectFeatures.Exporting;
 
 public class JsonExport : ExportOption
 {
@@ -51,7 +51,7 @@ public class JsonExport : ExportOption
         public Line[] lines { get; set; }
     }
     
-    public override bool Export(string valueFilePath, ProdToolDOOM.Level level)
+    public override bool Export(string valueFilePath, DLLevelBuilder.Level level)
     {
         try
         {

@@ -3,7 +3,7 @@ using MonoGameGum.GueDeriving;
 using TextBox = Gum.Forms.Controls.TextBox;
 using Button = Gum.Forms.Controls.Button;
 
-namespace ProdToolDOOM.ProjectFeatures;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class EntityCreationPopup : Popup<EntityCreationPopup>
 {

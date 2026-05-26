@@ -2,7 +2,7 @@
 using System.Xml;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ProdToolDOOM.Version2;
+namespace DLLevelBuilder.Version2;
 
 public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
 {

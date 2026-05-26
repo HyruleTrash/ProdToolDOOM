@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
-namespace ProdToolDOOM.ProjectFeatures.Tools;
+namespace DLLevelBuilder.ProjectFeatures.Tools;
 
 public class PointPlacerTool : BasePlacerTool
 {
