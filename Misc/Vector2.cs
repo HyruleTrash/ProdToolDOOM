@@ -44,8 +44,14 @@ public class Vector2
     public static Vector2 operator -(Vector2 a) => new(-a.x, -a.y);
 
     // Equality check
-    public static bool operator ==(Vector2 lhs, Vector2 rhs) => lhs.x == rhs.x && lhs.y == rhs.y;
-    public static bool operator !=(Vector2 lhs, Vector2 rhs) => !(lhs == rhs);
+    public static bool operator ==(Vector2? lhs, Vector2? rhs)
+    {
+        if (lhs is null || rhs is null)
+            return lhs is null && rhs is null;
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    }
+
+    public static bool operator !=(Vector2? lhs, Vector2? rhs) => !(lhs == rhs);
 
     public override string ToString() => $"[{this.x},{this.y}]";
 

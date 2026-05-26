@@ -22,17 +22,12 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
     private Texture2D pointTextureRef;
     private bool beingMoved = false;
     private Vector2 oldPosition;
-    
-    private readonly WindowInstance windowRef;
-    private readonly Project projectRef;
 
     public Action onDispose;
     public Action onVisualMoved;
 
-    public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef)
+    public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef) : base(windowRef, projectRef)
     {
-        this.windowRef = windowRef;
-        this.projectRef = projectRef;
         this.position = point;
         this.pointTextureRef = pointTexture;
         this.LevelObjectId = levelObjectId;
@@ -101,16 +96,14 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
         Program.instance.UpdateRegister.Add(this);
     }
     
-    private void HandleRightClick(object? _, EventArgs __)
-    {
+    private void HandleRightClick(object? _, EventArgs __) => 
         RightClickManager.instance.ShowOptions<Point>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this, 1);
-    }
-
-    public void UpdateVisualPosition(Vector2 screenSize)
+    
+    public override void UpdateVisualPosition(Vector2 screenSize)
     {
-        if (this.icon == null) return;
-        this.iconContainer.X = this.Position.x - (float)this.pointTextureRef.Width / 2 + screenSize.x / 2;
-        this.iconContainer.Y = this.Position.y - (float)this.pointTextureRef.Height / 2 + screenSize.y / 2;
+        if (this.icon == null || this.iconContainer == null) return;
+        this.iconContainer.X = this.Position.x + this.offset.x - (float)this.pointTextureRef.Width / 2 + screenSize.x / 2;
+        this.iconContainer.Y = this.Position.y + this.offset.y - (float)this.pointTextureRef.Height / 2 + screenSize.y / 2;
     }
     
     public void Update(float dt, WindowInstance _)
@@ -124,7 +117,7 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
         }
         MouseState mouse = this.windowRef.Mouse.currentMouseState;
         if (mouse.LeftButton == ButtonState.Released) this.beingMoved = false;
-        this.Position = this.windowRef.Mouse.GetMousePosition();
+        this.Position = this.windowRef.Mouse.GetMousePosition() - this.offset;
         this.onVisualMoved?.Invoke();
         UpdateVisualPosition(this.windowRef.GetWindowSize());
     }

@@ -19,7 +19,7 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        this.line ??= new Line(Project.instance);
+        this.line ??= new Line(Project.instance, Program.instance);
 
         if (reader.Name == "Id")
             this.line.Id = reader.ReadElementContentAsInt();

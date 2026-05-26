@@ -85,6 +85,12 @@ public class Project
         this.toolBar = new ToolBarFeature(gum, this);
     }
 
+    public static Level TryGetCurrentLevel()
+    {
+        if (instance.currentLevel < 0 || instance.currentLevel >= instance.levels.Count) return null;
+        return instance.levels[instance.currentLevel];
+    }
+
     /// <summary>
     /// Checks the state of the current load strategy
     /// </summary>

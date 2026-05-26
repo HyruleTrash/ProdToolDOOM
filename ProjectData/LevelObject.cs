@@ -2,10 +2,20 @@
 
 public abstract class LevelObject
 {
-    public Vector2 position;
+    public Vector2 position = Vector2.Zero;
+    protected Vector2 offset = Vector2.Zero;
     public bool visible = true;
     public Action onShowEvent;
     public Action onHideEvent;
+    
+    protected readonly WindowInstance windowRef;
+    protected readonly Project projectRef;
+
+    protected LevelObject(WindowInstance windowRef, Project projectRef)
+    {
+        this.windowRef = windowRef;
+        this.projectRef = projectRef;
+    }
 
     public void Show()
     {
@@ -24,4 +34,12 @@ public abstract class LevelObject
     protected abstract void OnHide();
     public abstract void ShowSelectionVisual();
     public abstract void HideSelectionVisual();
+    
+    public void UpdateVisualOffset(Vector2 objectOffset)
+    {
+        this.offset = objectOffset;
+        UpdateVisualPosition(this.windowRef.GetWindowSize());
+    }
+    
+    public abstract void UpdateVisualPosition(Vector2 screenSize);
 }

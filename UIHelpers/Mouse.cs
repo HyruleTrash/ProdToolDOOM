@@ -29,6 +29,9 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
     
     public DragSelect? dragSelect;
     private bool shouldResetDrag;
+
+    private Vector2? originOfDragMove;
+    private Vector2? previousOffset;
     
     private List<MouseVisualSetCall> visualSetCalls = [];
     private WindowInstance windowRef = windowRef;
@@ -70,6 +73,12 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
 
     public void Update(float dt, WindowInstance _)
     {
+        UpdateDragSelect(dt);
+        UpdateDragMove();
+    }
+
+    private void UpdateDragSelect(float dt)
+    {
         this.dragSelect ??= new DragSelect();
         
         bool pressed = this.currentMouseState.LeftButton == ButtonState.Pressed;
@@ -88,5 +97,31 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
         if (released) this.shouldResetDrag = true;
 
         this.dragSelect.Update(dt, this.windowRef);
+    }
+    
+    private void UpdateDragMove()
+    {
+        Level currentLevel = Project.TryGetCurrentLevel();
+        if (currentLevel == null)
+            return;
+        
+        bool pressed = this.currentMouseState.MiddleButton == ButtonState.Pressed;
+        bool released = this.currentMouseState.MiddleButton == ButtonState.Released;
+
+        if (pressed && !this.windowRef.WasMouseClickConsumedByGum())
+        {
+            Vector2 mousePos = GetMousePosition();
+            if (this.originOfDragMove == null)
+                this.originOfDragMove = mousePos;
+            if (this.previousOffset == null)
+                this.previousOffset = currentLevel.GetOffset();
+            currentLevel.SetOffset(this.previousOffset + (mousePos - this.originOfDragMove));
+        }
+
+        if (released)
+        {
+            this.originOfDragMove = null;
+            this.previousOffset = null;
+        }
     }
 }

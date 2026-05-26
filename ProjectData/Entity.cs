@@ -23,12 +23,9 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
     private readonly Texture2D entityTextureRef;
     private bool beingMoved = false;
     private Vector2 oldPosition;
-    
-    private readonly WindowInstance windowRef;
-    private readonly Project projectRef;
 
     public Entity(int levelId, Texture2D entityTexture, WindowInstance windowRef, Project projectRef,
-        int levelObjectId = -1, Vector2? position = null, int dataId = -1)
+        int levelObjectId = -1, Vector2? position = null, int dataId = -1) : base(windowRef, projectRef)
     {
         this.LevelId = levelId;
         this.LevelObjectId = levelObjectId;
@@ -36,21 +33,16 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
             this.position = position;
         
         this.entityTextureRef = entityTexture;
-        this.windowRef = windowRef;
-        this.projectRef = projectRef;
-
         this.DataId = dataId;
     }
     
-    public Entity(Entity other, Texture2D entityTexture)
+    public Entity(Entity other, Texture2D entityTexture) : base(other.windowRef, other.projectRef)
     {
         this.LevelId = other.LevelId;
         this.LevelObjectId = other.LevelObjectId;
         this.position = other.position;
         
         this.entityTextureRef = entityTexture;
-        this.windowRef = other.windowRef;
-        this.projectRef = other.projectRef;
     }
 
     public void Init()
@@ -134,19 +126,19 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
     private void HandleRightClick(object? _, EventArgs __) => 
         RightClickManager.instance.ShowOptions<Entity>(new Vector2(this.windowRef.Mouse.currentMouseState.Position), this, 1);
 
-    public void UpdateVisualPosition(Vector2 screenSize)
+    public override void UpdateVisualPosition(Vector2 screenSize)
     {
         if (this.icon == null) return;
         
         if (this.iconContainer != null)
         {
-            this.iconContainer.X = this.Position.x - (float)this.entityTextureRef.Width / 2 + screenSize.x / 2;
-            this.iconContainer.Y = this.Position.y - (float)this.entityTextureRef.Height / 2 + screenSize.y / 2;
+            this.iconContainer.X = this.Position.x + this.offset.x - (float)this.entityTextureRef.Width / 2 + screenSize.x / 2;
+            this.iconContainer.Y = this.Position.y + this.offset.y - (float)this.entityTextureRef.Height / 2 + screenSize.y / 2;
         }
 
         if (this.nameText == null) return;
-        this.nameText.X = this.Position.x - this.nameText.Width / 2 + screenSize.x / 2;
-        this.nameText.Y = this.Position.y - this.nameText.Height / 2 + screenSize.y / 2;
+        this.nameText.X = this.Position.x + this.offset.x - this.nameText.Width / 2 + screenSize.x / 2;
+        this.nameText.Y = this.Position.y + this.offset.y - this.nameText.Height / 2 + screenSize.y / 2;
     }
     
     public void Update(float dt, WindowInstance _)
@@ -160,7 +152,7 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         }
         MouseState mouse = this.windowRef.Mouse.currentMouseState;
         if (mouse.LeftButton == ButtonState.Released) this.beingMoved = false;
-        this.Position = this.windowRef.Mouse.GetMousePosition();
+        this.Position = this.windowRef.Mouse.GetMousePosition() - this.offset;
         UpdateVisualPosition(this.windowRef.GetWindowSize());
     }
 

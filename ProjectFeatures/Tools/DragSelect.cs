@@ -94,7 +94,7 @@ public class DragSelect : IBaseUpdatable
             return false;
         Vector2 lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
 
-        this.levelRef ??= Project.instance.levels[Project.instance.CurrentLevel];
+        this.levelRef ??= Project.TryGetCurrentLevel();
         this.firstMousePos ??= new Vector2(lastMousePos);
         
         float width = Math.Abs(this.firstMousePos.x - lastMousePos.x);

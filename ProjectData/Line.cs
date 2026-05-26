@@ -19,26 +19,22 @@ public class Line : LevelObject, IDisposable
     private PolygonRuntime? selectedIcon;
     private ContainerRuntime? iconContainer;
     
-    private readonly WindowInstance windowRef;
-    private Project projectRef;
     private RemoveLineCmd removeCommand;
     public const float wallHeight = 5f;
 
-    public Line(Project projectRef, WindowInstance windowRef, int point1Id, int point2Id, int levelId) : this(projectRef)
+    public Line(Project projectRef, WindowInstance windowRef, int point1Id, int point2Id, int levelId) : base(windowRef, projectRef)
     {
         this.levelId = levelId;
         this.point1Id = point1Id;
         this.point2Id = point2Id;
-        this.windowRef = windowRef;
-        this.projectRef = projectRef;
     }
-    public Line(Project projectRef, Line line) : this(projectRef)
+    public Line(Project projectRef, Line line) : base(line.windowRef, projectRef)
     {
         this.levelId = line.levelId;
         this.point1Id = line.Id;
         this.point2Id = line.IdOther;
     }
-    public Line(Project projectRef) => this.projectRef = projectRef;
+    public Line(Project projectRef, WindowInstance windowRef) : base(windowRef, projectRef) { }
 
     public void Init()
     {
@@ -127,11 +123,11 @@ public class Line : LevelObject, IDisposable
         if (this.icon != null) this.icon.Visible = true;
     }
 
-    public void UpdateVisualPosition(Vector2 screenSize)
+    public override void UpdateVisualPosition(Vector2 screenSize)
     {
         if (this.iconContainer == null) return;
-        this.iconContainer.X = this.midPoint.x + screenSize.x / 2;
-        this.iconContainer.Y = this.midPoint.y + screenSize.y / 2;
+        this.iconContainer.X = this.midPoint.x + this.offset.x + screenSize.x / 2;
+        this.iconContainer.Y = this.midPoint.y + this.offset.y + screenSize.y / 2;
     }
     
     public void Dispose()

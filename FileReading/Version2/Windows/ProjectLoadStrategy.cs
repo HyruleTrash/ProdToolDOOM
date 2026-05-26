@@ -73,9 +73,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 if (Project.instance.CurrentLevel < 0 || Project.instance.CurrentLevel >= Project.instance.levels.Count)
                     return true;
                 
-                foreach (Line line in Project.instance.levels[Project.instance.CurrentLevel].Lines) line.Init();
-                foreach (Point point in Project.instance.levels[Project.instance.CurrentLevel].Points) point.Init();
-                foreach (Entity entity in Project.instance.levels[Project.instance.CurrentLevel].Entities) entity.Init();
+                foreach (Line line in Project.TryGetCurrentLevel().Lines) line.Init();
+                foreach (Point point in Project.TryGetCurrentLevel().Points) point.Init();
+                foreach (Entity entity in Project.TryGetCurrentLevel().Entities) entity.Init();
                 Project.instance.onEntityDataChanged?.Invoke(Project.instance.EntityDatas);
                 
                 // TODO remove this

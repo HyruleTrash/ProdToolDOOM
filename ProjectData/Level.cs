@@ -16,6 +16,8 @@ public class Level
 
     public List<LevelObject> levelObjects = [];
     public int levelObjectIdCounter = 0;
+    
+    private Vector2 objectOffset = Vector2.Zero;
 
     public Level(Level? other = null)
     {
@@ -67,5 +69,13 @@ public class Level
     public Point? GetPointById(int id)
     {
         return this.points.FirstOrDefault(point => point.LevelObjectId == id);
+    }
+
+    public Vector2 GetOffset() => this.objectOffset;
+
+    public void SetOffset(Vector2 newOffset)
+    {
+        this.objectOffset = newOffset;
+        foreach (LevelObject levelObject in this.levelObjects) levelObject.UpdateVisualOffset(newOffset);
     }
 }
