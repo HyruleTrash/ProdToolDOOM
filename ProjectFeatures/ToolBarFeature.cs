@@ -1,10 +1,8 @@
 ﻿using Gum.Forms.Controls;
-using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
 using MonoGameGum;
 using DLLevelBuilder.ProjectFeatures.Tools;
 using Button = Gum.Forms.Controls.Button;
-using static Microsoft.Xna.Framework.Color;
 
 namespace DLLevelBuilder.ProjectFeatures;
 

@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+
+namespace DLLevelBuilder;
 
 public abstract class RemoveLevelObjectCmd<T> : ICommand where T : LevelObject
 {

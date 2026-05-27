@@ -1,5 +1,4 @@
-﻿using Assimp;
-namespace DLLevelBuilder.ProjectFeatures.Exporting;
+﻿namespace DLLevelBuilder.ProjectFeatures.Exporting;
 
 public class FbxExport : ExportOption
 {

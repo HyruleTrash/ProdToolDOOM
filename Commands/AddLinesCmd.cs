@@ -1,4 +1,8 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace DLLevelBuilder;
 
 public class AddLinesCmd(Project project, WindowInstance windowRef, Func<bool, Point[]> getPoints) : ICommand
 {

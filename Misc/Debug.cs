@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+
+namespace DLLevelBuilder;
 
 public static class Debug
 {

@@ -1,4 +1,7 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+using System.Collections.Generic;
+
+namespace DLLevelBuilder;
 
 public class RemoveLevelObjectsCmd(Project project, Func<bool, LevelObject[]> getObjects) : ICommand
 {

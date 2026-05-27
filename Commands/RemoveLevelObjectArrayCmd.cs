@@ -1,4 +1,7 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+using System.Collections.Generic;
+
+namespace DLLevelBuilder;
 
 /// <summary>
 /// Used for the removal of a list of the same type of level object, this was made abstract to avoid duplicates

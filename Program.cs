@@ -1,8 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.ProjectFeatures.Tools;
-using Color = Microsoft.Xna.Framework.Color;
 
 namespace DLLevelBuilder;
 

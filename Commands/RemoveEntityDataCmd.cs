@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using System;
+
+namespace DLLevelBuilder;
 
 public class RemoveEntityDataCmd(Project projectRef, int? id, Action<int?, EntityData?> onChanged) : ICommand, IDisposable
 {

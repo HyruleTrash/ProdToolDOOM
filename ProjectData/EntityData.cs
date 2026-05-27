@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using System.Collections.Generic;
+
+namespace DLLevelBuilder;
 
 public class EntityData
 {

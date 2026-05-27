@@ -1,6 +1,7 @@
 ﻿
 
-using System.Runtime.CompilerServices;
+using System;
+using System.IO;
 #if WINDOWS
 using System.Windows.Forms;
 #endif

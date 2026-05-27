@@ -1,11 +1,10 @@
-﻿using Gum.Wireframe;
+﻿using System;
+using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using Color = Microsoft.Xna.Framework.Color;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace DLLevelBuilder.Window;
 
