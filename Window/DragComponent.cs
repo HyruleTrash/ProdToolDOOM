@@ -99,8 +99,5 @@ public class DragComponent : IHoverable
         this.rectangleVisual.AddChild(this.lineRectangleVisual);
     }
     
-    public void FinalizeUI()
-    {
-        this.rectangleVisual.AddToRoot();
-    }
+    public void FinalizeUI() => this.rectangleVisual.AddToRoot();
 }

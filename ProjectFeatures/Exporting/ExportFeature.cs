@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Gum.Forms.Controls;
 using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures.Exporting;
@@ -8,7 +9,7 @@ public class ExportFeature : ProjectFeature
 {
     private readonly Project projectRef;
     private readonly ExportOption[] exportOptions;
-    private Button exportButton = null!;
+    private MenuItem exportButton = null!;
 
     public ExportFeature(Project project)
     {
@@ -21,21 +22,22 @@ public class ExportFeature : ProjectFeature
         ];
     }
 
-    public override void LoadUI(object parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
         
-        this.exportButton = new Button
+        this.exportButton = new MenuItem
         {
-            Text = "Export Level",
+            Header = "Export Level",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.exportButton);
-        this.exportButton.Click += (_, _) => Export();
-
-        AddUI(parent, this.exportButton);
+        // UIParams.SetDefaultButton(this.exportButton);
+        this.exportButton.Clicked += (_, _) => Export();
+        menu.Items.Add(this.exportButton);
     }
+    
+    public override void SetVisible(bool state) => this.exportButton.IsVisible = state;
 
     private string GetFilters()
     {

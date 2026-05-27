@@ -9,6 +9,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using DLLevelBuilder.ProjectFeatures;
+using Gum.DataTypes;
+using Gum.Forms.DefaultVisuals;
+using static Gum.Forms.Controls.Orientation;
+using static Microsoft.Xna.Framework.Color;
 using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
@@ -27,8 +31,8 @@ public class WindowInstance : Game
     private Window.ResizeComponent? resizeComponent;
     private Window.DragComponent? dragComponent;
 
-    public StackPanel TopBarRight { get; private set; }
-    protected StackPanel topBarLeft;
+    protected Menu TopBarRight { get; private set; }
+    protected Menu topBarLeft;
     
     private Texture2D closeIcon;
     private Texture2D minimizeIcon;
@@ -95,61 +99,90 @@ public class WindowInstance : Game
     {
         this.dragComponent?.LoadUI();
 
-        this.TopBarRight = new StackPanel
-        {
-            Visual =
-            {
-                ChildrenLayout = ChildrenLayout.LeftToRightStack
-            },
-            X = this.gum.CanvasWidth - UIParams.borderPadding,
-            Y = UIParams.borderPadding
-        };
-        this.TopBarRight.Anchor(Anchor.TopRight);
-
-        this.topBarLeft = new StackPanel
+        this.topBarLeft = new Menu
         {
             X = UIParams.borderPadding,
-            Y = UIParams.borderPadding
+            Y = UIParams.borderPadding,
+            Height = UIParams.minButtonHeight,
+            Visual =
+            {
+                WidthUnits = DimensionUnitType.RelativeToChildren,
+            }
         };
+        ((MenuVisual)this.topBarLeft.Visual).Background.Color = Transparent;
         this.topBarLeft.Anchor(Anchor.TopLeft);
+
+        this.TopBarRight = new Menu
+        {
+            Y = UIParams.borderPadding,
+            Height = UIParams.minButtonHeight,
+            Visual =
+            {
+                WidthUnits = DimensionUnitType.RelativeToChildren,
+            }
+        };
+        ((MenuVisual)this.TopBarRight.Visual).Background.Color = Transparent;
+        this.TopBarRight.Anchor(Anchor.TopLeft);
+
+        this.onScreenSizeChange += _ => UpdateUISize();
+    }
+
+    private void UpdateUISize()
+    {
+        foreach (MenuItem item in this.topBarLeft.MenuItems) item.Visual.UpdateLayout();
+        foreach (MenuItem item in this.TopBarRight.MenuItems) item.Visual.UpdateLayout();
+        
+        this.topBarLeft.Visual.UpdateLayout();
+        this.TopBarRight.Visual.UpdateLayout();
+
+        this.topBarLeft.Width = GetFullWidth(this.topBarLeft);
+
+        float rightWidth = GetFullWidth(this.TopBarRight);
+        this.TopBarRight.Width = rightWidth;
+        this.TopBarRight.X = GetWindowWidth() - rightWidth - UIParams.borderPadding;
+
+        this.topBarLeft.Visual.UpdateLayout();
+        this.TopBarRight.Visual.UpdateLayout();
+        return;
+
+        float GetFullWidth(Menu menu)
+        {
+            float fullWidth = 0;
+            foreach (MenuItem item in menu.MenuItems)
+            {
+                MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
+
+                float baseContainerWidth = itemVisual.ContainerInstance.GetAbsoluteWidth();
+                float arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
+
+                float realCalculatedItemWidth = baseContainerWidth + arrowOffset;
+                fullWidth += realCalculatedItemWidth;
+            }
+            return fullWidth;
+        }
     }
     
     protected virtual void LoadUI()
     {
-        Button exitButton = new()
-        {
-            Text = "X",
-            Width = UIParams.minBoxSize,
-            Height = UIParams.minBoxSize,
-        };
-        UIParams.SetDefaultButton(exitButton);
-        UIParams.AddIconToButton(exitButton, this.closeIcon);
-        exitButton.Click += (_, _) => Exit();
+        MenuItem exitButton = new() { Header = "X", };
+        // UIParams.SetDefaultButton(exitButton);
+        // UIParams.AddIconToButton(exitButton, this.closeIcon);
+        exitButton.Clicked += (_, _) => Exit();
         
-        Button minimizeButton = new()
-        {
-            Text = "",
-            Width = UIParams.minBoxSize,
-            Height = UIParams.minBoxSize,
-        };
-        UIParams.SetDefaultButton(minimizeButton);
-        UIParams.AddIconToButton(minimizeButton, this.minimizeIcon);
-        minimizeButton.Click += (_, _) =>
+        MenuItem minimizeButton = new() { Header = "-", };
+        // UIParams.SetDefaultButton(minimizeButton);
+        // UIParams.AddIconToButton(minimizeButton, this.minimizeIcon);
+        minimizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
             DLLevelBuilder.Window.Helper.Minimize(handle);
         };
         
-        Button maximizeButton = new()
-        {
-            Text = "",
-            Width = UIParams.minBoxSize,
-            Height = UIParams.minBoxSize,
-        };
-        UIParams.SetDefaultButton(maximizeButton);
-        UIParams.AddIconToButton(maximizeButton, this.maximizeIcon);
-        maximizeButton.Click += (_, _) =>
+        MenuItem maximizeButton = new() { Header = "+", };
+        // UIParams.SetDefaultButton(maximizeButton);
+        // UIParams.AddIconToButton(maximizeButton, this.maximizeIcon);
+        maximizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
@@ -167,9 +200,9 @@ public class WindowInstance : Game
 
             this.shouldCallOnScreenSizeChanged = true;
         };
-        this.TopBarRight.AddChild(maximizeButton);
-        this.TopBarRight.AddChild(minimizeButton);
-        this.TopBarRight.AddChild(exitButton);
+        this.TopBarRight.Items.Add(maximizeButton);
+        this.TopBarRight.Items.Add(minimizeButton);
+        this.TopBarRight.Items.Add(exitButton);
     }
 
     private void FinalizeUI()
@@ -177,6 +210,7 @@ public class WindowInstance : Game
         this.dragComponent?.FinalizeUI();
         this.TopBarRight.AddToRoot();
         this.topBarLeft.AddToRoot();
+        UpdateUISize();
 
         this.rightClickManager = new RightClickManager();
         this.UpdateRegister.Add(this.rightClickManager);
@@ -231,14 +265,13 @@ public class WindowInstance : Game
         
         // TODO Check any other hover elements
         
-        if (this.Fullscreen)
+        if (this.Fullscreen || WasMouseClickConsumedByGum())
             return;
+        
         bool? dragging = this.dragComponent?.CheckHover(mouseState, dt);
-        if (dragging is null or false)
-        {
-            this.resizeComponent?.CheckHover(mouseState, dt);
-            this.resizeComponent?.ResizeWindow();
-        }
+        if (dragging is not (null or false)) return;
+        this.resizeComponent?.CheckHover(mouseState, dt);
+        this.resizeComponent?.ResizeWindow();
     }
     
     public GameWindow GetWindow() => this.Window;

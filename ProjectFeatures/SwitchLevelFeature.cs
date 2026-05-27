@@ -1,4 +1,5 @@
-﻿using MonoGameGum.GueDeriving;
+﻿using Gum.Forms.Controls;
+using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
@@ -6,44 +7,39 @@ namespace DLLevelBuilder.ProjectFeatures;
 public class SwitchLevelFeature : SaveFeature
 {
     private ContainerRuntime container;
-    private Button switchLeft;
-    private Button switchRight;
+    private MenuItem switchLeft;
+    private MenuItem switchRight;
 
     public SwitchLevelFeature(Project project) : base(project) { }
 
-    public override void LoadUI(object parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
-
-        this.container = new ContainerRuntime()
-        {
-            Height = UIParams.minBoxSize,
-            HasEvents = false
-        };
         
-        this.switchLeft = new Button
+        this.switchLeft = new MenuItem
         {
-            Text = "<",
-            Width = UIParams.minBoxSize,
+            Header = "Previous",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.switchLeft);
-        this.switchLeft.Click += (_, _) => SwitchLevel(-1);
-        AddUI(this.container, this.switchLeft);
+        // UIParams.SetDefaultButton(this.switchLeft);
+        this.switchLeft.Clicked += (_, _) => SwitchLevel(-1);
+        menu.Items.Add(this.switchLeft);
         
-        this.switchRight = new Button
+        this.switchRight = new MenuItem
         {
-            Text = ">",
-            X = UIParams.minBoxSize,
-            Width = UIParams.minBoxSize,
+            Header = "Next",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.switchRight);
-        this.switchRight.Click += (_, _) => SwitchLevel(1);
-        AddUI(this.container, this.switchRight);
-
-        AddUI(parent, this.container);
+        // UIParams.SetDefaultButton(this.switchRight);
+        this.switchRight.Clicked += (_, _) => SwitchLevel(1);
+        menu.Items.Add(this.switchRight);
+    }
+    
+    public override void SetVisible(bool state)
+    {
+        this.switchLeft.IsVisible = state;
+        this.switchRight.IsVisible = state;
     }
 
     private void SwitchLevel(int direction)

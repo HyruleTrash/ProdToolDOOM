@@ -3,12 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gum.Forms.Controls;
 using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.ProjectFeatures.Exporting;
 using DLLevelBuilder.Version2;
+using Gum.Forms.Controls;
 
 namespace DLLevelBuilder;
 
@@ -50,39 +50,33 @@ public class Project
     private int currentLevel = -1;
     public Action<int>? onCurrentLevelChanged;
     
-    // UI
-    private readonly ProjectFeature[] projectFeatures;
-    private StackPanel inProjectStackLeft = null!;
-    private StackPanel inProjectStackRight = null!;
-    private readonly ProjectFeatureInstance[] inProjectFeatures;
-    public ContainerRuntime ToolContainer { get; private set; }
+    private readonly LoadFeature loadFeature;
+    private readonly SaveNewFeature saveNewFeature;
+    private readonly SaveFeature saveFeature;
+    private readonly ExportFeature exportFeature;
+    private readonly SwitchLevelFeature switchLevelFeature; // TODO load ui
+    private readonly EntityDataManageFeature entityDataManagerFeature; // TODO load ui
     private readonly ToolBarFeature toolBar;
+    
+    // UI
+    private MenuItem projectMenuItem;
+    private MenuItem levelMenuItem;
+    public ContainerRuntime ToolContainer { get; private set; }
     public ContainerRuntime canvasContainer = null!;
     public ContainerRuntime popUpContainer = null!;
     private readonly GumService gum;
-
-    private class ProjectFeatureInstance(ProjectFeature instance, bool isLeft)
-    {
-        public ProjectFeature instance { get; } = instance;
-        public bool isLeft { get; } = isLeft;
-    }
 
     public Project(GumService gum)
     {
         this.gum = gum;
         this.filePathChanged = newPath => { Debug.Log($"FilePathChanged: {newPath}"); };
-        this.projectFeatures =
-        [
-            new LoadFeature(this), 
-            new SaveNewFeature(this)
-        ];
-        this.inProjectFeatures =
-        [
-            new ProjectFeatureInstance(new SaveFeature(this),  true),
-            new ProjectFeatureInstance(new ExportFeature(this),  true),
-            new ProjectFeatureInstance(new SwitchLevelFeature(this),  false),
-            new ProjectFeatureInstance(new EntityDataManageFeature(this), false)
-        ];
+
+        this.loadFeature = new LoadFeature(this);
+        this.saveNewFeature = new SaveNewFeature(this);
+        this.saveFeature = new SaveFeature(this);
+        this.exportFeature = new ExportFeature(this);
+        this.switchLevelFeature = new SwitchLevelFeature(this);
+        this.entityDataManagerFeature = new EntityDataManageFeature(this);
         this.toolBar = new ToolBarFeature(gum, this);
     }
 
@@ -112,23 +106,8 @@ public class Project
         return this.saveStrat == null;
     }
 
-    public void LoadUI(StackPanel mainPanel)
+    public void LoadUI(Menu topBarLeft, Menu topBarRight)
     {
-        foreach (ProjectFeature projectFeature in this.projectFeatures)
-            projectFeature.LoadUI(mainPanel);
-
-        this.inProjectStackLeft = new StackPanel { IsVisible = false };
-        this.inProjectStackRight = new StackPanel { IsVisible = false };
-        mainPanel.AddChild(this.inProjectStackLeft);
-        Program.instance.TopBarRight.AddChild(this.inProjectStackRight);
-        
-        this.filePathChanged += (newPath) =>
-        {
-            bool state = newPath != string.Empty;
-            this.inProjectStackLeft.IsVisible = state;
-            this.inProjectStackRight.IsVisible = state;
-        };
-
         // all level objects will go here
         this.canvasContainer = new ContainerRuntime
         {
@@ -171,12 +150,38 @@ public class Project
             this.ToolContainer.Height = size.y;
         };
         
-        foreach (ProjectFeatureInstance projectFeature in this.inProjectFeatures.Where(i => i.isLeft)) 
-            projectFeature.instance.LoadUI(this.inProjectStackLeft);
-        foreach (ProjectFeatureInstance projectFeature in this.inProjectFeatures.Where(i => !i.isLeft)) 
-            projectFeature.instance.LoadUI(this.inProjectStackRight);
-
         this.toolBar.LoadUI(this.ToolContainer);
+        
+        TopLeftUI(topBarLeft);
+        TopRightUI(topBarRight);
+    }
+
+    private void TopLeftUI(Menu topLeftMenu)
+    {
+        this.projectMenuItem = new MenuItem { Header = "Project" };
+        topLeftMenu.Items.Add(this.projectMenuItem);
+        this.levelMenuItem = new MenuItem { Header = "Level" };
+        topLeftMenu.Items.Add(this.levelMenuItem);
+
+        this.loadFeature.LoadUI(this.projectMenuItem);
+        this.saveNewFeature.LoadUI(this.projectMenuItem);
+        
+        this.saveFeature.LoadUI(this.projectMenuItem);
+        this.exportFeature.LoadUI(this.projectMenuItem);
+        this.switchLevelFeature.LoadUI(this.levelMenuItem);
+        
+        this.filePathChanged += (newPath) =>
+        {
+            bool state = newPath != string.Empty;
+            this.saveFeature.SetVisible(state);
+            this.exportFeature.SetVisible(state);
+            this.switchLevelFeature.SetVisible(state);
+        };
+    }
+
+    private void TopRightUI(Menu topBarRight)
+    {
+        // throw new NotImplementedException();
     }
 
     public void ResetData()

@@ -1,11 +1,12 @@
-﻿using Button = Gum.Forms.Controls.Button;
+﻿using Gum.Forms.Controls;
+using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class SaveFeature : ProjectFeature
 {
     protected Project project;
-    private Button saveProjectButton = null!;
+    private MenuItem saveProjectButton = null!;
     
     protected delegate bool ShouldOverwriteDelegate(ref string filePath);
     protected ShouldOverwriteDelegate shouldOverwriteFilePath;
@@ -16,21 +17,23 @@ public class SaveFeature : ProjectFeature
         this.shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
     }
 
-    public override void LoadUI(object parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
 
-        this.saveProjectButton = new Button
+        this.saveProjectButton = new MenuItem
         {
-            Text = "Save Project",
+            Header = "Save Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.saveProjectButton);
+        // UIParams.SetDefaultButton(this.saveProjectButton);
 
-        this.saveProjectButton.Click += (_, _) => Save();
-        AddUI(parent, this.saveProjectButton);
+        this.saveProjectButton.Clicked += (_, _) => Save();
+        menu.Items.Add(this.saveProjectButton);
     }
+
+    public override void SetVisible(bool state) => this.saveProjectButton.IsVisible = state;
 
     protected void Save()
     {

@@ -40,7 +40,7 @@ public class Program : WindowInstance
     
     protected override void LoadUI()
     {
-        this.currentProject.LoadUI(this.topBarLeft);
+        this.currentProject.LoadUI(this.topBarLeft, this.TopBarRight);
         base.LoadUI();
     }
 }

@@ -1,36 +1,40 @@
-﻿using Button = Gum.Forms.Controls.Button;
+﻿using Gum.Forms.Controls;
+using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class SaveNewFeature : SaveFeature
 {
     private const string projectFileFilter = "wapd files (*.wapd)|*.wapd";
-    private Button saveProjectAsButton = null!;
+    private MenuItem saveProjectAsButton = null!;
 
     public SaveNewFeature(Project project) : base(project)
     {
         this.shouldOverwriteFilePath = ShouldOverwriteFilePath;
     }
     
-    public override void LoadUI(object? parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
 
-        this.saveProjectAsButton = new Button
+        this.saveProjectAsButton = new MenuItem
         {
-            Text = "New Project",
+            Header = "New Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.saveProjectAsButton);
+        // UIParams.SetDefaultButton(this.saveProjectAsButton);
 
-        this.saveProjectAsButton.Click += (_, _) => Save();
+        this.saveProjectAsButton.Clicked += (_, _) => Save();
         this.project.filePathChanged += (newPath) =>
         {
-            this.saveProjectAsButton.Text = newPath == string.Empty ? "New Project" : "Save Project as...";
+            this.saveProjectAsButton.Header = newPath == string.Empty ? "New Project" : "Save Project as...";
         };
-        AddUI(parent, this.saveProjectAsButton);
+        
+        menu.Items.Add(this.saveProjectAsButton);
     }
+    
+    public override void SetVisible(bool state) => this.saveProjectAsButton.IsVisible = state;
 
     private bool ShouldOverwriteFilePath(ref string tempPath)
     {

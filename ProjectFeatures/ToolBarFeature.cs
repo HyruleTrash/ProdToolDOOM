@@ -2,11 +2,12 @@
 using Gum.Wireframe;
 using MonoGameGum;
 using DLLevelBuilder.ProjectFeatures.Tools;
+using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
-public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
+public class ToolBarFeature(GumService gum, Project project)
 {
     private StackPanel toolStack = null!;
     private Button addLevelButton = null!;
@@ -20,9 +21,9 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
     
     private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     
-    public override void LoadUI(object parent)
+    public void LoadUI(ContainerRuntime container)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(container))
             return;
         this.toolStack = new StackPanel
         {
@@ -35,7 +36,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
             Y = gum.CanvasHeight - UIParams.borderPadding,
         };
         this.toolStack.Anchor(Anchor.BottomLeft);
-        AddUI(parent, this.toolStack);
+        container.AddUI(this.toolStack);
 
         this.addLevelButton = new Button
         {
@@ -44,7 +45,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         };
         UIParams.SetDefaultButton(this.addLevelButton);
         this.addLevelButton.Click += (_, _) => AddLevel();
-        AddUI(this.toolStack, this.addLevelButton);
+        this.toolStack.AddUI(this.addLevelButton);
 
         this.addNewEntityButton = new Button
         {
@@ -53,7 +54,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         };
         UIParams.SetDefaultButton(this.addNewEntityButton);
         this.addNewEntityButton.Click += (_, _) => AddEntityData();
-        AddUI(this.toolStack, this.addNewEntityButton);
+        this.toolStack.AddUI(this.addNewEntityButton);
 
         this.addNewEntityToLevelButton = new Button
         {
@@ -62,7 +63,7 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         };
         UIParams.SetDefaultButton(this.addNewEntityToLevelButton);
         this.addNewEntityToLevelButton.Click += (_, _) => AddEntity();
-        AddUI(this.toolStack, this.addNewEntityToLevelButton);
+        this.toolStack.AddUI(this.addNewEntityToLevelButton);
 
         this.addPointToLevelButton = new Button
         {
@@ -71,6 +72,9 @@ public class ToolBarFeature(GumService gum, Project project) : ProjectFeature
         };
         UIParams.SetDefaultButton(this.addPointToLevelButton);
         this.addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
-        AddUI(this.toolStack, this.addPointToLevelButton);
+        this.toolStack.AddUI(this.addPointToLevelButton);
     }
+    
+    private bool ShouldLoadUI(object? parent) => 
+        parent == null || parent is GraphicalUiElement || parent is FrameworkElement;
 }

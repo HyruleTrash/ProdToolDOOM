@@ -1,26 +1,29 @@
-﻿using Button = Gum.Forms.Controls.Button;
+﻿using Gum.Forms.Controls;
+using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class LoadFeature(Project project) : ProjectFeature
 {
-    private Button loadProjectButton = null!;
+    private MenuItem loadProjectButton = null!;
 
-    public override void LoadUI(object parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
 
-        this.loadProjectButton = new Button
+        this.loadProjectButton = new MenuItem
         {
-            Text = "Load Project",
+            Header = "Load Project",
             Height = UIParams.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.loadProjectButton);
+        // UIParams.SetDefaultButton(this.loadProjectButton);
 
-        this.loadProjectButton.Click += (sender, args) => Load();
-        AddUI(parent, this.loadProjectButton);
+        this.loadProjectButton.Clicked += (_, _) => Load();
+        menu.Items.Add(this.loadProjectButton);
     }
+    
+    public override void SetVisible(bool state) => this.loadProjectButton.IsVisible = state;
 
     private void Load()
     {

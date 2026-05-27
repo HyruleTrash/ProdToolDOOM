@@ -1,4 +1,5 @@
 ﻿
+using Gum.Forms.Controls;
 using MonoGameGum;
 using Button = Gum.Forms.Controls.Button;
 
@@ -8,9 +9,9 @@ public class EntityDataManageFeature(Project projectRef) : ProjectFeature
 {
     private Button toggleManagerButton = null!;
 
-    public override void LoadUI(object parent)
+    public override void LoadUI(MenuItem menu)
     {
-        if (!ShouldLoadUI(parent))
+        if (!ShouldLoadUI(menu))
             return;
 
         Program.instance.onScreenSizeChange += UpdatePosition;
@@ -26,6 +27,8 @@ public class EntityDataManageFeature(Project projectRef) : ProjectFeature
         
         UpdatePosition(Program.instance.GetWindowSize());
     }
+    
+    public override void SetVisible(bool state) => this.toggleManagerButton.IsVisible = state;
 
     private void UpdatePosition(Vector2 windowSize)
     {
