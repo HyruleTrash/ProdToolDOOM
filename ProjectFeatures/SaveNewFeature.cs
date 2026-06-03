@@ -2,12 +2,10 @@
 
 namespace DLLevelBuilder.ProjectFeatures;
 
-public class SaveNewFeature : SaveFeature
+public class SaveNewFeature(Project project) : ProjectFeature
 {
-    private const string projectFileFilter = "wapd files (*.wapd)|*.wapd";
+    private const string ProjectFileFilter = "wapd files (*.wapd)|*.wapd";
     private MenuItem saveProjectAsButton = null!;
-
-    public SaveNewFeature(Project project) : base(project) => this.shouldOverwriteFilePath = ShouldOverwriteFilePath;
 
     public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
@@ -23,7 +21,7 @@ public class SaveNewFeature : SaveFeature
         // UIParams.SetDefaultButton(this.saveProjectAsButton);
 
         this.saveProjectAsButton.Clicked += (_, _) => Save();
-        this.project.filePathChanged += newPath =>
+        project.filePathChanged += newPath =>
         {
             this.saveProjectAsButton.Header = newPath == string.Empty ? "New Project" : "Save Project as...";
         };
@@ -32,11 +30,17 @@ public class SaveNewFeature : SaveFeature
         SetVisible(isVisible);
     }
 
+    private void Save()
+    {
+        SaveProjectCmd cmd = new(project) { shouldOverwriteFilePath = ShouldOverwriteFilePath };
+        Program.instance.cmdHistory.ApplyCmd(cmd);
+    }
+
     private bool ShouldOverwriteFilePath(ref string tempPath)
     {
-        FileExplorerHelper.FileDialogResult? result = this.project.FilePath == string.Empty
-            ? FileExplorerHelper.SaveWithFileExplorer(projectFileFilter)
-            : FileExplorerHelper.SaveWithFileExplorer(projectFileFilter, tempPath);
+        FileExplorerHelper.FileDialogResult? result = project.FilePath == string.Empty
+            ? FileExplorerHelper.SaveWithFileExplorer(ProjectFileFilter)
+            : FileExplorerHelper.SaveWithFileExplorer(ProjectFileFilter, tempPath);
 
         if (!result.HasValue)
             return false;

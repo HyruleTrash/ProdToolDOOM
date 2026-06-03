@@ -2,12 +2,10 @@
 
 namespace DLLevelBuilder.ProjectFeatures;
 
-public class SwitchLevelFeature : SaveFeature
+public class SwitchLevelFeature(Project project) : ProjectFeature
 {
     private MenuItem switchLeft = null!;
     private MenuItem switchRight = null!;
-
-    public SwitchLevelFeature(Project project) : base(project) { }
 
     public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
@@ -38,12 +36,12 @@ public class SwitchLevelFeature : SaveFeature
 
     private void SwitchLevel(int direction)
     {
-        this.project.CurrentLevel += direction;
-        Debug.Log($"Switched level {this.project.CurrentLevel}");
-        Save();
-        if (this.project.CheckLoadStrategy())
+        project.CurrentLevel += direction;
+        Debug.Log($"Switched level {project.CurrentLevel}");
+        Program.instance.cmdHistory.ApplyCmd(new SaveProjectCmd(project));
+        if (project.CheckLoadStrategy())
             return;
         Debug.Log("Reloading project file...");
-        this.project.Load(this.project.FilePath);
+        project.Load(project.FilePath);
     }
 }

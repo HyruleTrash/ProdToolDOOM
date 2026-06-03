@@ -41,7 +41,7 @@ public class Project
         get => this.currentLevel;
         set
         {
-            if (value < -1 || value >= this.levels.Count)
+            if (value <= -1 || value >= this.levels.Count)
                 return;
             if (this.currentLevel != value) this.onCurrentLevelChanged?.Invoke(value);
             this.currentLevel = value;
