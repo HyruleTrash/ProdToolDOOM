@@ -125,41 +125,47 @@ public class WindowInstance : Game
         this.TopBarRight.Anchor(Anchor.TopLeft);
 
         this.onScreenSizeChange += _ => UpdateUISize();
+
+        this.topBarLeft.ItemsCollectionChanged += (_, _) => UpdateUIMenu(this.topBarLeft);
+        this.TopBarRight.ItemsCollectionChanged += (_, _) => UpdateTopBarRightUI();
     }
 
     private void UpdateUISize()
     {
-        foreach (MenuItem item in this.topBarLeft.MenuItems) item.Visual.UpdateLayout();
-        foreach (MenuItem item in this.TopBarRight.MenuItems) item.Visual.UpdateLayout();
-        
-        this.topBarLeft.Visual.UpdateLayout();
-        this.TopBarRight.Visual.UpdateLayout();
+        UpdateUIMenu(this.topBarLeft);
+        UpdateTopBarRightUI();
+    }
 
-        this.topBarLeft.Width = GetFullWidth(this.topBarLeft);
-
-        float rightWidth = GetFullWidth(this.TopBarRight);
+    private void UpdateTopBarRightUI()
+    {
+        float rightWidth = GetFullMenuWidth(this.TopBarRight);
         this.TopBarRight.Width = rightWidth;
         this.TopBarRight.X = GetWindowWidth() - rightWidth - UIParams.borderPadding;
+        UpdateUIMenu(this.TopBarRight);
+    }
 
-        this.topBarLeft.Visual.UpdateLayout();
-        this.TopBarRight.Visual.UpdateLayout();
-        return;
-
-        float GetFullWidth(Menu menu)
+    private void UpdateUIMenu(Menu menu)
+    {
+        foreach (MenuItem item in menu.MenuItems) item.Visual.UpdateLayout();
+        menu.Visual.UpdateLayout();
+        menu.Width = GetFullMenuWidth(menu);
+        menu.Visual.UpdateLayout();
+    }
+    
+    private float GetFullMenuWidth(Menu menu)
+    {
+        float fullWidth = 0;
+        foreach (MenuItem item in menu.MenuItems)
         {
-            float fullWidth = 0;
-            foreach (MenuItem item in menu.MenuItems)
-            {
-                MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
+            MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
 
-                float baseContainerWidth = itemVisual.ContainerInstance.GetAbsoluteWidth();
-                float arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
+            float baseContainerWidth = itemVisual.ContainerInstance.GetAbsoluteWidth();
+            float arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
 
-                float realCalculatedItemWidth = baseContainerWidth + arrowOffset;
-                fullWidth += realCalculatedItemWidth;
-            }
-            return fullWidth;
+            float realCalculatedItemWidth = baseContainerWidth + arrowOffset;
+            fullWidth += realCalculatedItemWidth;
         }
+        return fullWidth;
     }
     
     protected virtual void LoadUI()

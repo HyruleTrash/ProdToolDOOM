@@ -12,10 +12,11 @@ public class SwitchLevelFeature : SaveFeature
 
     public SwitchLevelFeature(Project project) : base(project) { }
 
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
+        this.parent = menu;
         
         this.switchLeft = new MenuItem
         {
@@ -24,7 +25,6 @@ public class SwitchLevelFeature : SaveFeature
         };
         // UIParams.SetDefaultButton(this.switchLeft);
         this.switchLeft.Clicked += (_, _) => SwitchLevel(-1);
-        menu.Items.Add(this.switchLeft);
         
         this.switchRight = new MenuItem
         {
@@ -33,13 +33,10 @@ public class SwitchLevelFeature : SaveFeature
         };
         // UIParams.SetDefaultButton(this.switchRight);
         this.switchRight.Clicked += (_, _) => SwitchLevel(1);
-        menu.Items.Add(this.switchRight);
-    }
-    
-    public override void SetVisible(bool state)
-    {
-        this.switchLeft.IsVisible = state;
-        this.switchRight.IsVisible = state;
+        
+        this.children.Add(this.switchLeft);
+        this.children.Add(this.switchRight);
+        SetVisible(isVisible);
     }
 
     private void SwitchLevel(int direction)
@@ -50,6 +47,6 @@ public class SwitchLevelFeature : SaveFeature
         if (this.project.CheckLoadStrategy())
             return;
         Debug.Log("Reloading project file...");
-        project.loadStrat.Load(this.project.FilePath);
+        this.project.loadStrat.Load(this.project.FilePath);
     }
 }

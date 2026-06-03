@@ -7,10 +7,11 @@ public class LoadFeature(Project project) : ProjectFeature
 {
     private MenuItem loadProjectButton = null!;
 
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
+        this.parent = menu;
 
         this.loadProjectButton = new MenuItem
         {
@@ -20,10 +21,9 @@ public class LoadFeature(Project project) : ProjectFeature
         // UIParams.SetDefaultButton(this.loadProjectButton);
 
         this.loadProjectButton.Clicked += (_, _) => Load();
-        menu.Items.Add(this.loadProjectButton);
+        this.children.Add(this.loadProjectButton);
+        SetVisible(isVisible);
     }
-    
-    public override void SetVisible(bool state) => this.loadProjectButton.IsVisible = state;
 
     private void Load()
     {

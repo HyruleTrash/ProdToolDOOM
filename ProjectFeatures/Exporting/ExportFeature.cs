@@ -22,10 +22,11 @@ public class ExportFeature : ProjectFeature
         ];
     }
 
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
+        this.parent = menu;
         
         this.exportButton = new MenuItem
         {
@@ -34,10 +35,9 @@ public class ExportFeature : ProjectFeature
         };
         // UIParams.SetDefaultButton(this.exportButton);
         this.exportButton.Clicked += (_, _) => Export();
-        menu.Items.Add(this.exportButton);
+        this.children.Add(this.exportButton);
+        SetVisible(isVisible);
     }
-    
-    public override void SetVisible(bool state) => this.exportButton.IsVisible = state;
 
     private string GetFilters()
     {

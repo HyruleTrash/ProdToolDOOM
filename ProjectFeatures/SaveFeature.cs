@@ -17,10 +17,11 @@ public class SaveFeature : ProjectFeature
         this.shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
     }
 
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
+        this.parent = menu;
 
         this.saveProjectButton = new MenuItem
         {
@@ -30,10 +31,9 @@ public class SaveFeature : ProjectFeature
         // UIParams.SetDefaultButton(this.saveProjectButton);
 
         this.saveProjectButton.Clicked += (_, _) => Save();
-        menu.Items.Add(this.saveProjectButton);
+        this.children.Add(this.saveProjectButton);
+        SetVisible(isVisible);
     }
-
-    public override void SetVisible(bool state) => this.saveProjectButton.IsVisible = state;
 
     protected void Save()
     {

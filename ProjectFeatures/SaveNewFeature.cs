@@ -13,10 +13,11 @@ public class SaveNewFeature : SaveFeature
         this.shouldOverwriteFilePath = ShouldOverwriteFilePath;
     }
     
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
+        this.parent = menu;
 
         this.saveProjectAsButton = new MenuItem
         {
@@ -31,10 +32,9 @@ public class SaveNewFeature : SaveFeature
             this.saveProjectAsButton.Header = newPath == string.Empty ? "New Project" : "Save Project as...";
         };
         
-        menu.Items.Add(this.saveProjectAsButton);
+        this.children.Add(this.saveProjectAsButton);
+        SetVisible(isVisible);
     }
-    
-    public override void SetVisible(bool state) => this.saveProjectAsButton.IsVisible = state;
 
     private bool ShouldOverwriteFilePath(ref string tempPath)
     {

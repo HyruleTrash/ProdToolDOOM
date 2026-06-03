@@ -160,15 +160,18 @@ public class Project
     {
         this.projectMenuItem = new MenuItem { Header = "Project" };
         topLeftMenu.Items.Add(this.projectMenuItem);
-        this.levelMenuItem = new MenuItem { Header = "Level" };
-        topLeftMenu.Items.Add(this.levelMenuItem);
+        this.levelMenuItem = new MenuItem
+        {
+            Header = "Level",
+            IsVisible = false
+        };
 
-        this.loadFeature.LoadUI(this.projectMenuItem);
-        this.saveNewFeature.LoadUI(this.projectMenuItem);
+        this.loadFeature.LoadUI(this.projectMenuItem, true);
+        this.saveNewFeature.LoadUI(this.projectMenuItem, true);
         
-        this.saveFeature.LoadUI(this.projectMenuItem);
-        this.exportFeature.LoadUI(this.projectMenuItem);
-        this.switchLevelFeature.LoadUI(this.levelMenuItem);
+        this.saveFeature.LoadUI(this.projectMenuItem, false);
+        this.exportFeature.LoadUI(this.levelMenuItem, false);
+        this.switchLevelFeature.LoadUI(this.levelMenuItem, false);
         
         this.filePathChanged += (newPath) =>
         {
@@ -176,6 +179,20 @@ public class Project
             this.saveFeature.SetVisible(state);
             this.exportFeature.SetVisible(state);
             this.switchLevelFeature.SetVisible(state);
+            
+            this.levelMenuItem.IsVisible = state;
+            if (state)
+            {
+                if (topLeftMenu.Items.Contains(this.levelMenuItem))
+                    return;
+                topLeftMenu.Items.Add(this.levelMenuItem);
+            }
+            else
+            {
+                if (!topLeftMenu.Items.Contains(this.levelMenuItem))
+                    return;
+                topLeftMenu.Items.Remove(this.levelMenuItem);
+            }
         };
     }
 

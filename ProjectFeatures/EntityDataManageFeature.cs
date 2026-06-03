@@ -9,7 +9,7 @@ public class EntityDataManageFeature(Project projectRef) : ProjectFeature
 {
     private Button toggleManagerButton = null!;
 
-    public override void LoadUI(MenuItem menu)
+    public override void LoadUI(MenuItem menu, bool isVisible)
     {
         if (!ShouldLoadUI(menu))
             return;
@@ -26,6 +26,7 @@ public class EntityDataManageFeature(Project projectRef) : ProjectFeature
         projectRef.ToolContainer.AddChild(this.toggleManagerButton);
         
         UpdatePosition(Program.instance.GetWindowSize());
+        SetVisible(isVisible);
     }
     
     public override void SetVisible(bool state) => this.toggleManagerButton.IsVisible = state;
