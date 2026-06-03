@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gum.Forms.Controls;
-using Gum.Managers;
 using Gum.Wireframe;
 using MonoGameGum;
 using Microsoft.Xna.Framework;
@@ -11,9 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using DLLevelBuilder.ProjectFeatures;
 using Gum.DataTypes;
 using Gum.Forms.DefaultVisuals;
-using static Gum.Forms.Controls.Orientation;
 using static Microsoft.Xna.Framework.Color;
-using Button = Gum.Forms.Controls.Button;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
@@ -124,13 +121,13 @@ public class WindowInstance : Game
         ((MenuVisual)this.TopBarRight.Visual).Background.Color = Transparent;
         this.TopBarRight.Anchor(Anchor.TopLeft);
 
-        this.onScreenSizeChange += _ => UpdateUISize();
+        this.onScreenSizeChange += _ => UpdateTopBars();
 
         this.topBarLeft.ItemsCollectionChanged += (_, _) => UpdateUIMenu(this.topBarLeft);
         this.TopBarRight.ItemsCollectionChanged += (_, _) => UpdateTopBarRightUI();
     }
 
-    private void UpdateUISize()
+    public void UpdateTopBars()
     {
         UpdateUIMenu(this.topBarLeft);
         UpdateTopBarRightUI();
@@ -157,6 +154,7 @@ public class WindowInstance : Game
         float fullWidth = 0;
         foreach (MenuItem item in menu.MenuItems)
         {
+            if (!item.IsVisible) continue;
             MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
 
             float baseContainerWidth = itemVisual.ContainerInstance.GetAbsoluteWidth();
@@ -216,7 +214,7 @@ public class WindowInstance : Game
         this.dragComponent?.FinalizeUI();
         this.TopBarRight.AddToRoot();
         this.topBarLeft.AddToRoot();
-        UpdateUISize();
+        UpdateTopBars();
 
         this.rightClickManager = new RightClickManager();
         this.UpdateRegister.Add(this.rightClickManager);

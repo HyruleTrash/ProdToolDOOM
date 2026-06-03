@@ -32,7 +32,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
-        Project.instance.levels.Add(this.level);
+        Project.Instance.levels.Add(this.level);
     }
 }
 #endif

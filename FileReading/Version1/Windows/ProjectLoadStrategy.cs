@@ -27,7 +27,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         this.expectedData.Add(new ExpectedData { name = "Id_Counter", load = (XmlReader reader) =>
         {
             int counter = reader.ReadElementContentAsInt();
-            Project.instance.entityDataIdCounter = counter;
+            Project.Instance.entityDataIdCounter = counter;
         }});
         this.expectedData.Add(new ExpectedEntityData(this)); 
     }
@@ -45,17 +45,16 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             {
                 if (entry.Name != "projectData.xml") continue;
                 using XmlReader reader = XmlReader.Create(entry.Open());
-                Project.instance.ResetData();
+                Project.Instance.ResetData();
                 ReadData(reader, new List<ExpectedData>(this.expectedData));
                 
                 foreach (Line line in Project.TryGetCurrentLevel().Lines) line.Init();
                 foreach (Point point in Project.TryGetCurrentLevel().Points) point.Init();
                 foreach (Entity entity in Project.TryGetCurrentLevel().Entities) entity.Init();
-                Project.instance.onEntityDataChanged?.Invoke(Project.instance.EntityDatas);
                 
                 // TODO remove this
-                Debug.Log($"Levels: {Project.instance.levels.Count}");
-                foreach (Level level in Project.instance.levels)
+                Debug.Log($"Levels: {Project.Instance.levels.Count}");
+                foreach (Level level in Project.Instance.levels)
                 {
                     Debug.Log(" Level:");
                     Debug.Log("  Entities:");
@@ -76,8 +75,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                         Debug.Log($"   Line: {line.Id} to {line.IdOther}");
                     }
                 }
-                Debug.Log($"EntityData: {Project.instance.EntityDatas.Count}");
-                foreach (KeyValuePair<int, EntityData> data in Project.instance.EntityDatas)
+                Debug.Log($"EntityData: {Project.Instance.EntityDatas.Count}");
+                foreach (KeyValuePair<int, EntityData> data in Project.Instance.EntityDatas)
                 {
                     Debug.Log(" EntityData:");
                     Debug.Log($"  Id: {data.Key}");

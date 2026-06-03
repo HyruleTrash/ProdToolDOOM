@@ -1,5 +1,4 @@
 ﻿
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +13,14 @@ namespace DLLevelBuilder;
 
 public class Project
 {
-    public static Project instance => Program.instance.currentProject;
+    public static Project Instance => Program.instance.currentProject;
     // file reading
-    public IProjectSaveStrategy? saveStrat;
-    public IProjectLoadStrategy? loadStrat;
+    private IProjectSaveStrategy? saveStrat;
+    private IProjectLoadStrategy? loadStrat;
     public string FilePath
     {
         get => this.filePath;
-        set
+        private set
         {
             if (this.filePath != value) this.filePathChanged.Invoke(value);
             this.filePath = value;
@@ -33,8 +32,9 @@ public class Project
     public IReadOnlyDictionary<int, EntityData> EntityDatas => this.entityDatas;
     private Dictionary<int, EntityData> entityDatas = [];
     public int entityDataIdCounter = 0;
-    public Action<IReadOnlyDictionary<int, EntityData>> onEntityDataChanged;
+    private Action<IReadOnlyDictionary<int, EntityData>> onEntityDataChanged = null!;
     public List<Level> levels = [];
+    private Action<IReadOnlyList<Level>> onLevelsChanged = null!;
 
     public int CurrentLevel
     {
@@ -54,14 +54,19 @@ public class Project
     private readonly SaveNewFeature saveNewFeature;
     private readonly SaveFeature saveFeature;
     private readonly ExportFeature exportFeature;
-    private readonly SwitchLevelFeature switchLevelFeature; // TODO load ui
-    private readonly EntityDataManageFeature entityDataManagerFeature; // TODO load ui
+    private readonly SwitchLevelFeature switchLevelFeature;
+    private readonly OpenLevelManagerFeature openLevelManagerFeature;
+    private readonly NewLevelFeature newLevelFeature;
+    private readonly OpenEntityDataManageFeature openEntityDataManagerFeature;
+    private readonly NewEntityDataFeature newEntityDataFeature;
     private readonly ToolBarFeature toolBar;
     
     // UI
-    private MenuItem projectMenuItem;
-    private MenuItem levelMenuItem;
-    public ContainerRuntime ToolContainer { get; private set; }
+    private MenuItem projectMenuItem = null!;
+    private MenuItem levelMenuItem = null!;
+    private MenuItem entityMenuItem = null!;
+    private readonly List<MenuItem> topBarRightMenuItems = [];
+    private ContainerRuntime ToolContainer { get; set; } = null!;
     public ContainerRuntime canvasContainer = null!;
     public ContainerRuntime popUpContainer = null!;
     private readonly GumService gum;
@@ -76,14 +81,17 @@ public class Project
         this.saveFeature = new SaveFeature(this);
         this.exportFeature = new ExportFeature(this);
         this.switchLevelFeature = new SwitchLevelFeature(this);
-        this.entityDataManagerFeature = new EntityDataManageFeature(this);
-        this.toolBar = new ToolBarFeature(gum, this);
+        this.openLevelManagerFeature = new OpenLevelManagerFeature();
+        this.newLevelFeature = new NewLevelFeature(this);
+        this.openEntityDataManagerFeature = new OpenEntityDataManageFeature();
+        this.newEntityDataFeature = new NewEntityDataFeature();
+        this.toolBar = new ToolBarFeature(gum);
     }
 
     public static Level TryGetCurrentLevel()
     {
-        if (instance.currentLevel < 0 || instance.currentLevel >= instance.levels.Count) return null;
-        return instance.levels[instance.currentLevel];
+        if (Instance.currentLevel < 0 || Instance.currentLevel >= Instance.levels.Count) return null;
+        return Instance.levels[Instance.currentLevel];
     }
 
     /// <summary>
@@ -104,6 +112,20 @@ public class Project
     {
         this.saveStrat ??= new ProjectSaveStrategy();
         return this.saveStrat == null;
+    }
+    
+    public void Save(string tempPath)
+    {
+        if (this.saveStrat != null && this.saveStrat.Save(tempPath)) this.FilePath = tempPath;
+        if (this.levels.Count == 0) Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(this));
+    }
+    
+    public void Load(string tempPath)
+    {
+        if (this.loadStrat != null && this.loadStrat.Load(tempPath)) this.FilePath = tempPath;
+        if (this.levels.Count == 0) Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(this));
+        this.onEntityDataChanged?.Invoke(this.entityDatas);
+        this.onLevelsChanged?.Invoke(this.levels);
     }
 
     public void LoadUI(Menu topBarLeft, Menu topBarRight)
@@ -137,7 +159,7 @@ public class Project
             Y = 0,
             Visible = false
         };
-        this.filePathChanged += (newPath) => { this.ToolContainer.Visible = newPath != string.Empty; };
+        this.filePathChanged += newPath => { this.ToolContainer.Visible = newPath != string.Empty; };
         this.ToolContainer.AddToRoot();
         
         Program.instance.onScreenSizeChange += size =>
@@ -154,51 +176,57 @@ public class Project
         
         TopLeftUI(topBarLeft);
         TopRightUI(topBarRight);
+        
+        this.filePathChanged += _ => Program.instance.UpdateTopBars();
     }
 
     private void TopLeftUI(Menu topLeftMenu)
     {
         this.projectMenuItem = new MenuItem { Header = "Project" };
         topLeftMenu.Items.Add(this.projectMenuItem);
-        this.levelMenuItem = new MenuItem
-        {
-            Header = "Level",
-            IsVisible = false
-        };
 
-        this.loadFeature.LoadUI(this.projectMenuItem, true);
-        this.saveNewFeature.LoadUI(this.projectMenuItem, true);
-        
+        this.loadFeature.LoadUI(this.projectMenuItem);
+        this.saveNewFeature.LoadUI(this.projectMenuItem);
         this.saveFeature.LoadUI(this.projectMenuItem, false);
-        this.exportFeature.LoadUI(this.levelMenuItem, false);
-        this.switchLevelFeature.LoadUI(this.levelMenuItem, false);
         
-        this.filePathChanged += (newPath) =>
+        this.filePathChanged += newPath =>
         {
             bool state = newPath != string.Empty;
             this.saveFeature.SetVisible(state);
-            this.exportFeature.SetVisible(state);
-            this.switchLevelFeature.SetVisible(state);
-            
-            this.levelMenuItem.IsVisible = state;
-            if (state)
-            {
-                if (topLeftMenu.Items.Contains(this.levelMenuItem))
-                    return;
-                topLeftMenu.Items.Add(this.levelMenuItem);
-            }
-            else
-            {
-                if (!topLeftMenu.Items.Contains(this.levelMenuItem))
-                    return;
-                topLeftMenu.Items.Remove(this.levelMenuItem);
-            }
         };
     }
 
     private void TopRightUI(Menu topBarRight)
     {
-        // throw new NotImplementedException();
+        this.levelMenuItem = new MenuItem
+        {
+            Header = "Level",
+            IsVisible = false
+        };
+        topBarRight.Items.Add(this.levelMenuItem);
+        this.entityMenuItem = new MenuItem
+        {
+            Header = "Entity",
+            IsVisible = false
+        };
+        topBarRight.Items.Add(this.entityMenuItem);
+        
+        this.newLevelFeature.LoadUI(this.levelMenuItem);
+        this.openLevelManagerFeature.LoadUI(this.levelMenuItem);
+        this.exportFeature.LoadUI(this.levelMenuItem);
+        this.switchLevelFeature.LoadUI(this.levelMenuItem);
+        
+        this.openEntityDataManagerFeature.LoadUI(this.entityMenuItem);
+        this.newEntityDataFeature.LoadUI(this.entityMenuItem);
+        
+        this.topBarRightMenuItems.Add(this.levelMenuItem);
+        this.topBarRightMenuItems.Add(this.entityMenuItem);
+        
+        this.filePathChanged += newPath =>
+        {
+            bool state = newPath != string.Empty;
+            this.topBarRightMenuItems.SetVisibility(topBarRight, state);
+        };
     }
 
     public void ResetData()
@@ -225,4 +253,13 @@ public class Project
 
     public string? TryGetEntityName(int dataId) => 
         (from keyValuePair in this.entityDatas where keyValuePair.Key == dataId select keyValuePair.Value.Name).FirstOrDefault();
+
+    public void AddLevel(Level level)
+    {
+        this.levels.Add(level);
+        this.onLevelsChanged?.Invoke(this.levels);
+    }
+
+    public void RegisterOnLevelsChanged(Action<IReadOnlyList<Level>> listener) => this.onLevelsChanged += listener;
+    public void RegisterOnEntityDataChanged(Action<IReadOnlyDictionary<int,EntityData>> listener) => this.onEntityDataChanged += listener;
 }

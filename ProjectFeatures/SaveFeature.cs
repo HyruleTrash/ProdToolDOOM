@@ -1,11 +1,10 @@
 ﻿using Gum.Forms.Controls;
-using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class SaveFeature : ProjectFeature
 {
-    protected Project project;
+    protected readonly Project project;
     private MenuItem saveProjectButton = null!;
     
     protected delegate bool ShouldOverwriteDelegate(ref string filePath);
@@ -17,7 +16,7 @@ public class SaveFeature : ProjectFeature
         this.shouldOverwriteFilePath = (ref string _) => project.FilePath != string.Empty;
     }
 
-    public override void LoadUI(MenuItem menu, bool isVisible)
+    public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
         if (!ShouldLoadUI(menu))
             return;
@@ -45,7 +44,6 @@ public class SaveFeature : ProjectFeature
         if (!this.shouldOverwriteFilePath.Invoke(ref tempPath))
             return;
 
-        if (this.project.saveStrat.Save(tempPath)) 
-            this.project.FilePath = tempPath;
+        this.project.Save(tempPath);
     }
 }

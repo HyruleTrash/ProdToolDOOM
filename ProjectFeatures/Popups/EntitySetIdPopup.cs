@@ -52,10 +52,10 @@ public class EntitySetIdPopup : Popup<EntitySetIdPopup>
         this.panel.AddChild(this.dropDownBox);
         this.panel.AddChild(this.confirmButton);
 
-        Project.instance.onEntityDataChanged += LoadPossibleEntities;
+        Project.Instance.RegisterOnEntityDataChanged(LoadPossibleEntities);
         
         UpdatePositionsAndSizes();
-        LoadPossibleEntities(Project.instance.EntityDatas);
+        LoadPossibleEntities(Project.Instance.EntityDatas);
     }
 
     private void LoadPossibleEntities(IReadOnlyDictionary<int, EntityData> entityDatas)
@@ -80,7 +80,7 @@ public class EntitySetIdPopup : Popup<EntitySetIdPopup>
         if (this.currentSelected == null) return;
         try
         {
-            Program.instance.cmdHistory.ApplyCmd(new ChangeEntityDataRef(Project.instance, this.currentSelected, GetSelectedId(this.dropDownBox.SelectedIndex)));
+            Program.instance.cmdHistory.ApplyCmd(new ChangeEntityDataRef(Project.Instance, this.currentSelected, GetSelectedId(this.dropDownBox.SelectedIndex)));
         }
         catch (Exception e)
         {

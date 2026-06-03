@@ -8,29 +8,27 @@ using Orientation = Gum.Forms.Controls.Orientation;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
-public class EntityManagerPopup : Popup<EntityManagerPopup>
+public class LevelManagerPopup : Popup<LevelManagerPopup>
 {
     private readonly ScrollViewer panel;
     private readonly ColoredRectangleRuntime popupBG;
     private readonly RectangleRuntime popupBGBorder;
 
-    private List<EntityDataVisual> visuals = [];
+    private List<LevelVisual> visuals = [];
     private readonly Texture2D closeIcon;
 
-    private class EntityDataVisual
+    private class LevelVisual
     {
         public int? id;
-        public EntityData? entityData;
+        public Level? levelData;
         private readonly StackPanel panel;
         private readonly TextRuntime nameText;
         private readonly Button removeButton;
 
-        public EntityDataVisual(Texture2D closeIcon, ScrollViewer parent, int? id = null, EntityData? entityData = null)
+        public LevelVisual(Texture2D closeIcon, ScrollViewer parent, int? id = null, Level? levelData = null)
         {
             this.id = id;
-            this.entityData = entityData;
-            
-            Debug.Log($"Instantiating EntityDataVisual {this.id}");
+            this.levelData = levelData;
             
             // instantiate visuals
             this.panel = new StackPanel
@@ -42,7 +40,7 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
 
             this.nameText = new TextRuntime
             {
-                Text = entityData?.Name ?? "Unnamed",
+                Text = $"Level {this.id}",
                 Width = 200f
             };
 
@@ -63,22 +61,21 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
 
         public void UpdateVisuals()
         {
-            if (this.id == null || this.entityData == null)
+            if (this.id == null || this.levelData == null)
                 return;
             this.panel.IsVisible = true;
-            this.nameText.Text = this.entityData.Name;
         }
 
         public void RemoveAndHide()
         {
             this.panel.IsVisible = false;
-            if (this.id != null)
-                Program.instance.cmdHistory.ApplyCmd(new RemoveEntityDataCmd(Project.Instance, this.id, OnUndoRedo));
+            // if (this.id != null)
+            //     Program.instance.cmdHistory.ApplyCmd(new RemoveEntityDataCmd(Project.instance, this.id, OnUndoRedo)); TODO
             this.id = null;
-            this.entityData = null;
+            this.levelData = null;
         }
 
-        private void OnUndoRedo(int? newId, EntityData? newData)
+        private void OnUndoRedo(int? newId, Level? newData)
         {
             if (newId == null)
             {
@@ -88,12 +85,12 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
             }
 
             this.id = newId;
-            this.entityData = newData;
+            this.levelData = newData;
             UpdateVisuals();
         }
     }
     
-    public EntityManagerPopup()
+    public LevelManagerPopup()
     {
         this.closeIcon = Program.instance.Content.Load<Texture2D>("Icons/Cross");
         
@@ -105,10 +102,10 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         this.container.AddChild(this.popupBGBorder);
         this.container.AddChild(this.panel.Visual);
 
-        Project.Instance.RegisterOnEntityDataChanged(LoadEntityData);
+        Project.Instance.RegisterOnLevelsChanged(LoadLevels);
         
         UpdatePositionsAndSizes();
-        LoadEntityData(Project.Instance.EntityDatas);
+        LoadLevels(Project.Instance.levels);
     }
 
     protected override void UpdatePositionsAndSizes()
@@ -120,7 +117,6 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         const float margin = 16f;
 
         float containerWidth = this.popUpContainerRef.Width;
-        // float containerHeight = this.popUpContainerRef.Height;
 
         // Top-right anchor
         float popupX = containerWidth - popupWidth - margin;
@@ -145,14 +141,16 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         this.panel.Y = popupY + UIParams.popupPadding / 2;
     }
     
-    private void LoadEntityData(IReadOnlyDictionary<int, EntityData> data)
+    private void LoadLevels(IReadOnlyList<Level> data)
     {
-        List<EntityDataVisual> upToDateVisuals = [];
-        foreach (KeyValuePair<int, EntityData> keyValuePair in data)
+        List<LevelVisual> upToDateVisuals = [];
+        for (int id = 0; id < data.Count; id++)
         {
-            if (keyValuePair.Value == null)
+            Level level = data[id];
+            
+            if (level == null)
                 continue;
-            EntityDataVisual? instance = this.visuals.FirstOrDefault(x => x.id == keyValuePair.Key);
+            LevelVisual? instance = this.visuals.FirstOrDefault(x => x.id == id);
             if (instance != null)
             {
                 instance.UpdateVisuals();
@@ -163,19 +161,19 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
             instance = this.visuals.FirstOrDefault(x => x.id == null);
             if (instance == null)
             {
-                instance = new EntityDataVisual(this.closeIcon, this.panel, keyValuePair.Key, keyValuePair.Value);
+                instance = new LevelVisual(this.closeIcon, this.panel, id, level);
                 this.visuals.Add(instance);
                 upToDateVisuals.Add(instance);
                 continue;
             }
 
-            instance.entityData = keyValuePair.Value;
-            instance.id = keyValuePair.Key;
+            instance.levelData = level;
+            instance.id = id;
             instance.UpdateVisuals();
             upToDateVisuals.Add(instance);
         }
-        
-        foreach (EntityDataVisual entityDataVisual in this.visuals.Where(entityDataVisual => !upToDateVisuals.Contains(entityDataVisual)))
+
+        foreach (LevelVisual entityDataVisual in this.visuals.Where(entityDataVisual => !upToDateVisuals.Contains(entityDataVisual)))
             entityDataVisual.RemoveAndHide();
     }
 }

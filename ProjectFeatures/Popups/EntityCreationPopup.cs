@@ -53,7 +53,7 @@ public class EntityCreationPopup : Popup<EntityCreationPopup>
         if (this.lastSavedText == null) return;
         try
         {
-            Program.instance.cmdHistory.ApplyCmd(new AddEntityDataCmd(Project.instance, this.lastSavedText));
+            Program.instance.cmdHistory.ApplyCmd(new AddEntityDataCmd(Project.Instance, this.lastSavedText));
         }
         catch (Exception e)
         {

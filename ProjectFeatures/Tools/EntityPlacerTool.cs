@@ -9,7 +9,7 @@ public class EntityPlacerTool : BasePlacerTool
     public EntityPlacerTool(WindowInstance windowRef) : base(windowRef)
     {
         this.entityTexture = Program.instance.Content.Load<Texture2D>("Icons/Entity");
-        this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.instance, this.lastMousePosition, this.entityTexture, windowRef));
+        this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.Instance, this.lastMousePosition, this.entityTexture, windowRef));
     }
 
     public override void SetVisuals()

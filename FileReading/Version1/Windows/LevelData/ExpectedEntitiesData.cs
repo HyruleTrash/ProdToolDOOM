@@ -20,7 +20,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (this.entity == null)
         {
             Texture2D? entityTexture = Program.instance.Content.Load<Texture2D>("Icons/Entity");
-            this.entity = new Entity(-1, entityTexture, Program.instance, Project.instance, -1, Vector2.Zero);
+            this.entity = new Entity(-1, entityTexture, Program.instance, Project.Instance, -1, Vector2.Zero);
         }
         if (reader.NodeType != XmlNodeType.Element)
             return;
@@ -34,7 +34,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (this.entity == null) return;
         Debug.Log($"Saving entity: {this.entity}");
         this.referenceLevelData.level.Add(this.entity);
-        Project.instance.EntityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
+        Project.Instance.EntityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
         this.entity.UpdateVisualPosition(Program.instance.GetWindowSize());
         this.entity = null;
     }

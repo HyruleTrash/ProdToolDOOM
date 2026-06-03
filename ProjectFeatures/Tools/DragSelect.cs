@@ -30,26 +30,26 @@ public class DragSelect : IBaseUpdatable
         RightClickManager.instance.AddOptions<DragSelect>([
             new RightClickManager.RightClickOption(
                 "Remove all", 
-                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectsCmd(Project.instance, GetSelectedObjects<LevelObject>)),
+                () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectsCmd(Project.Instance, GetSelectedObjects<LevelObject>)),
                 () => this.selectedObjects.Count > 1),
             new RightClickManager.RightClickOption(
                 "Remove points", 
                 () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Point, RemovePointCmd>(
-                    Project.instance, GetSelectedObjects<Point>, (prj, obj) => new RemovePointCmd(prj, obj))),
+                    Project.Instance, GetSelectedObjects<Point>, (prj, obj) => new RemovePointCmd(prj, obj))),
                 () => this.selectedObjects.OfType<Point>().Any()),
             new RightClickManager.RightClickOption(
                 "Remove lines", 
                 () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Line, RemoveLineCmd>(
-                    Project.instance, GetSelectedObjects<Line>, (prj, obj) => new RemoveLineCmd(prj, obj))),
+                    Project.Instance, GetSelectedObjects<Line>, (prj, obj) => new RemoveLineCmd(prj, obj))),
                 () => this.selectedObjects.OfType<Line>().Any()),
             new RightClickManager.RightClickOption(
                 "Remove entities", 
                 () => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelObjectArrayCmd<Entity, RemoveEntityCmd>(
-                    Project.instance, GetSelectedObjects<Entity>, (prj, obj) => new RemoveEntityCmd(prj, obj))),
+                    Project.Instance, GetSelectedObjects<Entity>, (prj, obj) => new RemoveEntityCmd(prj, obj))),
                 () => this.selectedObjects.OfType<Line>().Any()),
             new RightClickManager.RightClickOption(
                 "Connect points", 
-                () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.instance, Program.instance, GetSelectedObjects<Point>)),
+                () => Program.instance.cmdHistory.ApplyCmd(new AddLinesCmd(Project.Instance, Program.instance, GetSelectedObjects<Point>)),
                 () =>
                 {
                     bool hadOne = false;
@@ -93,7 +93,7 @@ public class DragSelect : IBaseUpdatable
     /// <returns>if user is currently drag selecting</returns>
     public bool UpdateDrag(MouseState mouse, WindowInstance windowRef)
     {
-        if (Project.instance.levels.Count == 0 || windowRef.Mouse.IsDragging)
+        if (Project.Instance.levels.Count == 0 || windowRef.Mouse.IsDragging)
             return false;
         Vector2 lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
 

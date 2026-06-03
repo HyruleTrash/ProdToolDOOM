@@ -240,7 +240,7 @@ public class Line : LevelObject, IDisposable
         UpdateVisualPosition(screenSize);
     }
 
-    private void CreateRemoveCommand() => this.removeCommand ??= new RemoveLineCmd(Project.instance, this);
+    private void CreateRemoveCommand() => this.removeCommand ??= new RemoveLineCmd(Project.Instance, this);
     
     public override string ToString() =>
         $"Line [position: {this.position}, firstPnt: {this.Id}, SecondPnt: {this.IdOther}, levelId: {this.levelId}]";

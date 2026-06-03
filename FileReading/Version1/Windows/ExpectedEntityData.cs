@@ -27,7 +27,7 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
-        Project.instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
+        Project.Instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
     }
 }
 #endif

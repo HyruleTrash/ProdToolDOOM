@@ -8,7 +8,7 @@ public class AddLevelCmd(Project project) : ICommand
     {
         Debug.Log("Adding level!");
         this.level ??= new Level();
-        project.levels.Add(this.level);
+        project.AddLevel(this.level);
         project.CurrentLevel = project.levels.Count - 1;
     }
 

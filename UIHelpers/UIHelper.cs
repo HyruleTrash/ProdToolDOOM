@@ -1,4 +1,5 @@
-﻿using Gum.Forms.Controls;
+﻿using System.Collections.Generic;
+using Gum.Forms.Controls;
 using Gum.Wireframe;
 using MonoGameGum;
 
@@ -47,4 +48,26 @@ public static class UIHelper
     /// <param name="parent">GraphicalUiElement that will hold your addition</param>
     /// <param name="child">represents the element you want to add</param>
     public static void AddUI(this GraphicalUiElement parent, object child) => BaseAddUI(parent, child);
+
+    public static void SetVisibility(this List<MenuItem> childMenuItems, ItemsControl parent, bool visible)
+    {
+        foreach (MenuItem child in childMenuItems)
+        {
+            child.IsVisible = visible;
+            if (parent == null)
+                continue;
+            if (visible)
+            {
+                if (parent.Items.Contains(child))
+                    continue;
+                parent.Items.Add(child);
+            }
+            else
+            {
+                if (!parent.Items.Contains(child))
+                    continue;
+                parent.Items.Remove(child);
+            }
+        }
+    }
 }

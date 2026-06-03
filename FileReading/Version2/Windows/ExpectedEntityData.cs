@@ -25,6 +25,6 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
         if (reader.Name == "Name") this.entityData.Name = reader.ReadElementContentAsString();
     }
 
-    public void saveEntry() => Project.instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
+    public void saveEntry() => Project.Instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
 }
 #endif

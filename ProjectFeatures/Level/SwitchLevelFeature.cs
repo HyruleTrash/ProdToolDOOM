@@ -1,18 +1,15 @@
 ﻿using Gum.Forms.Controls;
-using MonoGameGum.GueDeriving;
-using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class SwitchLevelFeature : SaveFeature
 {
-    private ContainerRuntime container;
-    private MenuItem switchLeft;
-    private MenuItem switchRight;
+    private MenuItem switchLeft = null!;
+    private MenuItem switchRight = null!;
 
     public SwitchLevelFeature(Project project) : base(project) { }
 
-    public override void LoadUI(MenuItem menu, bool isVisible)
+    public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
         if (!ShouldLoadUI(menu))
             return;
@@ -47,6 +44,6 @@ public class SwitchLevelFeature : SaveFeature
         if (this.project.CheckLoadStrategy())
             return;
         Debug.Log("Reloading project file...");
-        this.project.loadStrat.Load(this.project.FilePath);
+        this.project.Load(this.project.FilePath);
     }
 }

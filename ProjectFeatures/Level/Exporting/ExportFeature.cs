@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using Gum.Forms.Controls;
-using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures.Exporting;
 
@@ -22,7 +21,7 @@ public class ExportFeature : ProjectFeature
         ];
     }
 
-    public override void LoadUI(MenuItem menu, bool isVisible)
+    public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
         if (!ShouldLoadUI(menu))
             return;

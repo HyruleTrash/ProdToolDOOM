@@ -9,7 +9,7 @@ public class PointPlacerTool : BasePlacerTool
     public PointPlacerTool(WindowInstance windowRef) : base(windowRef)
     {
         this.pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
-        this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddPointCmd(Project.instance, this.lastMousePosition, this.pointTexture, windowRef));
+        this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddPointCmd(Project.Instance, this.lastMousePosition, this.pointTexture, windowRef));
     }
 
     public override void SetVisuals()

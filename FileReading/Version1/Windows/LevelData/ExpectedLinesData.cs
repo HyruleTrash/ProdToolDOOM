@@ -19,7 +19,7 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        this.line ??= new Line(Project.instance, Program.instance);
+        this.line ??= new Line(Project.Instance, Program.instance);
 
         if (reader.Name == "Id")
             this.line.Id = reader.ReadElementContentAsInt();
@@ -31,7 +31,7 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
         if (this.line == null)
             return;
         Debug.Log($"Saving line: {this.line}");
-        Project projectRef = Project.instance;
+        Project projectRef = Project.Instance;
         this.line.levelId = projectRef.levels.Count;
         this.referenceLevelData.level.Add(new Line(projectRef, this.line));
     }

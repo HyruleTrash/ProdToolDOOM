@@ -22,7 +22,7 @@ public abstract class Popup<T> where T : Popup<T>, new()
 
     protected Popup()
     {
-        this.popUpContainerRef = Project.instance.popUpContainer;
+        this.popUpContainerRef = Project.Instance.popUpContainer;
         this.container = new ContainerRuntime { Visible = false };
 
         Color transparentBlack = Color.Black;

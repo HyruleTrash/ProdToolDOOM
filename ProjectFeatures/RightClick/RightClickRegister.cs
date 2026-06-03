@@ -12,7 +12,7 @@ public static class RightClickRegister
                     if (manager.currentVisual is null)
                         return;
                     if (manager.currentVisual?.currentSelection is Point pt)
-                        Program.instance.cmdHistory.ApplyCmd(new RemovePointCmd(Project.instance, pt, manager.Reset));
+                        Program.instance.cmdHistory.ApplyCmd(new RemovePointCmd(Project.Instance, pt, manager.Reset));
                 })
         ]);
         manager.AddOptions<Line>([
@@ -23,7 +23,7 @@ public static class RightClickRegister
                     if (manager.currentVisual is null)
                         return;
                     if (manager.currentVisual?.currentSelection is Line ln)
-                        Program.instance.cmdHistory.ApplyCmd(new RemoveLineCmd(Project.instance, ln, manager.Reset));
+                        Program.instance.cmdHistory.ApplyCmd(new RemoveLineCmd(Project.Instance, ln, manager.Reset));
                 })
         ]);
         manager.AddOptions<Entity>([
@@ -34,7 +34,7 @@ public static class RightClickRegister
                     if (manager.currentVisual is null)
                         return;
                     if (manager.currentVisual?.currentSelection is Entity e)
-                        Program.instance.cmdHistory.ApplyCmd(new RemoveEntityCmd(Project.instance, e, manager.Reset));
+                        Program.instance.cmdHistory.ApplyCmd(new RemoveEntityCmd(Project.Instance, e, manager.Reset));
                 }),
             new RightClickManager.RightClickOption(
                 "Set name", 

@@ -1,5 +1,4 @@
 ﻿using Gum.Forms.Controls;
-using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
@@ -7,7 +6,7 @@ public class LoadFeature(Project project) : ProjectFeature
 {
     private MenuItem loadProjectButton = null!;
 
-    public override void LoadUI(MenuItem menu, bool isVisible)
+    public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
         if (!ShouldLoadUI(menu))
             return;
@@ -39,7 +38,6 @@ public class LoadFeature(Project project) : ProjectFeature
             return;
         tempPath = result.Value.filePath;
 
-        if (project.loadStrat.Load(tempPath))
-            project.FilePath = tempPath;
+        project.Load(tempPath);
     }
 }

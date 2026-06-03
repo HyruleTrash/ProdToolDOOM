@@ -7,17 +7,13 @@ using Button = Gum.Forms.Controls.Button;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
-public class ToolBarFeature(GumService gum, Project project)
+public class ToolBarFeature(GumService gum)
 {
     private StackPanel toolStack = null!;
-    private Button addLevelButton = null!;
-    private Button addNewEntityButton = null!;
     private Button addNewEntityToLevelButton = null!;
     private Button addPointToLevelButton = null!;
-
-    private void AddLevel() => Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(project));
-    private void AddEntityData() => EntityCreationPopup.ToggleVisibility();
-    private void AddEntity() => Program.instance.toolManager?.SetTool(typeof(EntityPlacerTool));
+    
+    private static void AddEntity() => Program.instance.toolManager?.SetTool(typeof(EntityPlacerTool));
     
     private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     
@@ -37,24 +33,6 @@ public class ToolBarFeature(GumService gum, Project project)
         };
         this.toolStack.Anchor(Anchor.BottomLeft);
         container.AddUI(this.toolStack);
-
-        this.addLevelButton = new Button
-        {
-            Text = "Create new level",
-            Height = UIParams.minButtonHeight
-        };
-        UIParams.SetDefaultButton(this.addLevelButton);
-        this.addLevelButton.Click += (_, _) => AddLevel();
-        this.toolStack.AddUI(this.addLevelButton);
-
-        this.addNewEntityButton = new Button
-        {
-            Text = "Add new Entity to project",
-            Height = UIParams.minButtonHeight
-        };
-        UIParams.SetDefaultButton(this.addNewEntityButton);
-        this.addNewEntityButton.Click += (_, _) => AddEntityData();
-        this.toolStack.AddUI(this.addNewEntityButton);
 
         this.addNewEntityToLevelButton = new Button
         {

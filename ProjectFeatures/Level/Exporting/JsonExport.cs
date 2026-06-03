@@ -61,7 +61,7 @@ public class JsonExport : ExportOption
             Level levelToSerialize = new();
 
             List<EntityData> entityDatas = [];
-            entityDatas.AddRange(Project.instance.EntityDatas.Select(data => new EntityData { id = data.Key, name = data.Value.Name }));
+            entityDatas.AddRange(Project.Instance.EntityDatas.Select(data => new EntityData { id = data.Key, name = data.Value.Name }));
             levelToSerialize.entityDatas = entityDatas.ToArray();
         
             List<Entity> entities = [];
