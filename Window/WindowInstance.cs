@@ -157,7 +157,7 @@ public class WindowInstance : Game
             if (!item.IsVisible) continue;
             MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
 
-            float baseContainerWidth = itemVisual.ContainerInstance.GetAbsoluteWidth();
+            float baseContainerWidth = itemVisual.GetAbsoluteWidth();
             float arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
 
             float realCalculatedItemWidth = baseContainerWidth + arrowOffset;
@@ -168,14 +168,14 @@ public class WindowInstance : Game
     
     protected virtual void LoadUI()
     {
-        MenuItem exitButton = new() { Header = "X", };
-        // UIParams.SetDefaultButton(exitButton);
-        // UIParams.AddIconToButton(exitButton, this.closeIcon);
+        MenuItem exitButton = new();
+        UIParams.SetDefaultMenuItem(exitButton);
+        UIParams.AddIconToMenuItem(exitButton, this.closeIcon);
         exitButton.Clicked += (_, _) => Exit();
         
-        MenuItem minimizeButton = new() { Header = "-", };
-        // UIParams.SetDefaultButton(minimizeButton);
-        // UIParams.AddIconToButton(minimizeButton, this.minimizeIcon);
+        MenuItem minimizeButton = new();
+        UIParams.SetDefaultMenuItem(minimizeButton);
+        UIParams.AddIconToMenuItem(minimizeButton, this.minimizeIcon);
         minimizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;
@@ -183,9 +183,9 @@ public class WindowInstance : Game
             DLLevelBuilder.Window.Helper.Minimize(handle);
         };
         
-        MenuItem maximizeButton = new() { Header = "+", };
-        // UIParams.SetDefaultButton(maximizeButton);
-        // UIParams.AddIconToButton(maximizeButton, this.maximizeIcon);
+        MenuItem maximizeButton = new();
+        UIParams.SetDefaultMenuItem(maximizeButton);
+        UIParams.AddIconToMenuItem(maximizeButton, this.maximizeIcon);
         maximizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;

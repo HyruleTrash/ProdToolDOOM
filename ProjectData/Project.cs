@@ -183,6 +183,7 @@ public class Project
     private void TopLeftUI(Menu topLeftMenu)
     {
         this.projectMenuItem = new MenuItem { Header = "Project" };
+        UIParams.SetDefaultMenuItem(this.projectMenuItem);
         topLeftMenu.Items.Add(this.projectMenuItem);
 
         this.loadFeature.LoadUI(this.projectMenuItem);

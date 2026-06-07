@@ -18,7 +18,7 @@ public class SaveNewFeature(Project project) : ProjectFeature
             Header = "New Project",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.saveProjectAsButton);
+        UIParams.SetDefaultMenuItem(this.saveProjectAsButton);
 
         this.saveProjectAsButton.Clicked += (_, _) => Save();
         project.filePathChanged += newPath =>
