@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace DLLevelBuilder;
+namespace DLLevelBuilder.UI;
 
 public interface IHoverable
 {

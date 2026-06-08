@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DLLevelBuilder.UI;
 using Gum.Forms.Controls;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum.GueDeriving;
@@ -49,11 +50,11 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
             this.removeButton = new Button
             {
                 Text = "X",
-                Width = UIParams.minBoxSize,
-                Height = UIParams.minBoxSize
+                Width = Params.minBoxSize,
+                Height = Params.minBoxSize
             };
-            UIParams.SetDefaultButton(this.removeButton);
-            UIParams.AddIconToButton(this.removeButton, closeIcon);
+            CustomButtonVisual.Create(this.removeButton);
+            CustomButtonVisual.AddIcon(this.removeButton, closeIcon);
             this.removeButton.Click += (_, _) => RemoveAndHide();
 
             this.panel.AddChild(this.nameText);
@@ -98,8 +99,8 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         this.closeIcon = Program.instance.Content.Load<Texture2D>("Icons/Cross");
         
         this.panel = new ScrollViewer { InnerPanel = { StackSpacing = 4 } };
-        this.popupBG = new ColoredRectangleRuntime { Color = UIParams.defaultFillColor };
-        this.popupBGBorder = new RectangleRuntime { Color = UIParams.defaultOutlineColor };
+        this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
+        this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
         
         this.container.AddChild(this.popupBG);
         this.container.AddChild(this.popupBGBorder);
@@ -124,7 +125,7 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
 
         // Top-right anchor
         float popupX = containerWidth - popupWidth - margin;
-        const float popupY = margin + UIParams.minBoxSize;
+        const float popupY = margin + Params.minBoxSize;
 
         // Background
         this.popupBG.Width = popupWidth;
@@ -133,16 +134,16 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         this.popupBG.Y = popupY;
 
         // Background border
-        this.popupBGBorder.Width = popupWidth + UIParams.defaultOutLineWidth;
-        this.popupBGBorder.Height = popupHeight + UIParams.defaultOutLineWidth;
-        this.popupBGBorder.X = popupX - UIParams.defaultOutLineWidth / 2;
-        this.popupBGBorder.Y = popupY - UIParams.defaultOutLineWidth / 2;
+        this.popupBGBorder.Width = popupWidth + Params.defaultOutLineWidth;
+        this.popupBGBorder.Height = popupHeight + Params.defaultOutLineWidth;
+        this.popupBGBorder.X = popupX - Params.defaultOutLineWidth / 2;
+        this.popupBGBorder.Y = popupY - Params.defaultOutLineWidth / 2;
 
         // Panel
-        this.panel.Width = popupWidth - UIParams.popupPadding;
-        this.panel.Height = popupHeight - UIParams.popupPadding;
-        this.panel.X = popupX + UIParams.popupPadding / 2;
-        this.panel.Y = popupY + UIParams.popupPadding / 2;
+        this.panel.Width = popupWidth - Params.popupPadding;
+        this.panel.Height = popupHeight - Params.popupPadding;
+        this.panel.X = popupX + Params.popupPadding / 2;
+        this.panel.Y = popupY + Params.popupPadding / 2;
     }
     
     private void LoadEntityData(IReadOnlyDictionary<int, EntityData> data)

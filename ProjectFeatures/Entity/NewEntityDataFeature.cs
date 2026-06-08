@@ -1,4 +1,5 @@
 ﻿
+using DLLevelBuilder.UI;
 using Gum.Forms.Controls;
 
 namespace DLLevelBuilder.ProjectFeatures;
@@ -16,9 +17,9 @@ public class NewEntityDataFeature : ProjectFeature
         this.toggleManagerButton = new MenuItem
         {
             Header = "New",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.toggleManagerButton);
+        CustomMenuItemVisual.Create(this.toggleManagerButton);
         this.toggleManagerButton.Clicked += (_, _) => TogglePopup();
         
         this.children.Add(this.toggleManagerButton);

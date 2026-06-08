@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DLLevelBuilder.UI;
 using Gum.Forms.Controls;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum;
@@ -68,7 +69,7 @@ public class RightClickManager : IBaseUpdatable
                 Text = option.text,
             };
             option.button.Click += (_, _) => option.toCall.Invoke();
-            UIParams.SetDefaultButton(option.button);
+            CustomButtonVisual.Create(option.button);
             entry.rightClickOptionStack.AddChild(option.button);
         }
 
@@ -126,7 +127,7 @@ public class RightClickManager : IBaseUpdatable
             this.currentStack = stack;
 
             Vector2 size = new(this.rightClickPopUp.GetAbsoluteWidth(), this.rightClickPopUp.GetAbsoluteHeight());
-            Vector2 offset = new(UIParams.minNearSelection, UIParams.minNearSelection);
+            Vector2 offset = new(Params.minNearSelection, Params.minNearSelection);
             this.selectionBox = new SelectionBox(newVisual.Value.position + (size / 2), size + offset);
         }
         

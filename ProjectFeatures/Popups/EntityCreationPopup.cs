@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DLLevelBuilder.UI;
 using Gum.Forms.Controls;
 using MonoGameGum.GueDeriving;
 using TextBox = Gum.Forms.Controls.TextBox;
@@ -19,8 +20,8 @@ public class EntityCreationPopup : Popup<EntityCreationPopup>
     public EntityCreationPopup()
     {
         this.panel = new StackPanel { Spacing = 5, };
-        this.popupBG = new ColoredRectangleRuntime { Color = UIParams.defaultFillColor };
-        this.popupBGBorder = new RectangleRuntime { Color = UIParams.defaultOutlineColor };
+        this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
+        this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
 
         this.textBox = new TextBox()
         {
@@ -32,9 +33,9 @@ public class EntityCreationPopup : Popup<EntityCreationPopup>
         this.confirmButton = new Button
         {
             Text = "Confirm",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.confirmButton);
+        CustomButtonVisual.Create(this.confirmButton);
         this.confirmButton.Click += (_, _) => ConfirmCreation();
         
         this.container.AddChild(this.popupBG);
@@ -81,13 +82,13 @@ public class EntityCreationPopup : Popup<EntityCreationPopup>
         
         base.UpdatePositionsAndSizes();
             
-        this.popupBG.Width = this.panel.Width + UIParams.popupPadding;
-        this.popupBG.Height = this.panel.Height + UIParams.popupPadding;
+        this.popupBG.Width = this.panel.Width + Params.popupPadding;
+        this.popupBG.Height = this.panel.Height + Params.popupPadding;
         this.popupBG.X = this.popUpContainerRef.Width / 2 - this.popupBG.Width / 2;
         this.popupBG.Y = this.popUpContainerRef.Height / 2 - this.popupBG.Height / 2;
         
-        this.popupBGBorder.Width = this.panel.Width + UIParams.popupPadding + UIParams.defaultOutLineWidth;
-        this.popupBGBorder.Height = this.panel.Height + UIParams.popupPadding + UIParams.defaultOutLineWidth;
+        this.popupBGBorder.Width = this.panel.Width + Params.popupPadding + Params.defaultOutLineWidth;
+        this.popupBGBorder.Height = this.panel.Height + Params.popupPadding + Params.defaultOutLineWidth;
         this.popupBGBorder.X = this.popUpContainerRef.Width / 2 - this.popupBGBorder.Width / 2;
         this.popupBGBorder.Y = this.popUpContainerRef.Height / 2 - this.popupBGBorder.Height / 2;
             

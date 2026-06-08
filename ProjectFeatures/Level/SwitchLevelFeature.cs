@@ -1,4 +1,5 @@
-﻿using Gum.Forms.Controls;
+﻿using DLLevelBuilder.UI;
+using Gum.Forms.Controls;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
@@ -16,17 +17,17 @@ public class SwitchLevelFeature(Project project) : ProjectFeature
         this.switchLeft = new MenuItem
         {
             Header = "Previous",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.switchLeft);
+        CustomMenuItemVisual.Create(this.switchLeft);
         this.switchLeft.Clicked += (_, _) => SwitchLevel(-1);
         
         this.switchRight = new MenuItem
         {
             Header = "Next",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.switchRight);
+        CustomMenuItemVisual.Create(this.switchRight);
         this.switchRight.Clicked += (_, _) => SwitchLevel(1);
         
         this.children.Add(this.switchLeft);

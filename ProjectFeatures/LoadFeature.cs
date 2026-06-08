@@ -1,4 +1,5 @@
-﻿using Gum.Forms.Controls;
+﻿using DLLevelBuilder.UI;
+using Gum.Forms.Controls;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
@@ -15,9 +16,9 @@ public class LoadFeature(Project project) : ProjectFeature
         this.loadProjectButton = new MenuItem
         {
             Header = "Load Project",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.loadProjectButton);
+        CustomMenuItemVisual.Create(this.loadProjectButton);
 
         this.loadProjectButton.Clicked += (_, _) => Load();
         this.children.Add(this.loadProjectButton);

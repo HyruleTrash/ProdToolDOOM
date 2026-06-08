@@ -2,6 +2,7 @@
 using Gum.Wireframe;
 using MonoGameGum;
 using DLLevelBuilder.ProjectFeatures.Tools;
+using DLLevelBuilder.UI;
 using MonoGameGum.GueDeriving;
 using Button = Gum.Forms.Controls.Button;
 
@@ -29,7 +30,7 @@ public class ToolBarFeature(GumService gum)
                 StackSpacing = 4
             },
             X = 5,
-            Y = gum.CanvasHeight - UIParams.borderPadding,
+            Y = gum.CanvasHeight - Params.borderPadding,
         };
         this.toolStack.Anchor(Anchor.BottomLeft);
         container.AddUI(this.toolStack);
@@ -37,18 +38,18 @@ public class ToolBarFeature(GumService gum)
         this.addNewEntityToLevelButton = new Button
         {
             Text = "Add Entity to level",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.addNewEntityToLevelButton);
+        CustomButtonVisual.Create(this.addNewEntityToLevelButton);
         this.addNewEntityToLevelButton.Click += (_, _) => AddEntity();
         this.toolStack.AddUI(this.addNewEntityToLevelButton);
 
         this.addPointToLevelButton = new Button
         {
             Text = "Add point",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultButton(this.addPointToLevelButton);
+        CustomButtonVisual.Create(this.addPointToLevelButton);
         this.addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
         this.toolStack.AddUI(this.addPointToLevelButton);
     }

@@ -6,6 +6,7 @@ using MonoGameGum;
 using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.ProjectFeatures.Exporting;
+using DLLevelBuilder.UI;
 using DLLevelBuilder.Version2;
 using Gum.Forms.Controls;
 
@@ -183,7 +184,7 @@ public class Project
     private void TopLeftUI(Menu topLeftMenu)
     {
         this.projectMenuItem = new MenuItem { Header = "Project" };
-        UIParams.SetDefaultMenuItem(this.projectMenuItem);
+        CustomMenuItemVisual.Create(this.projectMenuItem);
         topLeftMenu.Items.Add(this.projectMenuItem);
 
         this.loadFeature.LoadUI(this.projectMenuItem);
@@ -205,14 +206,14 @@ public class Project
             IsVisible = false
         };
         topBarRight.Items.Add(this.levelMenuItem);
-        UIParams.SetDefaultMenuItem(this.levelMenuItem);
+        CustomMenuItemVisual.Create(this.levelMenuItem);
         this.entityMenuItem = new MenuItem
         {
             Header = "Entity",
             IsVisible = false
         };
         topBarRight.Items.Add(this.entityMenuItem);
-        UIParams.SetDefaultMenuItem(this.entityMenuItem);
+        CustomMenuItemVisual.Create(this.entityMenuItem);
         
         this.newLevelFeature.LoadUI(this.levelMenuItem);
         this.openLevelManagerFeature.LoadUI(this.levelMenuItem);

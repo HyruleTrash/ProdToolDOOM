@@ -1,4 +1,5 @@
 ﻿using System;
+using DLLevelBuilder.UI;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -14,7 +15,7 @@ public class DragComponent : IHoverable
     private SelectionBox selectionBox;
     private ColoredRectangleRuntime? rectangleVisual;
     private RectangleRuntime? lineRectangleVisual;
-    private const float height = UIParams.minBoxSize;
+    private const float height = Params.minBoxSize;
     private bool dragging = false;
     
     private Vector2 firstMousePos;
@@ -82,7 +83,7 @@ public class DragComponent : IHoverable
         {
             Width = this.selectionBox.size.x,
             Height = height,
-            Color = UIParams.defaultFillColor,
+            Color = Params.DefaultFillColor,
             X = this.selectionBox.center.x
         };
         this.rectangleVisual.Anchor(Anchor.Top);
@@ -91,9 +92,9 @@ public class DragComponent : IHoverable
         {
             Width = this.selectionBox.size.x,
             Height = height,
-            Color = UIParams.defaultOutlineColor,
+            Color = Params.DefaultOutlineColor,
             X = this.selectionBox.center.x,
-            LineWidth = UIParams.defaultOutLineWidth
+            LineWidth = Params.defaultOutLineWidth
         };
         this.lineRectangleVisual.Anchor(Anchor.Top);
         this.rectangleVisual.AddChild(this.lineRectangleVisual);

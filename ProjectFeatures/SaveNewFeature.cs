@@ -1,4 +1,5 @@
-﻿using Gum.Forms.Controls;
+﻿using DLLevelBuilder.UI;
+using Gum.Forms.Controls;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
@@ -16,9 +17,9 @@ public class SaveNewFeature(Project project) : ProjectFeature
         this.saveProjectAsButton = new MenuItem
         {
             Header = "New Project",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.saveProjectAsButton);
+        CustomMenuItemVisual.Create(this.saveProjectAsButton);
 
         this.saveProjectAsButton.Clicked += (_, _) => Save();
         project.filePathChanged += newPath =>

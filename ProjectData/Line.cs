@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
+using DLLevelBuilder.UI;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace DLLevelBuilder;
@@ -75,7 +76,7 @@ public class Line : LevelObject, IDisposable
         {
             IgnoredByParentSize = true,
             Visible = this.projectRef.CurrentLevel == this.levelId,
-            LineWidth = UIParams.defaultOutLineWidth,
+            LineWidth = Params.defaultOutLineWidth,
             IsDotted = true,
         };
         this.icon.SetPoints(polygonPoints);
@@ -85,7 +86,7 @@ public class Line : LevelObject, IDisposable
         {
             IgnoredByParentSize = true,
             Visible = false,
-            LineWidth = UIParams.defaultOutLineWidth,
+            LineWidth = Params.defaultOutLineWidth,
             IsDotted = true,
             Color = Color.Blue
         };

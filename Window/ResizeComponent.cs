@@ -1,4 +1,5 @@
 ﻿using System;
+using DLLevelBuilder.UI;
 using Microsoft.Xna.Framework;
 
 namespace DLLevelBuilder.Window;
@@ -14,11 +15,11 @@ public class ResizeComponent : ResizableBox
         protected override int GetPosWithinMinimumBounds(float pos)
         {
             int delta = (int)Math.Ceiling(pos);
-            if (delta > UIParams.minResizePerFrame)
-                delta = UIParams.minResizePerFrame;
+            if (delta > Params.minResizePerFrame)
+                delta = Params.minResizePerFrame;
             
             int desiredDelta = this.graphics.PreferredBackBufferWidth + delta;
-            return Math.Max(desiredDelta, UIParams.minWindowWidth);
+            return Math.Max(desiredDelta, Params.minWindowWidth);
         }
 
         protected override void ApplySize()
@@ -72,11 +73,11 @@ public class ResizeComponent : ResizableBox
         protected override int GetPosWithinMinimumBounds(float pos)
         {
             int delta = (int)Math.Ceiling(pos);
-            if (delta > UIParams.minResizePerFrame)
-                delta = UIParams.minResizePerFrame;
+            if (delta > Params.minResizePerFrame)
+                delta = Params.minResizePerFrame;
             
             int desiredDelta = this.graphics.PreferredBackBufferHeight + delta;
-            return Math.Max(desiredDelta, UIParams.minWindowHeight);
+            return Math.Max(desiredDelta, Params.minWindowHeight);
         }
 
         protected override void ApplySize()
@@ -135,10 +136,10 @@ public class ResizeComponent : ResizableBox
     public void ResizeSelectionBoxData(Vector2 windowSize)
     {
         this.resizeBoxes = new Sides(
-            new RightSide(new SelectionBox(new Vector2(windowSize.x, windowSize.y / 2), UIParams.minNearSelection, windowSize.y), this.graphics, this.window),
-            new LeftSide(new SelectionBox(new Vector2(0, windowSize.y / 2), UIParams.minNearSelection, windowSize.y), this.graphics, this.window),
-            new TopSide(new SelectionBox(new Vector2(windowSize.x / 2, 0), windowSize.x, UIParams.minNearSelection), this.graphics, this.window),
-            new BottomSide(new SelectionBox(new Vector2(windowSize.x / 2, windowSize.y), windowSize.x, UIParams.minNearSelection), this.graphics, this.window)
+            new RightSide(new SelectionBox(new Vector2(windowSize.x, windowSize.y / 2), Params.minNearSelection, windowSize.y), this.graphics, this.window),
+            new LeftSide(new SelectionBox(new Vector2(0, windowSize.y / 2), Params.minNearSelection, windowSize.y), this.graphics, this.window),
+            new TopSide(new SelectionBox(new Vector2(windowSize.x / 2, 0), windowSize.x, Params.minNearSelection), this.graphics, this.window),
+            new BottomSide(new SelectionBox(new Vector2(windowSize.x / 2, windowSize.y), windowSize.x, Params.minNearSelection), this.graphics, this.window)
         );
     }
     

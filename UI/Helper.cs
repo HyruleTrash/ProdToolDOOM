@@ -2,9 +2,9 @@
 using Gum.Wireframe;
 using MonoGameGum;
 
-namespace DLLevelBuilder;
+namespace DLLevelBuilder.UI;
 
-public static class UIHelper
+public static class Helper
 {
     /// <summary>
     /// Adds created UI, to a given parent

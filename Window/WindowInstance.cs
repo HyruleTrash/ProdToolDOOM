@@ -8,11 +8,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using DLLevelBuilder.ProjectFeatures;
+using DLLevelBuilder.UI;
 using Gum.DataTypes;
 using Gum.Forms.DefaultVisuals;
 using static Microsoft.Xna.Framework.Color;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
+using Mouse = DLLevelBuilder.UI.Mouse;
 
 namespace DLLevelBuilder;
 
@@ -98,9 +100,9 @@ public class WindowInstance : Game
 
         this.topBarLeft = new Menu
         {
-            X = UIParams.borderPadding,
-            Y = UIParams.borderPadding,
-            Height = UIParams.minButtonHeight,
+            X = Params.borderPadding,
+            Y = Params.borderPadding,
+            Height = Params.minButtonHeight,
             Visual = { WidthUnits = DimensionUnitType.RelativeToChildren, }
         };
         if (this.topBarLeft.Visual is MenuVisual topBarLeftMenuVisual)
@@ -109,8 +111,8 @@ public class WindowInstance : Game
 
         this.TopBarRight = new Menu
         {
-            Y = UIParams.borderPadding,
-            Height = UIParams.minButtonHeight,
+            Y = Params.borderPadding,
+            Height = Params.minButtonHeight,
             Visual = { WidthUnits = DimensionUnitType.RelativeToChildren, }
         };
         if (this.TopBarRight.Visual is MenuVisual menuVisual)
@@ -178,13 +180,13 @@ public class WindowInstance : Game
     protected virtual void LoadUI()
     {
         MenuItem exitButton = new();
-        UIParams.SetDefaultMenuItem(exitButton);
-        UIParams.AddIconToMenuItem(exitButton, this.closeIcon);
+        CustomMenuItemVisual.Create(exitButton);
+        CustomMenuItemVisual.AddIcon(exitButton, this.closeIcon);
         exitButton.Clicked += (_, _) => Exit();
         
         MenuItem minimizeButton = new();
-        UIParams.SetDefaultMenuItem(minimizeButton);
-        UIParams.AddIconToMenuItem(minimizeButton, this.minimizeIcon);
+        CustomMenuItemVisual.Create(minimizeButton);
+        CustomMenuItemVisual.AddIcon(minimizeButton, this.minimizeIcon);
         minimizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;
@@ -193,8 +195,8 @@ public class WindowInstance : Game
         };
         
         MenuItem maximizeButton = new();
-        UIParams.SetDefaultMenuItem(maximizeButton);
-        UIParams.AddIconToMenuItem(maximizeButton, this.maximizeIcon);
+        CustomMenuItemVisual.Create(maximizeButton);
+        CustomMenuItemVisual.AddIcon(maximizeButton, this.maximizeIcon);
         maximizeButton.Clicked += (_, _) =>
         {
             IntPtr handle = this.Window.Handle;
@@ -231,7 +233,7 @@ public class WindowInstance : Game
     
     protected override void Draw(GameTime gameTime)
     {
-        this.GraphicsDevice.Clear(UIParams.canvasColor);
+        this.GraphicsDevice.Clear(Params.CanvasColor);
         this.gum.Draw();
         base.Draw(gameTime);
     }
@@ -290,8 +292,8 @@ public class WindowInstance : Game
     public GameWindow GetWindow() => this.Window;
     public bool IsInsideWindowBounds(Vector2 point)
     {
-        float width = this.Window.ClientBounds.Width - UIParams.minNearSelection;
-        float height = this.Window.ClientBounds.Height - UIParams.minNearSelection;
+        float width = this.Window.ClientBounds.Width - Params.minNearSelection;
+        float height = this.Window.ClientBounds.Height - Params.minNearSelection;
         
         // Convert the mouse position into Gum's centered coordinate system
         Vector2 canvasCenter = new Vector2(this.gum.CanvasWidth, this.gum.CanvasHeight) * 0.5f;

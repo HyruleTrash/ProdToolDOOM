@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using DLLevelBuilder.UI;
 using Gum.Forms.Controls;
 
 namespace DLLevelBuilder.ProjectFeatures.Exporting;
@@ -30,9 +31,9 @@ public class ExportFeature : ProjectFeature
         this.exportButton = new MenuItem
         {
             Header = "Export Level",
-            Height = UIParams.minButtonHeight
+            Height = Params.minButtonHeight
         };
-        UIParams.SetDefaultMenuItem(this.exportButton);
+        CustomMenuItemVisual.Create(this.exportButton);
         this.exportButton.Clicked += (_, _) => Export();
         this.children.Add(this.exportButton);
         SetVisible(isVisible);

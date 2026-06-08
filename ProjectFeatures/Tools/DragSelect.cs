@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DLLevelBuilder.UI;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum;
@@ -19,9 +20,9 @@ public class DragSelect : IBaseUpdatable
 
     public DragSelect()
     {
-        this.visual.LineWidth = UIParams.defaultOutLineWidth;
+        this.visual.LineWidth = Params.defaultOutLineWidth;
         this.visual.IsDotted = true;
-        this.visual.Color = UIParams.selectionColor;
+        this.visual.Color = Params.SelectionColor;
         this.visual.Width = 0;
         this.visual.Height = 0;
         this.visual.Anchor(Anchor.Center);

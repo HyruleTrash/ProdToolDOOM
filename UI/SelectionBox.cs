@@ -1,4 +1,4 @@
-﻿namespace DLLevelBuilder;
+﻿namespace DLLevelBuilder.UI;
 
 public class SelectionBox
 {
