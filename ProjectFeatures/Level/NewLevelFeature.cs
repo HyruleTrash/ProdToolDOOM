@@ -17,7 +17,7 @@ public class NewLevelFeature(Project project) : ProjectFeature
             Header = "New",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.switchLeft);
+        UIParams.SetDefaultMenuItem(this.toggleManagerButton);
         this.toggleManagerButton.Clicked += (_, _) => AddLevel();
         
         this.children.Add(this.toggleManagerButton);

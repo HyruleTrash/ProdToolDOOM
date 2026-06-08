@@ -101,24 +101,25 @@ public class WindowInstance : Game
             X = UIParams.borderPadding,
             Y = UIParams.borderPadding,
             Height = UIParams.minButtonHeight,
-            Visual =
-            {
-                WidthUnits = DimensionUnitType.RelativeToChildren,
-            }
+            Visual = { WidthUnits = DimensionUnitType.RelativeToChildren, }
         };
-        ((MenuVisual)this.topBarLeft.Visual).Background.Color = Transparent;
+        if (this.topBarLeft.Visual is MenuVisual topBarLeftMenuVisual)
+            topBarLeftMenuVisual.Background.Color = Transparent;
         this.topBarLeft.Anchor(Anchor.TopLeft);
 
         this.TopBarRight = new Menu
         {
             Y = UIParams.borderPadding,
             Height = UIParams.minButtonHeight,
-            Visual =
-            {
-                WidthUnits = DimensionUnitType.RelativeToChildren,
-            }
+            Visual = { WidthUnits = DimensionUnitType.RelativeToChildren, }
         };
-        ((MenuVisual)this.TopBarRight.Visual).Background.Color = Transparent;
+        if (this.TopBarRight.Visual is MenuVisual menuVisual)
+        {
+            menuVisual.Background.Color = Transparent;
+            menuVisual.InnerPanelInstance.XOrigin = RenderingLibrary.Graphics.HorizontalAlignment.Right;
+            menuVisual.InnerPanelInstance.XUnits = Gum.Converters.GeneralUnitType.PixelsFromLarge;
+            menuVisual.InnerPanelInstance.StackSpacing = 0;
+        }
         this.TopBarRight.Anchor(Anchor.TopLeft);
 
         this.onScreenSizeChange += _ => UpdateTopBars();
@@ -137,7 +138,10 @@ public class WindowInstance : Game
     {
         float rightWidth = GetFullMenuWidth(this.TopBarRight);
         this.TopBarRight.Width = rightWidth;
-        this.TopBarRight.X = GetWindowWidth() - rightWidth - UIParams.borderPadding;
+        MenuVisual menuVisual = (MenuVisual)this.TopBarRight.Visual;
+        float padding = menuVisual.InnerPanelInstance.StackSpacing;
+        menuVisual.XUnits = Gum.Converters.GeneralUnitType.PixelsFromLarge;
+        menuVisual.X = padding - rightWidth;
         UpdateUIMenu(this.TopBarRight);
     }
 
@@ -152,15 +156,20 @@ public class WindowInstance : Game
     private float GetFullMenuWidth(Menu menu)
     {
         float fullWidth = 0;
+        MenuVisual menuVisual = (MenuVisual)menu.Visual;
+        float padding = menuVisual.InnerPanelInstance.StackSpacing;
         foreach (MenuItem item in menu.MenuItems)
         {
             if (!item.IsVisible) continue;
             MenuItemVisual itemVisual = (MenuItemVisual)item.Visual;
 
             float baseContainerWidth = itemVisual.GetAbsoluteWidth();
-            float arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
+            float arrowOffset = 0;
+            
+            if (itemVisual.SubmenuIndicatorInstance.Visible)
+                arrowOffset = itemVisual.SubmenuIndicatorInstance.X;
 
-            float realCalculatedItemWidth = baseContainerWidth + arrowOffset;
+            float realCalculatedItemWidth = baseContainerWidth + arrowOffset + padding;
             fullWidth += realCalculatedItemWidth;
         }
         return fullWidth;

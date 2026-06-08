@@ -32,7 +32,7 @@ public class ExportFeature : ProjectFeature
             Header = "Export Level",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.exportButton);
+        UIParams.SetDefaultMenuItem(this.exportButton);
         this.exportButton.Clicked += (_, _) => Export();
         this.children.Add(this.exportButton);
         SetVisible(isVisible);

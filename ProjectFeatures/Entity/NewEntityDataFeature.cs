@@ -18,7 +18,7 @@ public class NewEntityDataFeature : ProjectFeature
             Header = "New",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.toggleManagerButton);
+        UIParams.SetDefaultMenuItem(this.toggleManagerButton);
         this.toggleManagerButton.Clicked += (_, _) => TogglePopup();
         
         this.children.Add(this.toggleManagerButton);

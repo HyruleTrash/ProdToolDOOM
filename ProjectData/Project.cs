@@ -205,12 +205,14 @@ public class Project
             IsVisible = false
         };
         topBarRight.Items.Add(this.levelMenuItem);
+        UIParams.SetDefaultMenuItem(this.levelMenuItem);
         this.entityMenuItem = new MenuItem
         {
             Header = "Entity",
             IsVisible = false
         };
         topBarRight.Items.Add(this.entityMenuItem);
+        UIParams.SetDefaultMenuItem(this.entityMenuItem);
         
         this.newLevelFeature.LoadUI(this.levelMenuItem);
         this.openLevelManagerFeature.LoadUI(this.levelMenuItem);

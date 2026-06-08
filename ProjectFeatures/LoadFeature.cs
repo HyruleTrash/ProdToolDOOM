@@ -17,7 +17,7 @@ public class LoadFeature(Project project) : ProjectFeature
             Header = "Load Project",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.loadProjectButton);
+        UIParams.SetDefaultMenuItem(this.loadProjectButton);
 
         this.loadProjectButton.Clicked += (_, _) => Load();
         this.children.Add(this.loadProjectButton);

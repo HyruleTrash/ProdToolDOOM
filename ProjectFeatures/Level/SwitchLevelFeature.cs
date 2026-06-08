@@ -18,7 +18,7 @@ public class SwitchLevelFeature(Project project) : ProjectFeature
             Header = "Previous",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.switchLeft);
+        UIParams.SetDefaultMenuItem(this.switchLeft);
         this.switchLeft.Clicked += (_, _) => SwitchLevel(-1);
         
         this.switchRight = new MenuItem
@@ -26,7 +26,7 @@ public class SwitchLevelFeature(Project project) : ProjectFeature
             Header = "Next",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.switchRight);
+        UIParams.SetDefaultMenuItem(this.switchRight);
         this.switchRight.Clicked += (_, _) => SwitchLevel(1);
         
         this.children.Add(this.switchLeft);

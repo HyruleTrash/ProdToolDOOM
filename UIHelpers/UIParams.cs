@@ -76,6 +76,10 @@ public static class UIParams
         enabled.Clear();
         enabled.Apply = customVisual.EnabledState;
         
+        StateSave selected = visual.States.Selected;
+        selected.Clear();
+        selected.Apply = customVisual.SelectedState;
+        
         StateSave highlighted = visual.States.Highlighted;
         highlighted.Clear();
         highlighted.Apply = customVisual.HighlightedState;
@@ -227,7 +231,7 @@ public static class UIParams
             customMenuItem.Add(menuItem, this);
             this.visual.ParentChanged += (_, __) =>
             {
-                if(this.visual.Parent == null) // removed / disposed
+                if (this.visual.Parent == null) // removed / disposed
                     customMenuItem.Remove(menuItem);
             };
 
@@ -277,6 +281,7 @@ public static class UIParams
             BaseState();
             this.visual.Background.Color = defaultFillColor;
             this.outline.Color = defaultOutlineColor;
+            this.outline.Visible = true;
             this.visual.TextInstance.Color = defaultOutlineColor;
             if (this.icon != null) this.icon.Color = defaultOutlineColor;
         }
@@ -288,6 +293,14 @@ public static class UIParams
             this.outline.Color = defaultFillColor;
             this.visual.TextInstance.Color = defaultFillColor;
             if (this.icon != null) this.icon.Color = defaultFillColor;
+        }
+
+        public void SelectedState()
+        {
+            BaseState();
+            this.visual.Background.Color = canvasColor;
+            this.outline.Color = defaultOutlineColor;
+            this.visual.TextInstance.Color = defaultOutlineColor;
         }
     }
 }

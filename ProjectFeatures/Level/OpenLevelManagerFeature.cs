@@ -17,7 +17,7 @@ public class OpenLevelManagerFeature : ProjectFeature
             Header = "Manage",
             Height = UIParams.minButtonHeight
         };
-        // UIParams.SetDefaultButton(this.switchLeft);
+        UIParams.SetDefaultMenuItem(this.toggleManagerButton);
         this.toggleManagerButton.Clicked += (_, _) => TogglePopup();
         
         this.children.Add(this.toggleManagerButton);
