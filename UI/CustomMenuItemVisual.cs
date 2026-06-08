@@ -1,4 +1,5 @@
-﻿using Gum.Converters;
+﻿using System.Reflection;
+using Gum.Converters;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using Gum.Forms.Controls;
@@ -20,6 +21,7 @@ public class CustomMenuItemVisual
     private readonly RectangleRuntime outline;
     private readonly MenuItemVisual visual;
     private SpriteRuntime? icon;
+    private ScrollViewerVisual? scrollViewVisual;
 
     private CustomMenuItemVisual(MenuItem menuItem)
     {
@@ -43,17 +45,19 @@ public class CustomMenuItemVisual
             Visible = this.visual.Visible,
             IgnoredByParentSize = true
         };
-
         menuItem.AddChild(this.outline);
         
+        menuItem.ItemsCollectionChanged += (_, _) => SetScrollView();
+        
         CustomMenuItem.Add(menuItem, this);
-        this.visual.ParentChanged += (_, __) =>
+        this.visual.ParentChanged += (_, _) =>
         {
             if (this.visual.Parent == null) // removed / disposed
                 CustomMenuItem.Remove(menuItem);
         };
 
         CheckMinSizes();
+        SetScrollView();
     }
 
     private void CheckMinSizes()
@@ -83,6 +87,16 @@ public class CustomMenuItemVisual
         if (!(this.visual.ContainerInstance.GetAbsoluteWidth() < Params.minBoxSize)) return;
         this.visual.WidthUnits = DimensionUnitType.Absolute;
         this.menuItem.Width = Params.minBoxSize;
+    }
+
+    private void SetScrollView()
+    {
+        if (!this.menuItem.IsPopupVisible) return;
+        FieldInfo? fieldInfo = typeof(MenuItem).GetField("itemsPopup", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (fieldInfo == null || fieldInfo.GetValue(this.menuItem) is not ScrollViewer scrollViewer) return;
+        this.scrollViewVisual = (ScrollViewerVisual)scrollViewer.Visual;
+        this.scrollViewVisual.Background.Color = Color.Transparent;
+        this.scrollViewVisual.Background.Visible = false;
     }
 
     private void SetIcon(SpriteRuntime sprite) => this.icon = sprite;
@@ -119,6 +133,18 @@ public class CustomMenuItemVisual
         this.visual.Background.Color = Params.CanvasColor;
         this.outline.Color = Params.DefaultOutlineColor;
         this.visual.TextInstance.Color = Params.DefaultOutlineColor;
+        SetScrollView();
+        
+        if (this.scrollViewVisual == null)
+            return;
+        float biggestWidth = this.scrollViewVisual.InnerPanelInstance.GetAbsoluteWidth();
+        foreach (MenuItem item in this.menuItem.Items)
+        {
+            MenuItemVisual v = (MenuItemVisual)item.Visual;
+            float w = v.GetAbsoluteWidth();
+            if (w < biggestWidth)
+                v.Width += biggestWidth - w;
+        }
     }
 
     public static void Create(MenuItem menuItem)
