@@ -21,12 +21,12 @@ public class ToolBarFeature(GumService gum)
             Visual =
             {
                 ChildrenLayout = Gum.Managers.ChildrenLayout.LeftToRightStack,
-                StackSpacing = 4
-            },
-            X = 5,
-            Y = gum.CanvasHeight - Params.borderPadding,
+                StackSpacing = Params.borderMargin
+            }
         };
         this.toolStack.Anchor(Anchor.BottomLeft);
+        this.toolStack.X = Params.borderMargin;
+        this.toolStack.Y = -Params.borderMargin;
         container.AddUI(this.toolStack);
         
         ITool? entityPlacerTool = ToolManager.GetTool(typeof(EntityPlacerTool));

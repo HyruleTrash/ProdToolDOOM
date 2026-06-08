@@ -28,7 +28,7 @@ public abstract class BasePlacerTool(WindowInstance windowRef) : ITool
         this.ableToPlace = false;
     }
 
-    public void UnEquip() => this.ableToPlace = true;
+    public virtual void UnEquip() => this.ableToPlace = true;
 
     public void Update(float dt, WindowInstance windowRef)
     {

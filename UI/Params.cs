@@ -22,7 +22,7 @@ public static class Params
     
     // box specific
     public const float borderPadding = 10;
-    public const float borderRadius = 5;
+    public const float borderMargin = 20;
 
     public const float minBoxSize = 32;
     public const float defaultOutLineWidth = 2;

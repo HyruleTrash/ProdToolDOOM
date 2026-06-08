@@ -15,9 +15,11 @@ public class EntityPlacerTool : BasePlacerTool
         this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddEntityCmd(Project.Instance, this.lastMousePosition, entityTexture, Program.instance));
     }
 
-    public override void SetVisuals()
+    public override void SetVisuals() => CustomButtonVisual.SetAltEnabledState(this.button, true);
+    public override void UnEquip()
     {
-        Debug.Log("EntityPlacerTool::SetVisuals");
+        base.UnEquip();
+        CustomButtonVisual.SetAltEnabledState(this.button, false);
     }
 
     public override FrameworkElement LoadUI()
@@ -31,7 +33,7 @@ public class EntityPlacerTool : BasePlacerTool
         };
         CustomButtonVisual.Create(this.button);
         this.button.Click += (_, _) => ToolManager.SetTool(GetType());
-        CustomButtonVisual.AddIcon(this.button, toolTexture);
+        CustomButtonVisual.AddIcon(this.button, toolTexture, false);
         return this.button;
     }
 }

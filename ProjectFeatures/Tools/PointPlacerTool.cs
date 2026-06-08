@@ -16,9 +16,11 @@ public class PointPlacerTool : BasePlacerTool
         this.toCall = () => Program.instance.cmdHistory.ApplyCmd(new AddPointCmd(Project.Instance, this.lastMousePosition, pointTexture, Program.instance));
     }
 
-    public override void SetVisuals()
+    public override void SetVisuals() => CustomButtonVisual.SetAltEnabledState(this.button, true);
+    public override void UnEquip()
     {
-        Debug.Log("PointPlacerTool::SetVisuals");
+        base.UnEquip();
+        CustomButtonVisual.SetAltEnabledState(this.button, false);
     }
 
     public override FrameworkElement LoadUI()
@@ -32,7 +34,7 @@ public class PointPlacerTool : BasePlacerTool
         };
         CustomButtonVisual.Create(this.button);
         this.button.Click += (_, _) => ToolManager.SetTool(GetType());
-        CustomButtonVisual.AddIcon(this.button, toolTexture);
+        CustomButtonVisual.AddIcon(this.button, toolTexture, false);
         return this.button;
     }
 }
