@@ -11,12 +11,6 @@ namespace DLLevelBuilder.ProjectFeatures;
 public class ToolBarFeature(GumService gum)
 {
     private StackPanel toolStack = null!;
-    private Button addNewEntityToLevelButton = null!;
-    private Button addPointToLevelButton = null!;
-    
-    private static void AddEntity() => Program.instance.toolManager?.SetTool(typeof(EntityPlacerTool));
-    
-    private static void SetToolToPointPlacer() => Program.instance.toolManager?.SetTool(typeof(PointPlacerTool));
     
     public void LoadUI(ContainerRuntime container)
     {
@@ -34,24 +28,14 @@ public class ToolBarFeature(GumService gum)
         };
         this.toolStack.Anchor(Anchor.BottomLeft);
         container.AddUI(this.toolStack);
+        
+        ITool? entityPlacerTool = ToolManager.GetTool(typeof(EntityPlacerTool));
+        if (entityPlacerTool != null)
+            this.toolStack.AddUI(entityPlacerTool.LoadUI());
 
-        this.addNewEntityToLevelButton = new Button
-        {
-            Text = "Add Entity to level",
-            Height = Params.minButtonHeight
-        };
-        CustomButtonVisual.Create(this.addNewEntityToLevelButton);
-        this.addNewEntityToLevelButton.Click += (_, _) => AddEntity();
-        this.toolStack.AddUI(this.addNewEntityToLevelButton);
-
-        this.addPointToLevelButton = new Button
-        {
-            Text = "Add point",
-            Height = Params.minButtonHeight
-        };
-        CustomButtonVisual.Create(this.addPointToLevelButton);
-        this.addPointToLevelButton.Click += (_, _) => SetToolToPointPlacer();
-        this.toolStack.AddUI(this.addPointToLevelButton);
+        ITool? placerTool = ToolManager.GetTool(typeof(PointPlacerTool));
+        if (placerTool != null)
+            this.toolStack.AddUI(placerTool.LoadUI());
     }
     
     private bool ShouldLoadUI(object? parent) => 

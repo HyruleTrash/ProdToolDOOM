@@ -12,7 +12,6 @@ public class Program : WindowInstance
     public Project currentProject;
     public CommandHistory cmdHistory;
     private int currentLevel;
-    public ToolManager? toolManager;
 
     [STAThread]
     static void Main(string[] _)
@@ -32,8 +31,7 @@ public class Program : WindowInstance
     protected override void Initialize()
     {
         base.Initialize();
-        this.toolManager = new ToolManager(this);
-        this.UpdateRegister.Add(this.toolManager);
+        this.UpdateRegister.Add(ToolManager.Instance);
         SetShortcuts(BaseShortcuts.baseShortcuts);
         RightClickRegister.Register(this.rightClickManager);
     }

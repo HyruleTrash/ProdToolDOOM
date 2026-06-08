@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Gum.Forms.Controls;
+using Gum.Wireframe;
+using Microsoft.Xna.Framework.Input;
 
 namespace DLLevelBuilder.ProjectFeatures.Tools;
 
@@ -18,4 +20,9 @@ public interface ITool : IBaseUpdatable
     /// Sets any needed visuals, such as tool selected icon
     /// </summary>
     public void SetVisuals();
+    
+    /// <summary>
+    /// Creates the ui button for this tool
+    /// </summary>
+    public FrameworkElement LoadUI();
 }

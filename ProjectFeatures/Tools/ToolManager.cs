@@ -7,37 +7,40 @@ namespace DLLevelBuilder.ProjectFeatures.Tools;
 
 public class ToolManager : IBaseUpdatable
 {
-    public ITool? CurrentTool { get; set; }
-    public static Dictionary<Type, ITool> tools;
-    private bool wasPressed = false;
-
-    public ToolManager(WindowInstance windowRef)
+    private static ToolManager? instance;
+    public static ToolManager Instance
     {
-        tools = new Dictionary<Type, ITool>
-        {
-            {typeof(EntityPlacerTool), new EntityPlacerTool(windowRef)},
-            {typeof(PointPlacerTool), new PointPlacerTool(windowRef)}
-        };
+        get { return instance ??= new ToolManager(); }
+        private set => instance = value;
     }
 
-    public void SetTool(ITool tool)
+    private static readonly Dictionary<Type, ITool> Tools = new()
     {
-        this.CurrentTool?.UnEquip();
-        if (this.CurrentTool is not null && this.CurrentTool == tool)
+        { typeof(PointPlacerTool), new PointPlacerTool() },
+        { typeof(EntityPlacerTool), new EntityPlacerTool() },
+    };
+    private static ITool? CurrentTool { get; set; }
+    private static bool wasPressed;
+
+    private static void SetTool(ITool tool)
+    {
+        CurrentTool?.UnEquip();
+        if (CurrentTool is not null && CurrentTool == tool)
         {
-            this.CurrentTool = null;
+            CurrentTool = null;
             return;
         }
 
-        this.CurrentTool = tool;
+        CurrentTool = tool;
         tool.SetVisuals();
     }
-    
-    public void SetTool(Type tool)
+    public static void SetTool(Type tool)
     {
-        if (!tools.TryGetValue(tool, out ITool? foundTool)) return;
+        if (!Tools.TryGetValue(tool, out ITool? foundTool)) return;
         SetTool(foundTool);
     }
+    
+    public static ITool? GetTool(Type tool) => Tools.GetValueOrDefault(tool);
 
     public void Update(float dt, WindowInstance windowRef)
     {
@@ -46,18 +49,18 @@ public class ToolManager : IBaseUpdatable
         bool released = mouse.LeftButton == ButtonState.Released;
         bool pressed = mouse.LeftButton == ButtonState.Pressed;
         
-        if (!this.wasPressed && pressed) this.wasPressed = true;
+        if (!wasPressed && pressed) wasPressed = true;
 
-        if (this.wasPressed && !windowRef.Mouse.isDragSelecting)
+        if (wasPressed && !windowRef.Mouse.isDragSelecting)
         {
-            if (this.CurrentTool is not null && released)
+            if (CurrentTool is not null && released)
             {
-                this.CurrentTool?.Call(mouse);
-                this.wasPressed = false;
+                CurrentTool?.Call(mouse);
+                wasPressed = false;
                 windowRef.Mouse.dragSelect?.Reset();
             }
         }
 
-        this.CurrentTool?.Update(dt, windowRef);
+        CurrentTool?.Update(dt, windowRef);
     }
 }

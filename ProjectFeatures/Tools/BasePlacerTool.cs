@@ -1,4 +1,6 @@
 ﻿using System;
+using Gum.Forms.Controls;
+using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
@@ -26,10 +28,7 @@ public abstract class BasePlacerTool(WindowInstance windowRef) : ITool
         this.ableToPlace = false;
     }
 
-    public void UnEquip()
-    {
-        this.ableToPlace = true;
-    }
+    public void UnEquip() => this.ableToPlace = true;
 
     public void Update(float dt, WindowInstance windowRef)
     {
@@ -38,4 +37,5 @@ public abstract class BasePlacerTool(WindowInstance windowRef) : ITool
     }
 
     public abstract void SetVisuals();
+    public abstract FrameworkElement LoadUI();
 }
