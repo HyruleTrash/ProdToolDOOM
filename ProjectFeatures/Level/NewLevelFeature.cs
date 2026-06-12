@@ -5,7 +5,7 @@ namespace DLLevelBuilder.ProjectFeatures;
 
 public class NewLevelFeature(Project project) : ProjectFeature
 {
-    private MenuItem toggleManagerButton = null!;
+    private MenuItem createNewButton = null!;
 
     public override void LoadUI(MenuItem menu, bool isVisible = true)
     {
@@ -13,15 +13,15 @@ public class NewLevelFeature(Project project) : ProjectFeature
             return;
         this.parent = menu;
         
-        this.toggleManagerButton = new MenuItem
+        this.createNewButton = new MenuItem
         {
             Header = "New",
             Height = Params.minButtonHeight
         };
-        CustomMenuItemVisual.Create(this.toggleManagerButton);
-        this.toggleManagerButton.Clicked += (_, _) => AddLevel();
+        CustomMenuItemVisual.Create(this.createNewButton);
+        this.createNewButton.Clicked += (_, _) => AddLevel();
         
-        this.children.Add(this.toggleManagerButton);
+        this.children.Add(this.createNewButton);
         SetVisible(isVisible);
     }
     

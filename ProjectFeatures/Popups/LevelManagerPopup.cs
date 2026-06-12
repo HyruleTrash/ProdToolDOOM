@@ -21,10 +21,12 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
 {
     private static readonly float scrollPadding = 16f;
     
-    private readonly ScrollViewer scrollViewer;
-    private readonly StackPanel panel;
     private readonly ColoredRectangleRuntime popupBG;
     private readonly RectangleRuntime popupBGBorder;
+    private readonly ScrollViewer scrollViewer;
+    private readonly StackPanel panel;
+    private readonly ContainerRuntime buttonContainer;
+    private readonly Button createNewButton;
 
     private List<LevelVisual> visuals = [];
     private readonly Texture2D closeIcon;
@@ -67,7 +69,7 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
             this.nameText = new TextRuntime
             {
                 Text = $"Level - {this.id}",
-                X = 4,
+                X = 8,
                 Color = Color.Black
             };
             this.nameText.Anchor(Anchor.Left);
@@ -157,11 +159,9 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
             Y = scrollPadding,
             Spacing = scrollPadding
         };
-        this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
-        this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
 
         ScrollViewerVisual scrollViewerVisual = (ScrollViewerVisual)this.scrollViewer.Visual;
-        scrollViewerVisual.Background.Color = Microsoft.Xna.Framework.Color.Transparent;
+        scrollViewerVisual.Background.Color = Color.Transparent;
         ScrollBarVisual scrollBarVisual = scrollViewerVisual.VerticalScrollBarInstance;
         scrollBarVisual.Width = Params.minBoxSize * 0.2f;
         scrollBarVisual.DownButtonIcon.Visible = false;
@@ -170,11 +170,36 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
         CustomButtonVisual.Create(scrollBarVisual.DownButtonInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
         CustomButtonVisual.Create(scrollBarVisual.ThumbInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
         
+        this.buttonContainer = new ContainerRuntime
+        {
+            HeightUnits = DimensionUnitType.RelativeToChildren,
+            XUnits = GeneralUnitType.PixelsFromLarge,
+            YUnits = GeneralUnitType.PixelsFromSmall,
+            XOrigin = HorizontalAlignment.Right,
+            YOrigin = VerticalAlignment.Top,
+            // RaiseChildrenEventsOutsideOfBounds = true
+        };
+        
+        this.createNewButton = new Button()
+        {
+            Text = "+",
+            Height = Params.minButtonHeight,
+            Width = Params.minBoxSize,
+        };
+        CustomButtonVisual.Create(this.createNewButton);
+        this.createNewButton.Click += (_, _) => Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(Project.Instance));
+        this.createNewButton.Anchor(Anchor.Right);
+        this.createNewButton.X = 0;
+        
+        this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
+        this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
         
         this.container.AddChild(this.popupBG);
         this.container.AddChild(this.popupBGBorder);
+        this.container.AddChild(this.buttonContainer);
         this.container.AddChild(this.scrollViewer.Visual);
         this.scrollViewer.AddChild(this.panel);
+        this.buttonContainer.AddChild(this.createNewButton.Visual);
 
         Project.Instance.RegisterOnLevelsChanged(LoadLevels);
         
@@ -220,6 +245,11 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
         
         // instances
         foreach (LevelVisual levelVisual in this.visuals) levelVisual.UpdateVisuals();
+        
+        // buttons
+        this.buttonContainer.Width = popupWidth;
+        this.buttonContainer.X = -Params.popupPadding;
+        this.buttonContainer.Y = -Params.borderMargin;
     }
     
     private void LoadLevels(IReadOnlyList<Level> data)
