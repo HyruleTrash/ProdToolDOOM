@@ -157,10 +157,8 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
     private void LoadLevels(IReadOnlyDictionary<int, Level> data)
     {
         List<LevelVisual> upToDateVisuals = [];
-        for (int id = 0; id < data.Count; id++)
+        foreach ((int id, var level) in data)
         {
-            Level level = data[id];
-            
             if (level == null)
                 continue;
             LevelVisual? instance = this.visuals.FirstOrDefault(x => x.id == id);

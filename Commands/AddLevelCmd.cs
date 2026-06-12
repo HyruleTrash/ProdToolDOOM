@@ -17,6 +17,6 @@ public class AddLevelCmd(Project project) : ICommand
         if (this.level is null)
             return;
         Debug.Log("removing level!");
-        project.levels.Remove(this.level.LevelId);
+        project.RemoveLevel(this.level);
     }
 }

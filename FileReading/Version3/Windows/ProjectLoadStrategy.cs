@@ -24,9 +24,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             switch (version)
             {
                 case "0.0.3":
-                case "0.0.2":
                     Debug.Log($"File project version: {version}");
                     break;
+                case "0.0.2":
                 case "0.0.1":
                     this.shouldQuit = true;
                     this.foundVersion = version;

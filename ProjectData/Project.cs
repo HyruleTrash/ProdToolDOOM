@@ -88,11 +88,7 @@ public class Project
         this.toolBar = new ToolBarFeature(gum);
     }
 
-    public static Level TryGetCurrentLevel()
-    {
-        if (Instance.currentLevel < 0 || Instance.currentLevel >= Instance.levels.Count) return null;
-        return Instance.levels[Instance.currentLevel];
-    }
+    public static Level? TryGetCurrentLevel() => Instance.levels.GetValueOrDefault(Instance.currentLevel);
 
     /// <summary>
     /// Checks the state of the current load strategy
@@ -262,6 +258,12 @@ public class Project
         this.levels.Add(level.LevelId, level);
         this.onLevelsChanged?.Invoke(this.levels);
     }
+    
+    public void RemoveLevel(Level level)
+    {
+        this.levels.Remove(level.LevelId);
+        this.onLevelsChanged?.Invoke(this.levels);
+    }
 
     public int GetLowestUnusedLevelId()
     {
@@ -275,5 +277,4 @@ public class Project
 
     public void RegisterOnLevelsChanged(Action<IReadOnlyDictionary<int, Level>> listener) => this.onLevelsChanged += listener;
     public void RegisterOnEntityDataChanged(Action<IReadOnlyDictionary<int, EntityData>> listener) => this.onEntityDataChanged += listener;
-
 }
