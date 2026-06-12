@@ -38,8 +38,9 @@ public static class Params
     public static readonly Color DefaultFillColor = new (206, 209, 214);
     public static readonly Color DefaultOutlineColor = new (175, 153, 222);
     public static readonly Color CanvasColor = new (36, 28, 47);
+    public static readonly Color grayish = new (178, 182, 190);
     public static readonly Color SelectionColor = new (96, 101, 234);
     
     // popups
-    public const float popupPadding = 50f;
+    public const float popupPadding = 25f;
 }

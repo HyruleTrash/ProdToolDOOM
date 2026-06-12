@@ -15,21 +15,33 @@ namespace DLLevelBuilder.UI;
 
 public class CustomButtonVisual
 {
-    private static readonly Dictionary<Button, CustomButtonVisual> CustomButtons = [];
+    private static readonly Dictionary<ButtonVisual, CustomButtonVisual> CustomButtons = [];
     private readonly RectangleRuntime buttonOutline;
     private readonly ButtonVisual visual;
     private SpriteRuntime? icon;
     private bool shouldColorIcon;
-
-    private CustomButtonVisual(Button button)
+    private CustomButtonTheme theme;
+    
+    public struct CustomButtonTheme(Color mainColor, Color secondaryColor, Color tertiaryColor)
     {
-        this.visual = (ButtonVisual)button.Visual;
+        public readonly Color mainColor = mainColor;
+        public readonly Color secondaryColor = secondaryColor;
+        public readonly Color tertiaryColor = tertiaryColor;
+        
+        public static CustomButtonTheme DefaultTheme = new CustomButtonTheme(Params.DefaultFillColor, Params.DefaultOutlineColor, Params.CanvasColor);
+        public static CustomButtonTheme InvertedTheme = new CustomButtonTheme(Params.DefaultFillColor, Params.CanvasColor, Params.DefaultOutlineColor);
+    }
 
+    private CustomButtonVisual(ButtonVisual visual, CustomButtonTheme? theme)
+    {
+        this.visual = visual;
+        this.theme = theme ?? CustomButtonTheme.DefaultTheme;
+        
         this.buttonOutline = new RectangleRuntime
         {
             Width = this.visual.GetAbsoluteWidth(),
             Height = this.visual.GetAbsoluteHeight(),
-            Color = Params.DefaultOutlineColor,
+            Color = this.theme.secondaryColor,
             LineWidth = Params.defaultOutLineWidth,
             Visible = this.visual.Visible,
             IgnoredByParentSize = true
@@ -41,15 +53,13 @@ public class CustomButtonVisual
             this.buttonOutline.Height = this.visual.GetAbsoluteHeight();
         };
 
-        button.AddChild(this.buttonOutline);
+        this.visual.AddChild(this.buttonOutline);
         
-        CustomButtons.Add(button, this);
+        CustomButtons.Add(this.visual, this);
         this.visual.ParentChanged += (_, __) =>
         {
             if(this.visual.Parent == null) // removed / disposed
-            {
-                CustomButtons.Remove(button);
-            }
+                CustomButtons.Remove(this.visual);
         };
     }
 
@@ -62,10 +72,10 @@ public class CustomButtonVisual
     private void EnabledState()
     {
         this.visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid);
-        this.visual.Background.Color = Params.DefaultFillColor;
-        this.buttonOutline.Color = Params.DefaultOutlineColor;
-        this.visual.TextInstance.Color = Params.DefaultOutlineColor;
-        if (this.icon != null && this.shouldColorIcon) this.icon.Color = Params.DefaultOutlineColor;
+        this.visual.Background.Color = this.theme.mainColor;
+        this.buttonOutline.Color = this.theme.secondaryColor;
+        this.visual.TextInstance.Color = this.theme.secondaryColor;
+        if (this.icon != null && this.shouldColorIcon) this.icon.Color = this.theme.secondaryColor;
     }
     
     private void AltEnabledState() => PushState();
@@ -73,26 +83,31 @@ public class CustomButtonVisual
     private void PushState()
     {
         this.visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid);
-        this.visual.Background.Color = Params.CanvasColor;
-        this.buttonOutline.Color = Params.DefaultOutlineColor;
-        this.visual.TextInstance.Color = Params.DefaultOutlineColor;
-        if (this.icon != null && this.shouldColorIcon) this.icon.Color = Params.DefaultOutlineColor;
+        this.visual.Background.Color = this.theme.tertiaryColor;
+        this.buttonOutline.Color = this.theme.secondaryColor;
+        this.visual.TextInstance.Color = this.theme.secondaryColor;
+        if (this.icon != null && this.shouldColorIcon) this.icon.Color = this.theme.secondaryColor;
     }
 
     private void HighlightedState()
     {
         this.visual.Background.ApplyState(Styling.ActiveStyle.NineSlice.Solid);
-        this.visual.Background.Color = Params.DefaultOutlineColor;
-        this.buttonOutline.Color = Params.DefaultFillColor;
-        this.visual.TextInstance.Color = Params.DefaultFillColor;
-        if (this.icon != null && this.shouldColorIcon) this.icon.Color = Params.DefaultFillColor;
+        this.visual.Background.Color = this.theme.secondaryColor;
+        this.buttonOutline.Color = this.theme.mainColor;
+        this.visual.TextInstance.Color = this.theme.mainColor;
+        if (this.icon != null && this.shouldColorIcon) this.icon.Color = this.theme.mainColor;
     }
     
-    public static void Create(Button button)
+    public static void Create(Button button, CustomButtonTheme? theme = null)
     {
-        CustomButtonVisual customVisual = new(button);
         ButtonVisual visual = (ButtonVisual)button.Visual;
-        
+        Create(visual, theme);
+    }
+    
+    public static void Create(ButtonVisual visual, CustomButtonTheme? theme = null) => Create(visual, new CustomButtonVisual(visual, theme));
+
+    private static void Create(ButtonVisual visual, CustomButtonVisual customVisual)
+    {
         StateSave enabled = visual.States.Enabled;
         enabled.Clear();
         enabled.Apply = customVisual.EnabledState;
@@ -110,9 +125,9 @@ public class CustomButtonVisual
 
     public static void SetAltEnabledState(Button button, bool toSet)
     {
-        CustomButtons.TryGetValue(button, out CustomButtonVisual? buttonVisual);
-        if (buttonVisual == null) return;
         ButtonVisual visual = (ButtonVisual)button.Visual;
+        CustomButtons.TryGetValue(visual, out CustomButtonVisual? buttonVisual);
+        if (buttonVisual == null) return;
         
         StateSave enabled = visual.States.Enabled;
         enabled.Clear();
@@ -121,6 +136,7 @@ public class CustomButtonVisual
     
     public static void AddIcon(Button button, Texture2D iconTex, bool shouldColorIcon = true)
     {
+        ButtonVisual visual = (ButtonVisual)button.Visual;
         SpriteRuntime icon = new()
         {
             Texture = iconTex,
@@ -130,11 +146,10 @@ public class CustomButtonVisual
             IgnoredByParentSize = true
         };
         icon.Anchor(Anchor.Center);
-        button.AddChild(icon);
+        visual.AddChild(icon);
 
-        if (!CustomButtons.TryGetValue(button, out CustomButtonVisual? buttonVisual)) return;
+        if (!CustomButtons.TryGetValue(visual, out CustomButtonVisual? buttonVisual)) return;
         buttonVisual.SetIcon(icon, shouldColorIcon);
-        ButtonVisual visual = (ButtonVisual)button.Visual;
         visual.HeightUnits = DimensionUnitType.ScreenPixel;
         visual.Background.ApplyState(visual.States.Enabled);
     }

@@ -1,17 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DLLevelBuilder.UI;
+using Gum.Converters;
+using Gum.DataTypes;
 using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
+using Gum.Managers;
+using Gum.Wireframe;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum.GueDeriving;
+using RenderingLibrary.Graphics;
 using Button = Gum.Forms.Controls.Button;
+using Color = Microsoft.Xna.Framework.Color;
+using HorizontalAlignment = RenderingLibrary.Graphics.HorizontalAlignment;
 using Orientation = Gum.Forms.Controls.Orientation;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class LevelManagerPopup : Popup<LevelManagerPopup>
 {
-    private readonly ScrollViewer panel;
+    private static readonly float scrollPadding = 16f;
+    
+    private readonly ScrollViewer scrollViewer;
+    private readonly StackPanel panel;
     private readonly ColoredRectangleRuntime popupBG;
     private readonly RectangleRuntime popupBGBorder;
 
@@ -22,54 +33,92 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
     {
         public int? id;
         public Level? levelData;
-        private readonly StackPanel panel;
+        private readonly ContainerRuntime panel;
         private readonly TextRuntime nameText;
         private readonly Button removeButton;
+        private readonly ColoredRectangleRuntime background;
+        private readonly ContainerRuntime innerPanel;
 
-        public LevelVisual(Texture2D closeIcon, ScrollViewer parent, int? id = null, Level? levelData = null)
+        public LevelVisual(Texture2D closeIcon, StackPanel parent, int? id = null, Level? levelData = null)
         {
             this.id = id;
             this.levelData = levelData;
             
             // instantiate visuals
-            this.panel = new StackPanel
+            this.panel = new ContainerRuntime
             {
-                Spacing = 5,
-                Width = 400f,
-                Orientation = Orientation.Horizontal
+                WidthUnits = DimensionUnitType.PercentageOfParent,
+                HeightUnits = DimensionUnitType.RelativeToChildren,
+                Width = 98,
+                Height = 0
             };
-
+            
+            this.innerPanel = new ContainerRuntime
+            {
+                WidthUnits = DimensionUnitType.PercentageOfParent,
+                HeightUnits = DimensionUnitType.RelativeToChildren,
+                Width = 98,
+                Height = 0,
+                XUnits = GeneralUnitType.PixelsFromMiddle,
+                YUnits = GeneralUnitType.PixelsFromMiddle,
+                XOrigin = HorizontalAlignment.Center,
+                YOrigin = VerticalAlignment.Center
+            };
             this.nameText = new TextRuntime
             {
-                Text = $"Level {this.id}",
-                Width = 200f
+                Text = $"Level - {this.id}",
+                X = 4,
+                Color = Color.Black
+            };
+            this.nameText.Anchor(Anchor.Left);
+
+            this.background = new ColoredRectangleRuntime()
+            {
+                Color = Params.grayish,
+                WidthUnits = DimensionUnitType.PercentageOfParent,
+                HeightUnits = DimensionUnitType.PercentageOfParent,
+                Width = 102,
+                Height = 120,
+                XUnits = GeneralUnitType.PixelsFromMiddle,
+                YUnits = GeneralUnitType.PixelsFromMiddle,
+                XOrigin = HorizontalAlignment.Center,
+                YOrigin = VerticalAlignment.Center
             };
 
             this.removeButton = new Button
             {
-                Text = "X",
+                Text = "",
                 Width = Params.minBoxSize,
                 Height = Params.minBoxSize
             };
             CustomButtonVisual.Create(this.removeButton);
             CustomButtonVisual.AddIcon(this.removeButton, closeIcon);
+            this.removeButton.Anchor(Anchor.Right);
+            this.removeButton.X = 0;
             this.removeButton.Click += (_, _) => RemoveAndHide();
 
-            this.panel.AddChild(this.nameText);
-            this.panel.AddChild(this.removeButton);
+            this.panel.AddChild(this.background);
+            this.panel.AddChild(this.innerPanel);
+            this.innerPanel.AddChild(this.nameText);
+            this.innerPanel.AddChild(this.removeButton.Visual);
+            
             parent.AddChild(this.panel);
+
+            UpdateVisuals();
         }
 
         public void UpdateVisuals()
         {
+            this.innerPanel.UpdateLayout();
+            this.panel.UpdateLayout();
             if (this.id == null || this.levelData == null)
                 return;
-            this.panel.IsVisible = true;
+            this.panel.Visible = true;
         }
 
         public void RemoveAndHide()
         {
-            this.panel.IsVisible = false;
+            this.panel.Visible = false;
             // if (this.id != null)
             //     Program.instance.cmdHistory.ApplyCmd(new RemoveEntityDataCmd(Project.instance, this.id, OnUndoRedo)); TODO
             this.id = null;
@@ -95,13 +144,37 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
     {
         this.closeIcon = Program.instance.Content.Load<Texture2D>("Icons/Cross");
         
-        this.panel = new ScrollViewer { InnerPanel = { StackSpacing = 4 } };
+        this.scrollViewer = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden };
+        this.panel = new StackPanel
+        {
+            Visual =
+            {
+                WidthUnits = DimensionUnitType.PercentageOfParent,
+                HeightUnits = DimensionUnitType.RelativeToChildren,
+                Width = 100,
+                Height = scrollPadding
+            },
+            Y = scrollPadding,
+            Spacing = scrollPadding
+        };
         this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
         this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
+
+        ScrollViewerVisual scrollViewerVisual = (ScrollViewerVisual)this.scrollViewer.Visual;
+        scrollViewerVisual.Background.Color = Microsoft.Xna.Framework.Color.Transparent;
+        ScrollBarVisual scrollBarVisual = scrollViewerVisual.VerticalScrollBarInstance;
+        scrollBarVisual.Width = Params.minBoxSize * 0.2f;
+        scrollBarVisual.DownButtonIcon.Visible = false;
+        scrollBarVisual.UpButtonIcon.Visible = false;
+        CustomButtonVisual.Create(scrollBarVisual.UpButtonInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        CustomButtonVisual.Create(scrollBarVisual.DownButtonInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        CustomButtonVisual.Create(scrollBarVisual.ThumbInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        
         
         this.container.AddChild(this.popupBG);
         this.container.AddChild(this.popupBGBorder);
-        this.container.AddChild(this.panel.Visual);
+        this.container.AddChild(this.scrollViewer.Visual);
+        this.scrollViewer.AddChild(this.panel);
 
         Project.Instance.RegisterOnLevelsChanged(LoadLevels);
         
@@ -135,11 +208,18 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
         this.popupBGBorder.X = popupX - Params.defaultOutLineWidth / 2;
         this.popupBGBorder.Y = popupY - Params.defaultOutLineWidth / 2;
 
-        // Panel
-        this.panel.Width = popupWidth - Params.popupPadding;
-        this.panel.Height = popupHeight - Params.popupPadding;
-        this.panel.X = popupX + Params.popupPadding / 2;
-        this.panel.Y = popupY + Params.popupPadding / 2;
+        // ScrollPanel
+        ScrollViewerVisual scrollViewerVisual = (ScrollViewerVisual)this.scrollViewer.Visual;
+        ScrollBarVisual scrollBarVisual = scrollViewerVisual.VerticalScrollBarInstance;
+        scrollBarVisual.Width = Params.minBoxSize * 0.3f;
+        
+        this.scrollViewer.Width = popupWidth - Params.popupPadding + scrollBarVisual.Width * 0.5f;
+        this.scrollViewer.Height = popupHeight - Params.popupPadding * 1.5f + scrollBarVisual.Width * 0.5f - Params.minBoxSize;
+        this.scrollViewer.X = popupX + Params.popupPadding / 2;
+        this.scrollViewer.Y = popupY + Params.popupPadding + Params.minBoxSize;
+        
+        // instances
+        foreach (LevelVisual levelVisual in this.visuals) levelVisual.UpdateVisuals();
     }
     
     private void LoadLevels(IReadOnlyList<Level> data)
