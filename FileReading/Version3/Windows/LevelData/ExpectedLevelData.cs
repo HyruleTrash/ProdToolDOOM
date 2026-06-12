@@ -1,15 +1,13 @@
 ﻿
 #if WINDOWS
 using System.Xml;
-using Microsoft.Xna.Framework.Graphics;
 
-namespace DLLevelBuilder.Version1;
+namespace DLLevelBuilder.Version3;
 
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 {
-    public Level level = new ();
+    public Level level = new();
     private readonly ProjectLoadStrategy referenceLoadStrategy;
-    private Texture2D? pointTexture;
 
     public ExpectedLevelData(ProjectLoadStrategy referenceLoadStrategy)
     {
@@ -21,9 +19,13 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
     {
         if (reader.NodeType != XmlNodeType.Element)
             return;
-        this.level = new Level();
+
+        this.level ??= new Level();
 
         this.referenceLoadStrategy.ReadData(reader, [
+            new ExpectedData { name = "IdCounter", stopAt = "IdCounter", 
+                load = rdr => this.level.levelObjectIdCounter = rdr.ReadElementContentAsInt()
+            },
             new ExpectedEntitiesData(this) { stopAt = "Entities" },
             new ExpectedPointsData(this) { stopAt = "Points" },
             new ExpectedLinesData(this)  { stopAt = "Lines" }
@@ -32,7 +34,10 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 
     public void saveEntry()
     {
+        if (this.level == null) return;
+        Debug.Log("Saving Level Data");
         Project.Instance.levels.Add(this.level);
+        this.level = null;
     }
 }
 #endif

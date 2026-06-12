@@ -1,7 +1,8 @@
 ﻿
 #if WINDOWS
 using System.Xml;
-namespace DLLevelBuilder.Version1;
+
+namespace DLLevelBuilder.Version3;
 
 public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
 {
@@ -20,10 +21,10 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
             return;
 
         this.line ??= new Line(Project.Instance, Program.instance);
-
-        if (reader.Name == "Id")
-            this.line.Id = reader.ReadElementContentAsInt();
-        else if (reader.Name == "IdOther") this.line.IdOther = reader.ReadElementContentAsInt();
+        
+        if (reader.Name == "Id") this.line.Id = reader.ReadElementContentAsInt();
+        if (reader.Name == "IdOther") this.line.IdOther = reader.ReadElementContentAsInt();
+        if (reader.Name == "LevelId") this.line.LevelId = reader.ReadElementContentAsInt();
     }
 
     public void saveEntry()
@@ -32,7 +33,6 @@ public class ExpectedLinesData : ExpectedData, IExpectedCollectionData
             return;
         Debug.Log($"Saving line: {this.line}");
         Project projectRef = Project.Instance;
-        this.line.levelId = projectRef.levels.Count;
         this.referenceLevelData.level.Add(new Line(projectRef, this.line));
     }
 }

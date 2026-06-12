@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DLLevelBuilder.Window;
 using Microsoft.Xna.Framework.Input;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace DLLevelBuilder;
+namespace DLLevelBuilder.ProjectFeatures;
 
 public class ShortcutManager : IBaseUpdatable
 {

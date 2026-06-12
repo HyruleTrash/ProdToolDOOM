@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DLLevelBuilder.ProjectFeatures;
+using DLLevelBuilder.UI;
+using Gum.DataTypes;
 using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
 using Gum.Wireframe;
-using MonoGameGum;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using DLLevelBuilder.ProjectFeatures;
-using DLLevelBuilder.UI;
-using Gum.DataTypes;
-using Gum.Forms.DefaultVisuals;
+using MonoGameGum;
 using static Microsoft.Xna.Framework.Color;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Mouse = DLLevelBuilder.UI.Mouse;
 
-namespace DLLevelBuilder;
+namespace DLLevelBuilder.Window;
 
 public class WindowInstance : Game
 {

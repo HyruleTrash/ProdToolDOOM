@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DLLevelBuilder.Window;
 using Microsoft.Xna.Framework.Input;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 

@@ -1,13 +1,14 @@
 ﻿using System;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.ProjectFeatures.Tools;
+using DLLevelBuilder.Window;
 
 namespace DLLevelBuilder;
 
 public class Program : WindowInstance
 {
     public static Program instance = null!;
-    public readonly string PROGRAM_VERSION = "0.0.2";
+    public readonly string PROGRAM_VERSION = "0.0.3";
 
     public Project currentProject;
     public CommandHistory cmdHistory;

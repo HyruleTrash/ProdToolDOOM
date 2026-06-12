@@ -26,6 +26,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
             string version = reader.ReadElementContentAsString();
             switch (version)
             {
+                case "0.0.3":
                 case "0.0.2":
                     Debug.Log($"File project version: {version}");
                     break;

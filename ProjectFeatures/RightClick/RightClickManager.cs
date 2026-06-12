@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DLLevelBuilder.UI;
+using DLLevelBuilder.Window;
 using Gum.Forms.Controls;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum;

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if WINDOWS
 using System.IO.Compression;
-using System.Linq;
-
-#if WINDOWS
 using System.Xml;
-namespace DLLevelBuilder.Version1;
+
+namespace DLLevelBuilder.Version3;
 
 public class ProjectLoadStrategy : IProjectLoadStrategy
 {
     private List<ExpectedData> expectedData = [];
+    private bool shouldQuit = false;
+    private string? foundVersion;
     
     public ProjectLoadStrategy()
     {
@@ -18,22 +17,40 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
 
     private void SetExpectedData()
     {
-        this.expectedData.Add(new ExpectedData { name = "Project_Version", load = (XmlReader reader) =>
+        this.expectedData.Clear();
+        this.expectedData.Add(new ExpectedData { name = "Project_Version", load = reader =>
         {
             string version = reader.ReadElementContentAsString();
-            Debug.Log($"File project version: {version}");
+            switch (version)
+            {
+                case "0.0.3":
+                case "0.0.2":
+                    Debug.Log($"File project version: {version}");
+                    break;
+                case "0.0.1":
+                    this.shouldQuit = true;
+                    this.foundVersion = version;
+                    return;
+            }
         } });
-        this.expectedData.Add(new ExpectedLevelData(this));
-        this.expectedData.Add(new ExpectedData { name = "Id_Counter", load = (XmlReader reader) =>
+        this.expectedData.Add(new ExpectedData { name = "Id_Counter", load = reader =>
         {
             int counter = reader.ReadElementContentAsInt();
             Project.Instance.entityDataIdCounter = counter;
         }});
-        this.expectedData.Add(new ExpectedEntityData(this)); 
+        this.expectedData.Add(new ExpectedEntityData(this));
+        this.expectedData.Add(new ExpectedLevelData(this));
+        this.expectedData.Add(new ExpectedData { name = "Current_Level", load = reader =>
+        {
+            int levelId = reader.ReadElementContentAsInt();
+            Project.Instance.CurrentLevel = levelId;
+        }});
     }
     
     public bool Load(string path)
     {
+        this.shouldQuit = false;
+        this.foundVersion = null;
         SetExpectedData();
         
         if (path == string.Empty || path == null)
@@ -47,6 +64,15 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 using XmlReader reader = XmlReader.Create(entry.Open());
                 Project.Instance.ResetData();
                 ReadData(reader, new List<ExpectedData>(this.expectedData));
+
+                if (this.shouldQuit)
+                {
+                    Debug.Log($"old version encountered {this.foundVersion}");
+                    return VersionManager.LoadUsingOldStrategy(this.foundVersion, path);
+                }
+                
+                if (Project.Instance.CurrentLevel < 0 || Project.Instance.CurrentLevel >= Project.Instance.levels.Count)
+                    return true;
                 
                 foreach (Line line in Project.TryGetCurrentLevel().Lines) line.Init();
                 foreach (Point point in Project.TryGetCurrentLevel().Points) point.Init();
@@ -54,6 +80,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 
                 // TODO remove this
                 Debug.Log($"Levels: {Project.Instance.levels.Count}");
+                Debug.Log($"Current level: {Project.Instance.CurrentLevel}");
                 foreach (Level level in Project.Instance.levels)
                 {
                     Debug.Log(" Level:");
@@ -107,33 +134,36 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     {
         CollectionData collectionData = new();
         
-        while (reader.Read())
+        while (true)
         {
             foreach (ExpectedData dataInstance in searchData)
             {
+                if (this.shouldQuit)
+                    return;
+                
                 if (dataInstance.stopAt != null && reader.NodeType == XmlNodeType.EndElement &&
                     reader.Name == dataInstance.stopAt)
                 {
                     dataInstance.found = true;
+                    Debug.Log("Exiting due to stop at: " + reader.Name);
                     continue;
                 }
                 
-                if (dataInstance.name != reader.Name || reader.NodeType != XmlNodeType.Element)
+                if (dataInstance.name != reader.Name)
                     continue;
                 if (dataInstance is IExpectedCollectionData expectedCollectionData)
-                {
                     CheckCollection(reader, collectionData, expectedCollectionData);
-                }
                 else
-                {
                     dataInstance.load.Invoke(reader);
-                }
 
                 dataInstance.found = true;
             }
             
             if (searchData.All(data => data.found))
                 break;
+            // foreach (ExpectedData dataInstance in searchData) Debug.Log($"Status: {dataInstance.name}, {dataInstance.stopAt}, {dataInstance.found}");
+
+            reader.Read();
         }
     }
 
@@ -147,9 +177,17 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
     {
         if (!IsCollection(reader, collectionData, out collectionData))
             return;
-                    
-        while (reader.Read())
+        
+        if (collectionData.collectionCount == 0)
         {
+            Debug.Log($"Skipping empty collection: {collectionData.collectionName}");
+            return;
+        }
+                    
+        while (true)
+        {
+            if (this.shouldQuit)
+                return;
             if (reader.NodeType == XmlNodeType.EndElement && !reader.Name.Contains("Entry") &&
                 reader.Name.Contains(collectionData.collectionName))
             {
@@ -163,6 +201,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 Debug.Log($"Collection read finished (count) {collectionData.collectionName}");
                 break;
             }
+
+            reader.Read();
         }
     }
     
@@ -205,7 +245,7 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
         int entryDepth = reader.Depth;
         bool hasEntered = false;
 
-        while (reader.Read())
+        while (true)
         {
             if (reader.Depth > entryDepth)
                 hasEntered = true;
@@ -219,6 +259,8 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 data.saveEntry();
                 return true;
             }
+
+            reader.Read();
         }
 
         return true;

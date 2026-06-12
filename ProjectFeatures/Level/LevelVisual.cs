@@ -102,8 +102,11 @@ public class LevelVisual
     public void RemoveAndHide()
     {
         this.panel.Visible = false;
-        // if (this.id != null)
-        //     Program.instance.cmdHistory.ApplyCmd(new RemoveEntityDataCmd(Project.instance, this.id, OnUndoRedo)); TODO
+        if (this.id != null && this.levelData != null)
+        {
+            Project projectRef = Project.Instance;
+            Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(projectRef, this.levelData, OnUndoRedo));
+        }
         this.id = null;
         this.levelData = null;
     }

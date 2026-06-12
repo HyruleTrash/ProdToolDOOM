@@ -1,4 +1,5 @@
 ﻿using DLLevelBuilder.ProjectFeatures.Tools;
+using DLLevelBuilder.Window;
 using Microsoft.Xna.Framework.Input;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿#if WINDOWS
 using System.IO.Compression;
-
-#if WINDOWS
 using System.Xml;
-namespace DLLevelBuilder.Version1;
+
+namespace DLLevelBuilder.Version3;
 
 public class ProjectSaveStrategy : IProjectSaveStrategy
 {
@@ -53,14 +50,17 @@ public class ProjectSaveStrategy : IProjectSaveStrategy
         writer.WriteString(Program.instance.PROGRAM_VERSION);
         writer.WriteEndElement();
         
-        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.Instance.levels, "Levels", writer);
-        
         writer.WriteStartElement("Id_Counter");
         writer.WriteString(Project.Instance.entityDataIdCounter.ToString());
         writer.WriteEndElement();
         
         new ReflectionSerializer<EntityData, XmlWriter>().SerializeDictionary(new Dictionary<int, EntityData>(Project.Instance.EntityDatas), "EntityData", writer);
-            
+        new ReflectionSerializer<Level, XmlWriter>().SerializeList(Project.Instance.levels, "Levels", writer);
+        
+        writer.WriteStartElement("Current_Level");
+        writer.WriteString(Project.Instance.CurrentLevel.ToString());
+        writer.WriteEndElement();
+        
         writer.WriteEndElement();
         writer.WriteEndDocument();
     }

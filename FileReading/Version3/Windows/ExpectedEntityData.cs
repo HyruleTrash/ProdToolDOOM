@@ -1,8 +1,8 @@
 ﻿
 #if WINDOWS
-using System;
 using System.Xml;
-namespace DLLevelBuilder.Version1;
+
+namespace DLLevelBuilder.Version3;
 
 public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
 {
@@ -25,9 +25,6 @@ public class ExpectedEntityData : ExpectedData, IExpectedCollectionData
         if (reader.Name == "Name") this.entityData.Name = reader.ReadElementContentAsString();
     }
 
-    public void saveEntry()
-    {
-        Project.Instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
-    }
+    public void saveEntry() => Project.Instance.AddEntityData(this.lastReadId, new EntityData(this.entityData), true);
 }
 #endif

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.UI;
+using DLLevelBuilder.Window;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace DLLevelBuilder;

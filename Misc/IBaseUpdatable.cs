@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using DLLevelBuilder.Window;
+
+namespace DLLevelBuilder;
 
 public interface IBaseUpdatable
 {

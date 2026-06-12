@@ -1,4 +1,5 @@
 ﻿using System;
+using DLLevelBuilder.Window;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DLLevelBuilder;

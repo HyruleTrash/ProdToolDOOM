@@ -2,7 +2,7 @@
 using System.Xml;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DLLevelBuilder.Version1;
+namespace DLLevelBuilder.Version3;
 
 public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
 {
@@ -22,11 +22,12 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
             Texture2D? entityTexture = Program.instance.Content.Load<Texture2D>("Icons/Entity");
             this.entity = new Entity(-1, entityTexture, Program.instance, Project.Instance, -1, Vector2.Zero);
         }
-        if (reader.NodeType != XmlNodeType.Element)
-            return;
+        if (reader.NodeType != XmlNodeType.Element) return;
 
-        if (reader.Name == "DataId") this.entity.DataId = reader.ReadElementContentAsInt();
+        if (reader.Name == "LevelId") this.entity.LevelId = reader.ReadElementContentAsInt();
+        if (reader.Name == "LevelObjectId") this.entity.LevelObjectId = reader.ReadElementContentAsInt();
         if (reader.Name == "Position") this.entity.Position = Vector2.FromString(reader.ReadElementContentAsString());
+        if (reader.Name == "DataId") this.entity.DataId = reader.ReadElementContentAsInt();
     }
 
     public void saveEntry()
@@ -34,7 +35,8 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (this.entity == null) return;
         Debug.Log($"Saving entity: {this.entity}");
         this.referenceLevelData.level.Add(this.entity);
-        Project.Instance.EntityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
+        if (this.entity.DataId >= 0)
+            Project.Instance.EntityDatas[this.entity.DataId].AddEntityRegistration(this.entity);
         this.entity.UpdateVisualPosition(Program.instance.GetWindowSize());
         this.entity = null;
     }
