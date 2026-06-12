@@ -5,7 +5,7 @@ namespace DLLevelBuilder.Version2;
 
 public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
 {
-    public Level level = new();
+    public Level level = new(Project.Instance.GetLowestUnusedLevelId());
     private readonly ProjectLoadStrategy referenceLoadStrategy;
 
     public ExpectedLevelData(ProjectLoadStrategy referenceLoadStrategy)
@@ -19,7 +19,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
         if (reader.NodeType != XmlNodeType.Element)
             return;
 
-        this.level ??= new Level();
+        this.level ??= new Level(Project.Instance.GetLowestUnusedLevelId());
 
         this.referenceLoadStrategy.ReadData(reader, [
             new ExpectedData { name = "IdCounter", stopAt = "IdCounter", 
@@ -35,7 +35,7 @@ public class ExpectedLevelData : ExpectedData, IExpectedCollectionData
     {
         if (this.level == null) return;
         Debug.Log("Saving Level Data");
-        Project.Instance.levels.Add(this.level);
+        Project.Instance.levels.Add(this.level.LevelId, this.level);
         this.level = null;
     }
 }

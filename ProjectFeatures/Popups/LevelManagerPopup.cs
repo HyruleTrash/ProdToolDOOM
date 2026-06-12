@@ -154,7 +154,7 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
         this.buttonContainer.Y = -Params.borderMargin;
     }
     
-    private void LoadLevels(IReadOnlyList<Level> data)
+    private void LoadLevels(IReadOnlyDictionary<int, Level> data)
     {
         List<LevelVisual> upToDateVisuals = [];
         for (int id = 0; id < data.Count; id++)

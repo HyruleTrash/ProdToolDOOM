@@ -6,6 +6,9 @@ namespace DLLevelBuilder;
 public class Level
 {
     public int IdCounter { get => this.levelObjectIdCounter; }
+    public int LevelId { get => this.levelId; set => this.levelId = value; }
+    private int levelId;
+    
     public List<Entity> Entities { get => this.entities; set => this.entities = value; }
     private List<Entity> entities = [];
     
@@ -20,13 +23,16 @@ public class Level
     
     private Vector2 objectOffset = Vector2.Zero;
 
-    public Level(Level? other = null)
+    public Level(int id = -1) => this.levelId = id;
+
+    public Level(Level? other)
     {
         if (other == null)
             return;
         this.entities = other.Entities;
         this.points = other.Points;
         this.lines = other.Lines;
+        this.levelId = other.levelId;
     }
 
     public void Add(LevelObject? levelObject)

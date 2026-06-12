@@ -105,7 +105,7 @@ public class LevelVisual
         if (this.id != null && this.levelData != null)
         {
             Project projectRef = Project.Instance;
-            Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(projectRef, this.levelData, OnUndoRedo));
+            Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(projectRef, this.levelData, OnUndoRedo)); // TODO
         }
         this.id = null;
         this.levelData = null;

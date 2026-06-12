@@ -7,7 +7,7 @@ using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
 using DLLevelBuilder.ProjectFeatures.Exporting;
 using DLLevelBuilder.UI;
-using DLLevelBuilder.Version2;
+using DLLevelBuilder.Version3;
 using Gum.Forms.Controls;
 
 namespace DLLevelBuilder;
@@ -34,16 +34,15 @@ public class Project
     private Dictionary<int, EntityData> entityDatas = [];
     public int entityDataIdCounter = 0;
     private Action<IReadOnlyDictionary<int, EntityData>> onEntityDataChanged = null!;
-    public List<Level> levels = [];
-    private Action<IReadOnlyList<Level>> onLevelsChanged = null!;
+    public Dictionary<int, Level> levels = [];
+    private Action<IReadOnlyDictionary<int, Level>> onLevelsChanged = null!;
 
     public int CurrentLevel
     {
         get => this.currentLevel;
         set
         {
-            if (value <= -1 || value >= this.levels.Count)
-                return;
+            if (!this.levels.ContainsKey(value)) return;
             if (this.currentLevel != value) this.onCurrentLevelChanged?.Invoke(value);
             this.currentLevel = value;
         }
@@ -235,7 +234,7 @@ public class Project
 
     public void ResetData()
     {
-        this.levels = new List<Level>();
+        this.levels = new Dictionary<int, Level>();
         this.entityDatas = new Dictionary<int, EntityData>();
         this.CurrentLevel = -1;
         Program.instance.cmdHistory.Reset();
@@ -260,10 +259,21 @@ public class Project
 
     public void AddLevel(Level level)
     {
-        this.levels.Add(level);
+        this.levels.Add(level.LevelId, level);
         this.onLevelsChanged?.Invoke(this.levels);
     }
 
-    public void RegisterOnLevelsChanged(Action<IReadOnlyList<Level>> listener) => this.onLevelsChanged += listener;
-    public void RegisterOnEntityDataChanged(Action<IReadOnlyDictionary<int,EntityData>> listener) => this.onEntityDataChanged += listener;
+    public int GetLowestUnusedLevelId()
+    {
+        int counter = 0;
+        while (true)
+        {
+            if (!this.levels.ContainsKey(counter)) return counter;
+            counter++;
+        }
+    }
+
+    public void RegisterOnLevelsChanged(Action<IReadOnlyDictionary<int, Level>> listener) => this.onLevelsChanged += listener;
+    public void RegisterOnEntityDataChanged(Action<IReadOnlyDictionary<int, EntityData>> listener) => this.onEntityDataChanged += listener;
+
 }

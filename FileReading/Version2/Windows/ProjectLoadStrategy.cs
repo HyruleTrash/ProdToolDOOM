@@ -84,9 +84,9 @@ public class ProjectLoadStrategy : IProjectLoadStrategy
                 // TODO remove this
                 Debug.Log($"Levels: {Project.Instance.levels.Count}");
                 Debug.Log($"Current level: {Project.Instance.CurrentLevel}");
-                foreach (Level level in Project.Instance.levels)
+                foreach ((int key, Level level) in Project.Instance.levels)
                 {
-                    Debug.Log(" Level:");
+                    Debug.Log($" Level {key}:");
                     Debug.Log("  Entities:");
                     foreach (Entity entity in level.Entities)
                     {

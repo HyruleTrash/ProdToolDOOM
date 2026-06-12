@@ -7,9 +7,9 @@ public class AddLevelCmd(Project project) : ICommand
     public void Execute()
     {
         Debug.Log("Adding level!");
-        this.level ??= new Level();
+        this.level ??= new Level(project.GetLowestUnusedLevelId());
         project.AddLevel(this.level);
-        project.CurrentLevel = project.levels.Count - 1;
+        project.CurrentLevel = this.level.LevelId;
     }
 
     public void Undo()
@@ -17,6 +17,6 @@ public class AddLevelCmd(Project project) : ICommand
         if (this.level is null)
             return;
         Debug.Log("removing level!");
-        project.levels.Remove(this.level);
+        project.levels.Remove(this.level.LevelId);
     }
 }
