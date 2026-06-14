@@ -1,4 +1,6 @@
-﻿namespace DLLevelBuilder;
+﻿using DLLevelBuilder.ProjectFeatures;
+
+namespace DLLevelBuilder;
 
 public class RemoveLevelCmd(Project project, int id, Level level, Action<int?, Level?> onChanged, bool isSilent = false) : ICommand
 {
@@ -16,15 +18,15 @@ public class RemoveLevelCmd(Project project, int id, Level level, Action<int?, L
 
     public void Undo()
     {
-        if (project.levels.TryGetValue(id, out Level? data))
-        {
-            Debug.Log($"Sad silent removal of new level {id}");
-            new RemoveLevelCmd(project, id, data, (_, _) => { }, true).Execute();
-        }
+        if (project.levels.TryGetValue(id, out Level? data)) 
+            ConfirmationPopup.SetAndToggleVisibility($"Are you sure you wish to remove level {id}? And replace it with other level {id}", 
+                () => ApplySilentRemove(data));
         
         Debug.Log("ReAdding level!");
         
         project.AddLevel(level);
         onChanged?.Invoke(level.LevelId, level);
     }
+
+    private void ApplySilentRemove(Level data) => new RemoveLevelCmd(project, id, data, (_, _) => { }, true).Execute();
 }

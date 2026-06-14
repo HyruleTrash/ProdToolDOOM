@@ -101,14 +101,14 @@ public class LevelVisual
 
     public void RemoveAndHide()
     {
-        this.panel.Visible = false;
-        if (this.id != null && this.levelData != null)
-        {
-            Project projectRef = Project.Instance;
-            Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(projectRef, this.id.Value, this.levelData, OnUndoRedo));
-        }
-        this.id = null;
-        this.levelData = null;
+        if (this.id != null && this.levelData != null) 
+            ConfirmationPopup.SetAndToggleVisibility($"Are you sure you wish to remove level {this.id.Value}?", () =>
+            {
+                this.panel.Visible = false;
+                ApplyRemoveLevelCmd(this.id.Value, this.levelData);
+                this.id = null;
+                this.levelData = null;
+            });
     }
 
     private void OnUndoRedo(int? newId, Level? newData)
@@ -124,4 +124,6 @@ public class LevelVisual
         this.levelData = newData;
         UpdateVisuals();
     }
+    
+    private void ApplyRemoveLevelCmd(int id, Level level) => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(Project.Instance, id, level, OnUndoRedo));
 }
