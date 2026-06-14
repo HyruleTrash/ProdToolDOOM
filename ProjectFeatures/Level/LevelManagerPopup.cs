@@ -66,7 +66,6 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
             YUnits = GeneralUnitType.PixelsFromSmall,
             XOrigin = HorizontalAlignment.Right,
             YOrigin = VerticalAlignment.Top,
-            // RaiseChildrenEventsOutsideOfBounds = true
         };
         
         this.createNewButton = new Button()

@@ -1,110 +1,96 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DLLevelBuilder.UI;
+using Gum.Converters;
+using Gum.DataTypes;
 using Gum.Forms.Controls;
+using Gum.Forms.DefaultVisuals;
+using Gum.Wireframe;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum.GueDeriving;
+using RenderingLibrary.Graphics;
 using Button = Gum.Forms.Controls.Button;
+using Color = Microsoft.Xna.Framework.Color;
+using HorizontalAlignment = RenderingLibrary.Graphics.HorizontalAlignment;
 using Orientation = Gum.Forms.Controls.Orientation;
 
 namespace DLLevelBuilder.ProjectFeatures;
 
 public class EntityManagerPopup : Popup<EntityManagerPopup>
 {
-    private readonly ScrollViewer panel;
+    private static readonly float scrollPadding = 16f;
+    
     private readonly ColoredRectangleRuntime popupBG;
     private readonly RectangleRuntime popupBGBorder;
+    private readonly ScrollViewer scrollViewer;
+    private readonly StackPanel panel;
+    private readonly ContainerRuntime buttonContainer;
+    private readonly Button createNewButton;
 
     private List<EntityDataVisual> visuals = [];
     private readonly Texture2D closeIcon;
-
-    private class EntityDataVisual
-    {
-        public int? id;
-        public EntityData? entityData;
-        private readonly StackPanel panel;
-        private readonly TextRuntime nameText;
-        private readonly Button removeButton;
-
-        public EntityDataVisual(Texture2D closeIcon, ScrollViewer parent, int? id = null, EntityData? entityData = null)
-        {
-            this.id = id;
-            this.entityData = entityData;
-            
-            Debug.Log($"Instantiating EntityDataVisual {this.id}");
-            
-            // instantiate visuals
-            this.panel = new StackPanel
-            {
-                Spacing = 5,
-                Width = 400f,
-                Orientation = Orientation.Horizontal
-            };
-
-            this.nameText = new TextRuntime
-            {
-                Text = entityData?.Name ?? "Unnamed",
-                Width = 200f
-            };
-
-            this.removeButton = new Button
-            {
-                Text = "X",
-                Width = Params.minBoxSize,
-                Height = Params.minBoxSize
-            };
-            CustomButtonVisual.Create(this.removeButton);
-            CustomButtonVisual.AddIcon(this.removeButton, closeIcon);
-            this.removeButton.Click += (_, _) => RemoveAndHide();
-
-            this.panel.AddChild(this.nameText);
-            this.panel.AddChild(this.removeButton);
-            parent.AddChild(this.panel);
-        }
-
-        public void UpdateVisuals()
-        {
-            if (this.id == null || this.entityData == null)
-                return;
-            this.panel.IsVisible = true;
-            this.nameText.Text = this.entityData.Name;
-        }
-
-        public void RemoveAndHide()
-        {
-            this.panel.IsVisible = false;
-            if (this.id != null)
-                Program.instance.cmdHistory.ApplyCmd(new RemoveEntityDataCmd(Project.Instance, this.id, OnUndoRedo));
-            this.id = null;
-            this.entityData = null;
-        }
-
-        private void OnUndoRedo(int? newId, EntityData? newData)
-        {
-            if (newId == null)
-            {
-                this.id = null;
-                RemoveAndHide();
-                return;
-            }
-
-            this.id = newId;
-            this.entityData = newData;
-            UpdateVisuals();
-        }
-    }
     
     public EntityManagerPopup()
     {
         this.closeIcon = Program.instance.Content.Load<Texture2D>("Icons/Cross");
         
-        this.panel = new ScrollViewer { InnerPanel = { StackSpacing = 4 } };
+        // scroll panel, and inner panel
+        this.scrollViewer = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden };
+        this.panel = new StackPanel
+        {
+            Visual =
+            {
+                WidthUnits = DimensionUnitType.PercentageOfParent,
+                HeightUnits = DimensionUnitType.RelativeToChildren,
+                Width = 100,
+                Height = scrollPadding
+            },
+            Y = scrollPadding,
+            Spacing = scrollPadding
+        };
+
+        ScrollViewerVisual scrollViewerVisual = (ScrollViewerVisual)this.scrollViewer.Visual;
+        scrollViewerVisual.Background.Color = Color.Transparent;
+        ScrollBarVisual scrollBarVisual = scrollViewerVisual.VerticalScrollBarInstance;
+        scrollBarVisual.Width = Params.minBoxSize * 0.2f;
+        scrollBarVisual.DownButtonIcon.Visible = false;
+        scrollBarVisual.UpButtonIcon.Visible = false;
+        CustomButtonVisual.Create(scrollBarVisual.UpButtonInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        CustomButtonVisual.Create(scrollBarVisual.DownButtonInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        CustomButtonVisual.Create(scrollBarVisual.ThumbInstance, CustomButtonVisual.CustomButtonTheme.InvertedTheme);
+        
+        // buttons
+        this.buttonContainer = new ContainerRuntime
+        {
+            HeightUnits = DimensionUnitType.RelativeToChildren,
+            XUnits = GeneralUnitType.PixelsFromLarge,
+            YUnits = GeneralUnitType.PixelsFromSmall,
+            XOrigin = HorizontalAlignment.Right,
+            YOrigin = VerticalAlignment.Top,
+        };
+        
+        this.createNewButton = new Button()
+        {
+            Text = "+",
+            Height = Params.minButtonHeight,
+            Width = Params.minBoxSize,
+        };
+        CustomButtonVisual.Create(this.createNewButton);
+        this.createNewButton.Click += (_, _) => EntityCreationPopup.ToggleVisibility();
+        this.createNewButton.Anchor(Anchor.Right);
+        this.createNewButton.X = 0;
+        
+        // Background
         this.popupBG = new ColoredRectangleRuntime { Color = Params.DefaultFillColor };
         this.popupBGBorder = new RectangleRuntime { Color = Params.DefaultOutlineColor };
         
+        // structure
         this.container.AddChild(this.popupBG);
         this.container.AddChild(this.popupBGBorder);
-        this.container.AddChild(this.panel.Visual);
+        this.container.AddChild(this.buttonContainer);
+        this.container.AddChild(this.scrollViewer.Visual);
+        this.scrollViewer.AddChild(this.panel);
+        this.buttonContainer.AddChild(this.createNewButton.Visual);
 
         Project.Instance.RegisterOnEntityDataChanged(LoadEntityData);
         
@@ -121,7 +107,6 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         const float margin = 16f;
 
         float containerWidth = this.popUpContainerRef.Width;
-        // float containerHeight = this.popUpContainerRef.Height;
 
         // Top-right anchor
         float popupX = containerWidth - popupWidth - margin;
@@ -139,11 +124,23 @@ public class EntityManagerPopup : Popup<EntityManagerPopup>
         this.popupBGBorder.X = popupX - Params.defaultOutLineWidth / 2;
         this.popupBGBorder.Y = popupY - Params.defaultOutLineWidth / 2;
 
-        // Panel
-        this.panel.Width = popupWidth - Params.popupPadding;
-        this.panel.Height = popupHeight - Params.popupPadding;
-        this.panel.X = popupX + Params.popupPadding / 2;
-        this.panel.Y = popupY + Params.popupPadding / 2;
+        // ScrollPanel
+        ScrollViewerVisual scrollViewerVisual = (ScrollViewerVisual)this.scrollViewer.Visual;
+        ScrollBarVisual scrollBarVisual = scrollViewerVisual.VerticalScrollBarInstance;
+        scrollBarVisual.Width = Params.minBoxSize * 0.3f;
+        
+        this.scrollViewer.Width = popupWidth - Params.popupPadding + scrollBarVisual.Width * 0.5f;
+        this.scrollViewer.Height = popupHeight - Params.popupPadding * 1.5f + scrollBarVisual.Width * 0.5f - Params.minBoxSize;
+        this.scrollViewer.X = popupX + Params.popupPadding / 2;
+        this.scrollViewer.Y = popupY + Params.popupPadding + Params.minBoxSize;
+        
+        // instances
+        foreach (EntityDataVisual entityDataVisual in this.visuals) entityDataVisual.UpdateVisuals();
+        
+        // buttons
+        this.buttonContainer.Width = popupWidth - Params.popupPadding / 2 - Params.borderMargin / 2;
+        this.buttonContainer.X = -Params.popupPadding;
+        this.buttonContainer.Y = -Params.borderMargin;
     }
     
     private void LoadEntityData(IReadOnlyDictionary<int, EntityData> data)
