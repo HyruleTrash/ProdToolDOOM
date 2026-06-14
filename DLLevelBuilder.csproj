@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0-windows</TargetFramework>
@@ -26,5 +25,11 @@
     <ItemGroup>
       <Folder Include="Content\" />
       <Folder Include="ProjectFeatures\Popups\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Icon.bmp">
+        <LogicalName>Icon.bmp</LogicalName>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>
