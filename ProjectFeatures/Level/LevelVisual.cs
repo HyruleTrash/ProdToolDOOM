@@ -19,13 +19,17 @@ public class LevelVisual
     private readonly ContainerRuntime panel;
     private readonly TextRuntime nameText;
     private readonly Button removeButton;
+    private readonly Button openButton;
     private readonly ColoredRectangleRuntime background;
     private readonly ContainerRuntime innerPanel;
+    private readonly Project projectRef;
 
     public LevelVisual(Texture2D closeIcon, StackPanel parent, int? id = null, Level? levelData = null)
     {
         this.id = id;
         this.levelData = levelData;
+        
+        this.projectRef  = Project.Instance;
         
         // instantiate visuals
         this.panel = new ContainerRuntime
@@ -50,10 +54,10 @@ public class LevelVisual
         this.nameText = new TextRuntime
         {
             Text = $"Level - {this.id}",
-            X = 8,
             Color = Color.Black
         };
         this.nameText.Anchor(Anchor.Left);
+        this.nameText.X = 8;
 
         this.background = new ColoredRectangleRuntime()
         {
@@ -80,14 +84,27 @@ public class LevelVisual
         this.removeButton.X = 0;
         this.removeButton.Click += (_, _) => RemoveAndHide();
 
+        this.openButton = new Button { Text = "Open" };
+        CustomButtonVisual.Create(this.openButton);
+        this.openButton.Anchor(Anchor.Right);
+        this.openButton.X = -this.removeButton.Width - Params.borderPadding;
+        this.openButton.Click += (_, _) => SetToCurrentLevel();
+
         this.panel.AddChild(this.background);
         this.panel.AddChild(this.innerPanel);
         this.innerPanel.AddChild(this.nameText);
         this.innerPanel.AddChild(this.removeButton.Visual);
+        this.innerPanel.AddChild(this.openButton.Visual);
         
         parent.AddChild(this.panel);
 
         UpdateVisuals();
+    }
+
+    private void SetToCurrentLevel()
+    {
+        if (this.id == null || this.projectRef.CurrentLevel == this.id.Value) return;
+        Program.instance.cmdHistory.ApplyCmd(new SwitchLevelCmd(this.projectRef, null, this.id));
     }
 
     public void UpdateVisuals()
@@ -125,5 +142,5 @@ public class LevelVisual
         UpdateVisuals();
     }
     
-    private void ApplyRemoveLevelCmd(int id, Level level) => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(Project.Instance, id, level, OnUndoRedo));
+    private void ApplyRemoveLevelCmd(int id, Level level) => Program.instance.cmdHistory.ApplyCmd(new RemoveLevelCmd(this.projectRef, id, level, OnUndoRedo));
 }

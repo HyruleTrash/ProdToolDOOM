@@ -14,6 +14,7 @@ public abstract class LevelObject
     
     protected readonly WindowInstance windowRef;
     protected readonly Project projectRef;
+    public bool Initialized { get; protected set; }
 
     protected LevelObject(WindowInstance windowRef, Project projectRef, Level parentLevel)
     {
@@ -21,6 +22,8 @@ public abstract class LevelObject
         this.projectRef = projectRef;
         this.parentLevel = parentLevel;
     }
+
+    public virtual void Init() => this.Initialized = true;
 
     public void Show()
     {

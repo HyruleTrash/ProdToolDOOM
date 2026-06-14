@@ -79,11 +79,7 @@ public class LevelManagerPopup : Popup<LevelManagerPopup>
         this.createNewButton.Anchor(Anchor.Right);
         this.createNewButton.X = 0;
         
-        this.exportLevel = new Button()
-        {
-            Text = "Export current level",
-            Height = Params.minButtonHeight,
-        };
+        this.exportLevel = new Button { Text = "Export current level" };
         this.exportLevel.Anchor(Anchor.Left);
         this.exportLevel.X = 0;
         CustomButtonVisual.Create(this.exportLevel);

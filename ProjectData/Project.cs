@@ -42,8 +42,12 @@ public class Project
         get => this.currentLevel;
         set
         {
-            if (!this.levels.ContainsKey(value)) return;
-            if (this.currentLevel != value) this.onCurrentLevelChanged?.Invoke(value);
+            if (!this.levels.TryGetValue(value, out Level? level)) return;
+            if (this.currentLevel != value)
+            {
+                level.CheckInit();
+                this.onCurrentLevelChanged?.Invoke(value);
+            }
             this.currentLevel = value;
         }
     }

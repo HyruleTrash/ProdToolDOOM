@@ -36,8 +36,10 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
         this.LevelId = levelId;
     }
 
-    public void Init()
+    public override void Init()
     {
+        if (this.Initialized) return;
+        base.Init();
         this.iconContainer = new ContainerRuntime
         {
             Width = this.pointTextureRef.Width,

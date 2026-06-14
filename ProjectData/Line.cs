@@ -40,8 +40,10 @@ public class Line : LevelObject, IDisposable
     }
     public Line(Project projectRef, WindowInstance windowRef, Level parentLevel) : base(windowRef, projectRef, parentLevel) { }
 
-    public void Init()
+    public override void Init()
     {
+        if (this.Initialized) return;
+        base.Init();
         Point? point1 = this.projectRef.levels[this.levelId].GetPointById(this.point1Id);
         Point? point2 = this.projectRef.levels[this.levelId].GetPointById(this.point2Id);
         if (point1 == null || point2 == null)

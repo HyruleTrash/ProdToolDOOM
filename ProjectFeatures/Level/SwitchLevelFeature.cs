@@ -35,14 +35,5 @@ public class SwitchLevelFeature(Project project) : ProjectFeature
         SetVisible(isVisible);
     }
 
-    private void SwitchLevel(int direction)
-    {
-        project.CurrentLevel += direction;
-        Debug.Log($"Switched level {project.CurrentLevel}");
-        Program.instance.cmdHistory.ApplyCmd(new SaveProjectCmd(project));
-        if (project.CheckLoadStrategy())
-            return;
-        Debug.Log("Reloading project file...");
-        project.Load(project.FilePath);
-    }
+    private void SwitchLevel(int direction) => Program.instance.cmdHistory.ApplyCmd(new SwitchLevelCmd(project, direction));
 }

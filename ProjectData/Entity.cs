@@ -47,8 +47,10 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         this.entityTextureRef = entityTexture;
     }
 
-    public void Init()
+    public override void Init()
     {
+        if (this.Initialized) return;
+        base.Init();
         this.iconContainer = new ContainerRuntime
         {
             Width = this.entityTextureRef.Width,

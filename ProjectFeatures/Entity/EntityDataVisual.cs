@@ -53,10 +53,10 @@ public class EntityDataVisual
         this.nameText = new TextRuntime
         {
             Text = entityData?.Name ?? "Unnamed",
-            X = 8,
             Color = Color.Black
         };
         this.nameText.Anchor(Anchor.Left);
+        this.nameText.X = 8;
 
         this.background = new ColoredRectangleRuntime()
         {

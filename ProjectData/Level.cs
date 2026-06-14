@@ -85,4 +85,11 @@ public class Level
         this.objectOffset = newOffset;
         foreach (LevelObject levelObject in this.levelObjects) levelObject.UpdateVisualOffset(newOffset);
     }
+
+    public void CheckInit()
+    {
+        foreach (Line line in this.Lines) line.Init();
+        foreach (Point point in this.Points) point.Init();
+        foreach (Entity entity in this.Entities) entity.Init();
+    }
 }
