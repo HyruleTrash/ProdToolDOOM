@@ -5,6 +5,7 @@ namespace DLLevelBuilder;
 
 public abstract class LevelObject
 {
+    protected Level parentLevel;
     public Vector2 position = Vector2.Zero;
     protected Vector2 offset = Vector2.Zero;
     public bool visible = true;
@@ -14,10 +15,11 @@ public abstract class LevelObject
     protected readonly WindowInstance windowRef;
     protected readonly Project projectRef;
 
-    protected LevelObject(WindowInstance windowRef, Project projectRef)
+    protected LevelObject(WindowInstance windowRef, Project projectRef, Level parentLevel)
     {
         this.windowRef = windowRef;
         this.projectRef = projectRef;
+        this.parentLevel = parentLevel;
     }
 
     public void Show()

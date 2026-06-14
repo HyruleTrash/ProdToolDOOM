@@ -26,19 +26,19 @@ public class Line : LevelObject, IDisposable
     private RemoveLineCmd removeCommand;
     public const float wallHeight = 5f;
 
-    public Line(Project projectRef, WindowInstance windowRef, int point1Id, int point2Id, int levelId) : base(windowRef, projectRef)
+    public Line(Project projectRef, WindowInstance windowRef, Level parentLevel, int point1Id, int point2Id, int levelId) : base(windowRef, projectRef, parentLevel)
     {
         this.levelId = levelId;
         this.point1Id = point1Id;
         this.point2Id = point2Id;
     }
-    public Line(Project projectRef, Line line) : base(line.windowRef, projectRef)
+    public Line(Project projectRef, Line line) : base(line.windowRef, projectRef, line.parentLevel)
     {
         this.levelId = line.levelId;
         this.point1Id = line.Id;
         this.point2Id = line.IdOther;
     }
-    public Line(Project projectRef, WindowInstance windowRef) : base(windowRef, projectRef) { }
+    public Line(Project projectRef, WindowInstance windowRef, Level parentLevel) : base(windowRef, projectRef, parentLevel) { }
 
     public void Init()
     {
@@ -116,9 +116,10 @@ public class Line : LevelObject, IDisposable
 
     private void OnLevelChanged(int newLevelId)
     {
-        if (newLevelId != this.LevelId && this.icon != null)
+        if ((newLevelId != this.LevelId && this.icon != null) || !this.projectRef.levels.ContainsValue(this.parentLevel))
         {
-            this.icon.Visible = false;
+            if (this.icon != null) this.icon.Visible = false;
+            if (this.selectedIcon != null) this.selectedIcon.Visible = false;
             return;
         }
         

@@ -7,18 +7,20 @@ public class AddLineCmd(Project projectRef, WindowInstance windowRef, Point poin
 {
     private Point[]? points;
     private Line? line;
-    
+    private Level level;
+
     public void Execute()
     {
         int levelId = projectRef.CurrentLevel;
+        this.level = projectRef.levels[levelId];
         this.points ??= [point1, point2];
         if (this.points == null || this.points.Length < 2)
             return;
-        this.line ??= new Line(projectRef, windowRef, this.points[0].LevelObjectId, this.points[1].LevelObjectId, levelId);
+        this.line ??= new Line(projectRef, windowRef, this.level, this.points[0].LevelObjectId, this.points[1].LevelObjectId, levelId);
         this.line.Init();
         
         Debug.Log($"Adding line to level {levelId}: {this.points[0].LevelObjectId}, {this.points[1].LevelObjectId}!");
-        projectRef.levels[levelId].Add(this.line);
+        this.level.Add(this.line);
     }
 
     public void Undo()
@@ -27,7 +29,7 @@ public class AddLineCmd(Project projectRef, WindowInstance windowRef, Point poin
             return;
         Debug.Log($"Removing line from level {this.line.LevelId}!");
         
-        projectRef.levels[this.line.LevelId].Remove(this.line);
+        this.level.Remove(this.line);
         if (this.line.icon != null) this.line.Hide();
     }
     

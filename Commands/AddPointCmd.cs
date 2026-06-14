@@ -7,17 +7,19 @@ namespace DLLevelBuilder;
 public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D pointTexture, WindowInstance windowRef) : ICommand, IDisposable
 {
     private Point? point;
-    
+    private Level level;
+
     public void Execute()
     {
         if (projectRef.levels.Count == 0 || projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
         int levelId = projectRef.CurrentLevel;
-        this.point ??= new Point(initialPosition, pointTexture, projectRef.levels[levelId].levelObjectIdCounter++, levelId, windowRef, projectRef);
+        this.level = projectRef.levels[levelId];
+        this.point ??= new Point(initialPosition, pointTexture, this.level.levelObjectIdCounter++, levelId, windowRef, projectRef, this.level);
         this.point.Init();
         
         Debug.Log($"Adding point to level {levelId} {this.point.position}!");
-        projectRef.levels[levelId].Add(this.point);
+        this.level.Add(this.point);
     }
 
     public void Undo()
@@ -26,7 +28,7 @@ public class AddPointCmd(Project projectRef, Vector2 initialPosition, Texture2D 
             return;
         Debug.Log($"Removing point from level {this.point.LevelId}!");
         
-        projectRef.levels[this.point.LevelId].Remove(this.point);
+        this.level.Remove(this.point);
         if (this.point.icon != null) this.point.Hide();
     }
 

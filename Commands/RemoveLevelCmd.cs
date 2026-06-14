@@ -1,30 +1,30 @@
 ﻿namespace DLLevelBuilder;
 
-public class RemoveLevelCmd(Project project, int? id, Action<int?, Level?> onChanged) : ICommand
+public class RemoveLevelCmd(Project project, int id, Level level, Action<int?, Level?> onChanged, bool isSilent = false) : ICommand
 {
-    private Level? level;
-    
     public void Execute()
     {
-        if (id == null || !project.levels.TryGetValue(id.Value, out Level? data))
+        if (!project.levels.TryGetValue(id, out Level? data))
             return;
-        Debug.Log("removing level!");
+        Debug.Log($"removing level {data.LevelId}");
         
-        this.level ??= data;
+        project.RemoveLevel(level);
+        onChanged?.Invoke(level.LevelId, null);
         
-        project.RemoveLevel(this.level);
-        onChanged?.Invoke(this.level.LevelId, null);
+        if (project.CurrentLevel == id && !isSilent) project.SetLevelNearestId(); // silent removal is used for replacing, this func might create a required level 0, so preventing edge case here
     }
 
     public void Undo()
-    { // TODO something is going wrong here
-        if (id == null || this.level == null)
-            return;
+    {
+        if (project.levels.TryGetValue(id, out Level? data))
+        {
+            Debug.Log($"Sad silent removal of new level {id}");
+            new RemoveLevelCmd(project, id, data, (_, _) => { }, true).Execute();
+        }
         
-        Debug.Log("Adding level!");
+        Debug.Log("ReAdding level!");
         
-        project.AddLevel(this.level);
-        project.CurrentLevel = this.level.LevelId;
-        onChanged?.Invoke(this.level.LevelId, this.level);
+        project.AddLevel(level);
+        onChanged?.Invoke(level.LevelId, level);
     }
 }

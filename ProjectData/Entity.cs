@@ -26,8 +26,8 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
     private bool beingMoved = false;
     private Vector2 oldPosition;
 
-    public Entity(int levelId, Texture2D entityTexture, WindowInstance windowRef, Project projectRef,
-        int levelObjectId = -1, Vector2? position = null, int dataId = -1) : base(windowRef, projectRef)
+    public Entity(int levelId, Texture2D entityTexture, WindowInstance windowRef, Project projectRef, Level parentLevel,
+        int levelObjectId = -1, Vector2? position = null, int dataId = -1) : base(windowRef, projectRef, parentLevel)
     {
         this.LevelId = levelId;
         this.LevelObjectId = levelObjectId;
@@ -38,7 +38,7 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         this.DataId = dataId;
     }
     
-    public Entity(Entity other, Texture2D entityTexture) : base(other.windowRef, other.projectRef)
+    public Entity(Entity other, Texture2D entityTexture, Level parentLevel) : base(other.windowRef, other.projectRef, parentLevel)
     {
         this.LevelId = other.LevelId;
         this.LevelObjectId = other.LevelObjectId;
@@ -102,10 +102,11 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
 
     private void OnLevelChanged(int newLevelId)
     {
-        if (newLevelId != this.LevelId)
+        if (newLevelId != this.LevelId || !this.projectRef.levels.ContainsValue(this.parentLevel))
         {
             if (this.icon != null) this.icon.Visible = false;
             if (this.nameText != null) this.nameText.Visible = false;
+            if (this.selectedIcon != null) this.selectedIcon.Visible = false;
             return;
         }
 

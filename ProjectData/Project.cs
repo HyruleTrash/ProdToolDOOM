@@ -89,6 +89,20 @@ public class Project
     }
 
     public static Level? TryGetCurrentLevel() => Instance.levels.GetValueOrDefault(Instance.currentLevel);
+    public void SetLevelNearestId()
+    {
+        bool result = CheckAndMakeRequiredLevel();
+        this.CurrentLevel = this.levels.Keys.OrderBy(k => Math.Abs(k - this.currentLevel)).FirstOrDefault();
+        if (result && this.currentLevel == 0) this.onCurrentLevelChanged?.Invoke(0);
+    }
+
+    private bool CheckAndMakeRequiredLevel()
+    {
+        if (this.levels.Count != 0) return false;
+        AddLevelCmd cmd = new(this);
+        cmd.Execute();
+        return true;
+    }
 
     /// <summary>
     /// Checks the state of the current load strategy
@@ -113,13 +127,13 @@ public class Project
     public void Save(string tempPath)
     {
         if (this.saveStrat != null && this.saveStrat.Save(tempPath)) this.FilePath = tempPath;
-        if (this.levels.Count == 0) Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(this));
+        CheckAndMakeRequiredLevel();
     }
     
     public void Load(string tempPath)
     {
         if (this.loadStrat != null && this.loadStrat.Load(tempPath)) this.FilePath = tempPath;
-        if (this.levels.Count == 0) Program.instance.cmdHistory.ApplyCmd(new AddLevelCmd(this));
+        CheckAndMakeRequiredLevel();
         this.onEntityDataChanged?.Invoke(this.entityDatas);
         this.onLevelsChanged?.Invoke(this.levels);
     }
@@ -257,6 +271,7 @@ public class Project
     {
         this.levels.Add(level.LevelId, level);
         this.onLevelsChanged?.Invoke(this.levels);
+        if (level.LevelId == this.currentLevel) this.onCurrentLevelChanged?.Invoke(this.currentLevel);
     }
     
     public void RemoveLevel(Level level)

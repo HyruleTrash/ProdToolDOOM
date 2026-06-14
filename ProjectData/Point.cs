@@ -28,7 +28,7 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
     public Action onDispose;
     public Action onVisualMoved;
 
-    public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef) : base(windowRef, projectRef)
+    public Point(Vector2 point, Texture2D pointTexture, int levelObjectId, int levelId, WindowInstance windowRef, Project projectRef, Level parentLevel) : base(windowRef, projectRef, parentLevel)
     {
         this.position = point;
         this.pointTextureRef = pointTexture;
@@ -79,9 +79,10 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
 
     private void OnLevelChanged(int newLevelId)
     {
-        if (newLevelId != this.LevelId)
+        if (newLevelId != this.LevelId || !this.projectRef.levels.ContainsValue(this.parentLevel))
         {
             if (this.icon != null) this.icon.Visible = false;
+            if (this.selectedIcon != null) this.selectedIcon.Visible = false;
             return;
         }
 

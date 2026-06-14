@@ -7,21 +7,23 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
 {
     private Entity? entity;
     private int levelId;
-    
+    private Level level;
+
     public void Execute()
     {
         if (projectRef.EntityDatas.Count == 0 || projectRef.levels.Count == 0 ||
             projectRef.CurrentLevel > projectRef.levels.Count - 1)
             return;
         this.levelId = projectRef.CurrentLevel;
-        this.entity ??= new Entity(this.levelId, entityTexture, windowRef, projectRef, projectRef.levels[this.levelId].levelObjectIdCounter++, initialPosition);
+        this.level = projectRef.levels[this.levelId];
+        this.entity ??= new Entity(this.levelId, entityTexture, windowRef, projectRef, this.level, this.level.levelObjectIdCounter++, initialPosition);
         this.entity.Init();
         
         Debug.Log($"Adding entity to level {this.levelId}!");
         
         if (projectRef.EntityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
             value.AddEntityRegistration(this.entity);
-        projectRef.levels[this.levelId].Add(this.entity);
+        this.level.Add(this.entity);
     }
 
     public void Undo()
@@ -32,7 +34,7 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
         
         if (projectRef.EntityDatas.TryGetValue(this.entity.DataId, out EntityData? value))
             value.RemoveEntityRegistration(this.entity);
-        projectRef.levels[this.levelId].Remove(this.entity);
+        this.level.Remove(this.entity);
         
         if (this.entity.icon != null) this.entity.Hide();
     }

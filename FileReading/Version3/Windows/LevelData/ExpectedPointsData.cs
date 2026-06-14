@@ -21,7 +21,7 @@ public class ExpectedPointsData : ExpectedData, IExpectedCollectionData
         {
             Texture2D? pointTexture = Program.instance.Content.Load<Texture2D>("Icons/Point");
             this.point = new Point(Vector2.Zero, pointTexture, -1, -1, Program.instance,
-                Project.Instance);
+                Project.Instance, this.referenceLevelData.level);
         }
         if (reader.NodeType != XmlNodeType.Element) return;
 

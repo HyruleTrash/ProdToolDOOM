@@ -20,7 +20,7 @@ public class ExpectedEntitiesData : ExpectedData, IExpectedCollectionData
         if (this.entity == null)
         {
             Texture2D? entityTexture = Program.instance.Content.Load<Texture2D>("Icons/Entity");
-            this.entity = new Entity(-1, entityTexture, Program.instance, Project.Instance, -1, Vector2.Zero);
+            this.entity = new Entity(-1, entityTexture, Program.instance, Project.Instance, this.referenceLevelData.level, -1, Vector2.Zero);
         }
         if (reader.NodeType != XmlNodeType.Element) return;
 
