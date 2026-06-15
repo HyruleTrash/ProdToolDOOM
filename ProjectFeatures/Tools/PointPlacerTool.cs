@@ -17,6 +17,7 @@ public class PointPlacerTool : BasePlacerTool
     }
 
     public override void SetVisuals() => CustomButtonVisual.SetAltEnabledState(this.button, true);
+
     public override void UnEquip()
     {
         base.UnEquip();

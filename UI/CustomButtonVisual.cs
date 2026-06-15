@@ -132,6 +132,7 @@ public class CustomButtonVisual
         StateSave enabled = visual.States.Enabled;
         enabled.Clear();
         enabled.Apply = toSet ? buttonVisual.AltEnabledState : buttonVisual.EnabledState;
+        visual.ApplyState(enabled);
     }
     
     public static void AddIcon(Button button, Texture2D iconTex, bool shouldColorIcon = true)
