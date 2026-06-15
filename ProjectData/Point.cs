@@ -77,6 +77,7 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
         this.windowRef.onScreenSizeChange += UpdateVisualPosition;
 
         this.projectRef.onCurrentLevelChanged += OnLevelChanged;
+        UpdateVisualOffset(this.parentLevel.GetOffset());
     }
 
     private void OnLevelChanged(int newLevelId)

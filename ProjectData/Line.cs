@@ -114,6 +114,8 @@ public class Line : LevelObject, IDisposable
         
         this.iconContainer.RightClick += HandleRightClick;
         this.projectRef.onCurrentLevelChanged += OnLevelChanged;
+        
+        UpdateVisualOffset(this.parentLevel.GetOffset());
     }
 
     private void OnLevelChanged(int newLevelId)

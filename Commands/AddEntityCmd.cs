@@ -16,7 +16,7 @@ public class AddEntityCmd(Project projectRef, Vector2 initialPosition, Texture2D
             return;
         this.levelId = projectRef.CurrentLevel;
         this.level = projectRef.levels[this.levelId];
-        this.entity ??= new Entity(this.levelId, entityTexture, windowRef, projectRef, this.level, this.level.levelObjectIdCounter++, initialPosition);
+        this.entity ??= new Entity(this.levelId, entityTexture, windowRef, projectRef, this.level, this.level.levelObjectIdCounter++, initialPosition - this.level.GetOffset());
         this.entity.Init();
         
         Debug.Log($"Adding entity to level {this.levelId}!");

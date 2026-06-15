@@ -95,6 +95,7 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         this.windowRef.onScreenSizeChange += UpdateVisualPosition;
 
         this.projectRef.onCurrentLevelChanged += OnLevelChanged;
+        UpdateVisualOffset(this.parentLevel.GetOffset());
     }
 
     public void UpdateName()
