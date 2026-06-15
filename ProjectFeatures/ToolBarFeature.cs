@@ -28,14 +28,8 @@ public class ToolBarFeature(GumService gum)
         this.toolStack.X = Params.borderMargin;
         this.toolStack.Y = -Params.borderMargin;
         container.AddUI(this.toolStack);
-        
-        ITool? entityPlacerTool = ToolManager.GetTool(typeof(EntityPlacerTool));
-        if (entityPlacerTool != null)
-            this.toolStack.AddUI(entityPlacerTool.LoadUI());
 
-        ITool? placerTool = ToolManager.GetTool(typeof(PointPlacerTool));
-        if (placerTool != null)
-            this.toolStack.AddUI(placerTool.LoadUI());
+        ToolManager.LoadUI(this.toolStack.AddUI);
     }
     
     private bool ShouldLoadUI(object? parent) => 

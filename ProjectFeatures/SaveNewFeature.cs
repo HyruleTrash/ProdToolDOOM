@@ -5,7 +5,6 @@ namespace DLLevelBuilder.ProjectFeatures;
 
 public class SaveNewFeature(Project project) : ProjectFeature
 {
-    private const string ProjectFileFilter = "wapd files (*.wapd)|*.wapd";
     private MenuItem saveProjectAsButton = null!;
 
     public override void LoadUI(MenuItem menu, bool isVisible = true)
@@ -31,22 +30,5 @@ public class SaveNewFeature(Project project) : ProjectFeature
         SetVisible(isVisible);
     }
 
-    private void Save()
-    {
-        SaveProjectCmd cmd = new(project) { shouldOverwriteFilePath = ShouldOverwriteFilePath };
-        Program.instance.cmdHistory.ApplyCmd(cmd);
-    }
-
-    private bool ShouldOverwriteFilePath(ref string tempPath)
-    {
-        FileExplorerHelper.FileDialogResult? result = project.FilePath == string.Empty
-            ? FileExplorerHelper.SaveWithFileExplorer(ProjectFileFilter)
-            : FileExplorerHelper.SaveWithFileExplorer(ProjectFileFilter, tempPath);
-
-        if (!result.HasValue)
-            return false;
-        tempPath = result.Value.filePath;
-
-        return true;
-    }
+    private void Save() => Program.instance.cmdHistory.ApplyCmd(new SaveProjectAsNewCmd(project));
 }

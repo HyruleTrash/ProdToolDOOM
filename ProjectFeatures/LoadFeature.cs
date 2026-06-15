@@ -25,20 +25,5 @@ public class LoadFeature(Project project) : ProjectFeature
         SetVisible(isVisible);
     }
 
-    private void Load()
-    {
-        if (project.CheckLoadStrategy())
-            return;
-        Debug.Log("Loading project file...");
-
-        string tempPath = project.FilePath;
-        FileExplorerHelper.FileDialogResult? result = tempPath == string.Empty
-            ? FileExplorerHelper.OpenFileExplorer()
-            : FileExplorerHelper.OpenFileExplorer(tempPath);
-        if (!result.HasValue)
-            return;
-        tempPath = result.Value.filePath;
-
-        project.Load(tempPath);
-    }
+    private void Load() => Program.instance.cmdHistory.ApplyCmd(new LoadProjectCmd(project));
 }

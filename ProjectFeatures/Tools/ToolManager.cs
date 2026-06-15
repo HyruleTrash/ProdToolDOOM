@@ -64,4 +64,13 @@ public class ToolManager : IBaseUpdatable
 
         CurrentTool?.Update(dt, windowRef);
     }
+
+    public static void LoadUI(Action<object> addUI)
+    {
+        foreach (KeyValuePair<Type, ITool> keyValuePair in Tools)
+        {
+            if (keyValuePair.Value == null) continue;
+            addUI.Invoke(keyValuePair.Value.LoadUI());
+        }
+    }
 }

@@ -33,7 +33,7 @@ public class Program : WindowInstance
     {
         base.Initialize();
         this.UpdateRegister.Add(ToolManager.Instance);
-        SetShortcuts(BaseShortcuts.baseShortcuts);
+        SetShortcuts(BaseShortcuts.Shortcuts);
         RightClickRegister.Register(this.rightClickManager);
     }
     
