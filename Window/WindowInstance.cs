@@ -24,15 +24,15 @@ public class WindowInstance : Game
     public bool Fullscreen { get; private set; }
 
     private bool shouldCallOnScreenSizeChanged;
-    private Window.ResizeComponent? resizeComponent;
-    private Window.DragComponent? dragComponent;
+    private ResizeComponent? resizeComponent;
+    private DragComponent? dragComponent;
 
-    protected Menu TopBarRight { get; private set; }
-    protected Menu topBarLeft;
+    protected Menu TopBarRight { get; private set; } = null!;
+    protected Menu topBarLeft = null!;
     
-    private Texture2D closeIcon;
-    private Texture2D minimizeIcon;
-    private Texture2D maximizeIcon;
+    private Texture2D closeIcon = null!;
+    private Texture2D minimizeIcon = null!;
+    private Texture2D maximizeIcon = null!;
 
     public List<IBaseUpdatable> UpdateRegister { get; set; }
     private List<IBaseUpdatable> updateRegister = [];
@@ -40,8 +40,10 @@ public class WindowInstance : Game
     protected float dt;
     public Mouse Mouse { get; private set; }
     
-    public ShortcutManager shortcutManager;
-    public RightClickManager rightClickManager;
+    public ShortcutManager shortcutManager = null!;
+    public RightClickManager rightClickManager = null!;
+    private bool triggerExit;
+    private int exitDelayFrames = 3;
 
     protected WindowInstance()
     {
@@ -73,8 +75,8 @@ public class WindowInstance : Game
         base.Initialize();
         
         Vector2 windowSize = new(this.gum.CanvasWidth, this.gum.CanvasHeight);
-        this.resizeComponent = new Window.ResizeComponent(windowSize, this.graphics, this.Window);
-        this.dragComponent = new Window.DragComponent(windowSize, this.Window);
+        this.resizeComponent = new ResizeComponent(windowSize, this.graphics, this.Window);
+        this.dragComponent = new DragComponent(windowSize, this.Window);
 
         this.shortcutManager = new ShortcutManager();
         this.UpdateRegister.Add(this.shortcutManager);
@@ -179,7 +181,7 @@ public class WindowInstance : Game
         MenuItem exitButton = new();
         CustomMenuItemVisual.Create(exitButton);
         CustomMenuItemVisual.AddIcon(exitButton, this.closeIcon);
-        exitButton.Clicked += (_, _) => Exit();
+        exitButton.Clicked += (_, _) => this.triggerExit = true;
         
         MenuItem minimizeButton = new();
         CustomMenuItemVisual.Create(minimizeButton);
@@ -188,7 +190,7 @@ public class WindowInstance : Game
         {
             IntPtr handle = this.Window.Handle;
             if (handle == IntPtr.Zero) return;
-            DLLevelBuilder.Window.Helper.Minimize(handle);
+            Helper.Minimize(handle);
         };
         
         MenuItem maximizeButton = new();
@@ -201,12 +203,12 @@ public class WindowInstance : Game
 
             if (this.Fullscreen)
             {
-                DLLevelBuilder.Window.Helper.UnMaximize(handle);
+                Helper.UnMaximize(handle);
                 this.Fullscreen = false;
             }
             else
             {
-                DLLevelBuilder.Window.Helper.Maximize(handle);
+                Helper.Maximize(handle);
                 this.Fullscreen = true;
             }
 
@@ -260,6 +262,10 @@ public class WindowInstance : Game
 
         CheckScreenSizeChange();
         this.Mouse.UpdateVisual();
+
+        if (!this.triggerExit) return;
+        this.exitDelayFrames--; // delay exit, because mouse click can bleed through to other applications
+        if (this.exitDelayFrames <= 0) Exit();
     }
 
     private void CheckScreenSizeChange()
@@ -310,7 +316,7 @@ public class WindowInstance : Game
 
     public bool WasMouseClickConsumedByGum() => this.gum.Cursor.WindowOver != null;
 
-    public bool IsFocused() => DLLevelBuilder.Window.Helper.HasFocus(this.Window.Handle);
+    public bool IsFocused() => Helper.HasFocus(this.Window.Handle);
 
     public Vector2 GetWindowSize()
     {
