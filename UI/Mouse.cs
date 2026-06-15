@@ -116,13 +116,13 @@ public class Mouse(WindowInstance windowRef) : IBaseUpdatable
                 this.originOfDragMove = mousePos;
             if (this.previousOffset == null)
                 this.previousOffset = currentLevel.GetOffset();
-            currentLevel.SetOffset(this.previousOffset + (mousePos - this.originOfDragMove));
+            Vector2 offset = this.previousOffset + (mousePos - this.originOfDragMove);
+            currentLevel.SetOffset(offset);
+            if (this.isDragSelecting) this.dragSelect?.UpdateVisual();
         }
 
-        if (released)
-        {
-            this.originOfDragMove = null;
-            this.previousOffset = null;
-        }
+        if (!released) return;
+        this.originOfDragMove = null;
+        this.previousOffset = null;
     }
 }

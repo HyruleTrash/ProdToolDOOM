@@ -14,6 +14,8 @@ namespace DLLevelBuilder.ProjectFeatures.Tools;
 public class DragSelect : IBaseUpdatable
 {
     private Vector2? firstMousePos;
+    private Vector2? lastMousePos;
+    private Vector2? initialOffset;
     private SelectionBox selectionBox = new();
     private RectangleRuntime visual = new();
     private Level? levelRef;
@@ -95,32 +97,68 @@ public class DragSelect : IBaseUpdatable
     /// <returns>if user is currently drag selecting</returns>
     public bool UpdateDrag(MouseState mouse, WindowInstance windowRef)
     {
-        if (Project.Instance.levels.Count == 0 || windowRef.Mouse.IsDragging)
-            return false;
-        Vector2 lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
+        if (Project.Instance.levels.Count == 0 || windowRef.Mouse.IsDragging) return false;
 
+        if (!UpdateMousePositions(mouse, windowRef)) return false;
+        if (!UpdateVisual()) return false;
+        UpdateSelection();
+        
+        return this.visual.Visible;
+    }
+    
+    private bool UpdateMousePositions(MouseState mouse, WindowInstance windowRef)
+    {
         this.levelRef ??= Project.TryGetCurrentLevel();
         if (this.levelRef == null) return false;
-        this.firstMousePos ??= new Vector2(lastMousePos);
         
-        float width = Math.Abs(this.firstMousePos.x - lastMousePos.x);
-        float height = Math.Abs(this.firstMousePos.y - lastMousePos.y);
+        this.initialOffset ??= this.levelRef.GetOffset();
+        this.lastMousePos = new Vector2(mouse.Position) - new Vector2(windowRef.GetWindowWidth() / 2, windowRef.GetWindowHeight() / 2);
+        this.firstMousePos ??= new Vector2(this.lastMousePos);
+        return true;
+    }
 
-        this.selectionBox.center = (this.firstMousePos + lastMousePos) / 2f;
+    public bool UpdateVisual()
+    {
+        if (this.firstMousePos == null || this.lastMousePos == null || this.levelRef == null) return false;
+        Vector2 usedFirstMousePos = this.firstMousePos;
+        Vector2 usedLastMousePos = this.lastMousePos;
+        
+        float width = Math.Abs(usedFirstMousePos.x - usedLastMousePos.x);
+        float height = Math.Abs(usedFirstMousePos.y - usedLastMousePos.y);
+
+        Vector2 currentLevelOffset = this.levelRef.GetOffset();
+        Vector2 startOffset = this.initialOffset ?? currentLevelOffset;
+        Vector2 deltaOffset = currentLevelOffset - startOffset;
+        
+        this.selectionBox.center = (usedFirstMousePos + this.lastMousePos) / 2f;
         this.selectionBox.size = new Vector2(width, height);
 
         this.visual.Width = width;
         this.visual.Height = height;
-        this.visual.X = this.selectionBox.center.x;
-        this.visual.Y = this.selectionBox.center.y;
+        this.visual.X = this.selectionBox.center.x + deltaOffset.x;
+        this.visual.Y = this.selectionBox.center.y + deltaOffset.y;
 
         this.visual.Visible = this.selectionBox.size.Magnitude > 10;
 
+        return true;
+    }
+    
+    private void UpdateSelection()
+    {
+        if (this.levelRef == null) return;
+        
+        Vector2 offsetCenter = this.selectionBox.center - this.levelRef.GetOffset();
+        SelectionBox offsetBox = new()
+        {
+            center = offsetCenter,
+            size = this.selectionBox.size
+        };
+        
         foreach (var obj in this.levelRef.levelObjects)
         {
-            if (obj is null || obj.position is null)
-                continue;
-            bool isSelected = this.selectionBox.IsInsideBounds(obj.position);
+            if (obj?.position is null) continue;
+            
+            bool isSelected = offsetBox.IsInsideBounds(obj.position);
             if (this.selectedObjects.Contains(obj))
             {
                 if (isSelected) continue;
@@ -133,24 +171,19 @@ public class DragSelect : IBaseUpdatable
                 obj.ShowSelectionVisual();
             }
         }
-        
-        return this.visual.Visible;
     }
 
     public void Reset()
     {
         this.levelRef = null;
         this.firstMousePos = null;
+        this.initialOffset = null;
     }
 
     public void UnSelect()
     {
         Reset();
-        foreach (var obj in this.selectedObjects)
-        {
-            if (obj is not null)
-                obj.HideSelectionVisual();
-        }
+        foreach (var obj in this.selectedObjects) obj?.HideSelectionVisual();
 
         this.selectedObjects.Clear();
         this.visual.Visible = false;

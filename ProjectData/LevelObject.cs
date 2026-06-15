@@ -24,6 +24,7 @@ public abstract class LevelObject
     }
 
     public virtual void Init() => this.Initialized = true;
+    public Vector2 GetPositionWithoutOffset() => this.position - this.offset;
 
     public void Show()
     {
