@@ -50,13 +50,13 @@ public class ToolManager : IBaseUpdatable
         bool released = mouse.LeftButton == ButtonState.Released;
         bool pressed = mouse.LeftButton == ButtonState.Pressed;
         
-        if (!wasPressed && pressed) wasPressed = true;
+        if (!wasPressed && pressed && !windowRef.WasMouseClickConsumedByGum()) wasPressed = true;
 
         if (wasPressed && !windowRef.Mouse.isDragSelecting)
         {
             if (CurrentTool is not null && released)
             {
-                CurrentTool?.Call(mouse);
+                CurrentTool.Call(mouse);
                 wasPressed = false;
                 windowRef.Mouse.dragSelect?.Reset();
             }

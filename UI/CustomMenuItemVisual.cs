@@ -55,6 +55,8 @@ public class CustomMenuItemVisual
             if (this.visual.Parent == null) // removed / disposed
                 CustomMenuItem.Remove(menuItem);
         };
+        
+        menuItem.Clicked += (_, _) => UiInputGuard.Lock(TimeSpan.FromMilliseconds(Params.clickCaptureMs), Program.instance.gameTime);
 
         CheckMinSizes();
         SetScrollView();

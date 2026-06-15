@@ -15,6 +15,8 @@ namespace DLLevelBuilder.UI;
 
 public static class Params
 {
+    public const float clickCaptureMs = 300;
+
     // window specific
     public const int minWindowWidth = 500;
     public const int minWindowHeight = 100;

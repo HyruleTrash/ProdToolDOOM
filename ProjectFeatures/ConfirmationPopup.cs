@@ -135,7 +135,6 @@ public class ConfirmationPopup : Popup<ConfirmationPopup>
     {
         if (OnConfirmation == null) return;
         OnConfirmation.Invoke();
-        ToggleVisibility();
         UpdatePositionsAndSizes();
     }
 

@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameGum;
 using static Microsoft.Xna.Framework.Color;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using Cursor = MonoGameGum.Input.Cursor;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Mouse = DLLevelBuilder.UI.Mouse;
 
@@ -38,6 +39,7 @@ public class WindowInstance : Game
     private List<IBaseUpdatable> updateRegister = [];
     public KeyboardState KeyboardState { get; private set; }
     protected float dt;
+    public GameTime gameTime;
     public Mouse Mouse { get; private set; }
     
     public ShortcutManager shortcutManager = null!;
@@ -241,7 +243,10 @@ public class WindowInstance : Game
     {
         this.KeyboardState = Keyboard.GetState();
         this.dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        this.gameTime = gameTime;
         this.Mouse.currentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        
+        if (UiInputGuard.IsLocked(gameTime)) return;
         
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || this.KeyboardState.IsKeyDown(Keys.Escape))
             Exit();
@@ -250,12 +255,7 @@ public class WindowInstance : Game
         base.Update(gameTime);
 
         this.updateRegister = this.UpdateRegister.ToList();
-        foreach (var baseUpdatable in this.updateRegister)
-        {
-            if (baseUpdatable is null)
-                continue;
-            baseUpdatable.Update(this.dt, this);
-        }
+        foreach (var baseUpdatable in this.updateRegister) baseUpdatable?.Update(this.dt, this);
         
         if (IsFocused())
             CheckOnHover(this.dt);
@@ -314,7 +314,7 @@ public class WindowInstance : Game
         return insideWidth && insideHeight;
     }
 
-    public bool WasMouseClickConsumedByGum() => this.gum.Cursor.WindowOver != null;
+    public bool WasMouseClickConsumedByGum() => this.gum.Cursor.WindowOver != null || this.gum.Cursor.WindowPushed != null;
 
     public bool IsFocused() => Helper.HasFocus(this.Window.Handle);
 

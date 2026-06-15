@@ -28,8 +28,8 @@ public class CustomButtonVisual
         public readonly Color secondaryColor = secondaryColor;
         public readonly Color tertiaryColor = tertiaryColor;
         
-        public static CustomButtonTheme DefaultTheme = new CustomButtonTheme(Params.DefaultFillColor, Params.DefaultOutlineColor, Params.CanvasColor);
-        public static CustomButtonTheme InvertedTheme = new CustomButtonTheme(Params.DefaultFillColor, Params.CanvasColor, Params.DefaultOutlineColor);
+        public static CustomButtonTheme DefaultTheme = new(Params.DefaultFillColor, Params.DefaultOutlineColor, Params.CanvasColor);
+        public static CustomButtonTheme InvertedTheme = new(Params.DefaultFillColor, Params.CanvasColor, Params.DefaultOutlineColor);
     }
 
     private CustomButtonVisual(ButtonVisual visual, CustomButtonTheme? theme)
@@ -61,6 +61,8 @@ public class CustomButtonVisual
             if(this.visual.Parent == null) // removed / disposed
                 CustomButtons.Remove(this.visual);
         };
+        
+        visual.Click += (_, __) => UiInputGuard.Lock(TimeSpan.FromMilliseconds(Params.clickCaptureMs), Program.instance.gameTime);
     }
 
     private void SetIcon(SpriteRuntime sprite, bool shouldColorIcon = true)
