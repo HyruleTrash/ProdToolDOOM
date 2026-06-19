@@ -4,9 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameGum.GueDeriving;
 using DLLevelBuilder.ProjectFeatures;
+using DLLevelBuilder.UI;
 using DLLevelBuilder.Window;
+using RenderingLibrary.Graphics;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
+using HorizontalAlignment = RenderingLibrary.Graphics.HorizontalAlignment;
 
 namespace DLLevelBuilder;
 
@@ -108,16 +111,20 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         if (newLevelId != this.LevelId || !this.projectRef.levels.ContainsValue(this.parentLevel))
         {
             if (this.icon != null) this.icon.Visible = false;
-            if (this.nameText != null) this.nameText.Visible = false;
             if (this.selectedIcon != null) this.selectedIcon.Visible = false;
+            if (this.nameText != null) this.nameText.Visible = false;
             return;
         }
+        
+        if (!this.parentLevel.Contains(this)) return;
 
         if (this.iconContainer is { Parent: null }) 
             this.projectRef.canvasContainer.AddChild(this.iconContainer);
         if (this.nameText is { Parent: null }) 
             this.projectRef.canvasContainer.AddChild(this.nameText);
         if (this.icon != null) this.icon.Visible = true;
+        if (this.nameText != null) this.nameText.Visible = true;
+        UpdateName();
     }
 
     private void HandleLeftClickHold(object? _, EventArgs __)
@@ -143,8 +150,14 @@ public class Entity : LevelObject, IDisposable, IBaseUpdatable
         }
 
         if (this.nameText == null) return;
-        this.nameText.X = this.Position.x + this.offset.x - this.nameText.Width / 2 + screenSize.x / 2;
-        this.nameText.Y = this.Position.y + this.offset.y - this.nameText.Height / 2 + screenSize.y / 2;
+        this.nameText.UpdateLayout();
+        
+        this.nameText.HorizontalAlignment = HorizontalAlignment.Center;
+        this.nameText.XOrigin = HorizontalAlignment.Center;
+        this.nameText.YOrigin = VerticalAlignment.Center;
+        
+        this.nameText.X = this.Position.x + this.offset.x + (screenSize.x / 2);
+        this.nameText.Y = this.Position.y + this.offset.y + ((float)this.entityTextureRef.Height / 2) + (screenSize.y / 2) + (this.nameText.Height / 2) + Params.borderMargin;
     }
     
     public void Update(float dt, WindowInstance _)

@@ -92,4 +92,16 @@ public class Level
         foreach (Point point in this.Points) point.Init();
         foreach (Entity entity in this.Entities) entity.Init();
     }
+
+    public bool Contains(LevelObject? levelObject)
+    {
+        if (levelObject == null) return false;
+        return levelObject switch
+        {
+            Entity entity => this.entities.Contains(entity),
+            Point point => this.points.Contains(point),
+            Line line => this.lines.Contains(line),
+            _ => false
+        };
+    }
 }

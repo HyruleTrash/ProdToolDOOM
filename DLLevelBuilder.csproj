@@ -9,6 +9,7 @@
         <Platforms>AnyCPU</Platforms>
         <DefineConstants>$(DefineConstants);WINDOWS;</DefineConstants>
         <MGCBUseProperDotNetTool>false</MGCBUseProperDotNetTool>
+        <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -31,5 +32,8 @@
       <EmbeddedResource Include="Icon.bmp">
         <LogicalName>Icon.bmp</LogicalName>
       </EmbeddedResource>
+      <None Update="Icon.bmp">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

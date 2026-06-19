@@ -89,6 +89,8 @@ public class Point : LevelObject, IDisposable, IBaseUpdatable
             return;
         }
 
+        if (!this.parentLevel.Contains(this)) return;
+        
         if (this.iconContainer is { Parent: null }) this.projectRef.canvasContainer.AddChild(this.iconContainer);
         if (this.icon != null) this.icon.Visible = true;
     }
